@@ -11,14 +11,14 @@ const HEADER_HEIGHT = 120;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
-  icon: ReactElement;
+  notificationIcon: ReactElement;
   headerBackgroundColor: string;
 }>;
 
 export default function ParallaxScrollView({
   children,
   headerImage,
-  icon,
+  notificationIcon,
   headerBackgroundColor,
 }: Props) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -49,29 +49,15 @@ export default function ParallaxScrollView({
     <View className="flex flex-col">
       <Animated.ScrollView ref={scrollRef}>
         <Animated.View
-          style={[
-            styles.header,
-            { backgroundColor: headerBackgroundColor },
-            headerAnimatedStyle,
-          ]}
+          className={`h-[60px] overflow-hidden items-center justify-center ${headerBackgroundColor}`}
         >
           {headerImage}
+          {notificationIcon}
         </Animated.View>
-        <View style={styles.content}>{children}</View>
+        <View className="h-full flex-1 p-4 gap-4 overflow-hidden">
+          {children}
+        </View>
       </Animated.ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    height: 120,
-    overflow: "hidden",
-  },
-  content: {
-    flex: 1,
-    padding: 32,
-    gap: 16,
-    overflow: "hidden",
-  },
-});
