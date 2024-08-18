@@ -27,24 +27,24 @@ export default function Notifications() {
         }
       >
         <View className="flex flex-col items-center justify-between pt-4">
-          <View className="p-0 text-justify">
-            <Text className="text-2xl font-bold text-neutrals-neutrals-n900 font-rbold">
-              Parametres des cookies
+          <View className=" text-justify">
+            <Text className="text-xl font-bold text-neutrals-neutrals-n900 font-rbold">
+              Veuillez activer les notifications
             </Text>
-            <Text className="text-lg mt-6 mb-6 text-justify">
+            <Text className="text-base mt-6 mb-2 text-justify">
               Activez les notifications de uniresa relatives aux voyages et au
               marketing contenant notamment des promotions, des recompenses, des
               experiences de voyage et des informations sur les produits et
               services de uniresa.
             </Text>
           </View>
-          <View className="flex w-full mt-56">
+          <View className="flex w-full mt-48">
             <View className="flex ">
               <Text className="text-lg text-neutrals-neutrals-n900 font-lbold">
                 Vous pouvez les désactiver a tout moment.
               </Text>
             </View>
-            <View className="flex my-8">
+            <View className="flex my-4">
               <Text className="text-lg text-accents font-lbold">
                 Lire la charte de confidentialite.
               </Text>

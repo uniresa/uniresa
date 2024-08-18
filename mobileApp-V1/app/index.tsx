@@ -27,11 +27,11 @@ export default function HomeScreen() {
         }
       >
         <View className="flex flex-col items-center justify-between pt-4">
-          <View className="p-0 text-justify">
-            <Text className="text-2xl font-bold text-neutrals-neutrals-n900 font-rbold">
+          <View className="text-justify">
+            <Text className="text-xl font-bold text-neutrals-neutrals-n900 font-rbold">
               Parametres des cookies
             </Text>
-            <Text className="text-base mt-6 mb-6 text-justify">
+            <Text className="text-base mt-4 mb-2 text-justify">
               En cliquant sur accpter, vous acceptez l utilisation de cookies
               analytiques et de technologies siilaires utilisees pour obtenir
               des donnees sur l’utilisation de l’appli et pour ameliorer nos
@@ -43,8 +43,8 @@ export default function HomeScreen() {
               partager certains elements directement sur vos reseaux sociaux.
             </Text>
           </View>
-          <View className="flex pt-40">
-            <View className="flex my-8">
+          <View className="flex">
+            <View className="flex my-4">
               <Text className="text-base mt-24 text-justify">
                 Gerez vos autorisations et apprenez-en plus sur les cookies et
                 les technologies similaires que nous utilisons.
