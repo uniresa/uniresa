@@ -24,7 +24,7 @@ const TextButton = ({
       }`}
       disabled={isLoading}
     >
-      <Text className={`text-neutrals font-rbold text-lg ${textStyle}`}>{title}</Text>
+      <Text className={`text-neutrals font-rbold text-base ${textStyle}`}>{title}</Text>
       {isLoading && (
         <ActivityIndicator
           animating={isLoading}
