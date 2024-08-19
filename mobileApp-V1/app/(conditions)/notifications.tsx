@@ -8,7 +8,7 @@ import TextButton from "@/components/generalComponents/TextButton";
 export default function Notifications() {
   return (
     <SafeAreaView className="bg-neutrals-neutrals-n20 h-full">
-      <StatusBar backgroundColor="#069494" style="light" />
+      {/* <StatusBar backgroundColor="#069494" style="light" /> */}
       <ParallaxScrollView
         headerBackgroundColor="bg-primary"
         notificationIcon={

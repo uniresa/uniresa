@@ -3,9 +3,6 @@ import {
   Image,
   Text,
   View,
-  ScrollView,
-  StyleSheet,
-  FlatList,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Link, router, useNavigation } from "expo-router";
@@ -17,7 +14,7 @@ import TextButton from "@/components/generalComponents/TextButton";
 export default function Connection() {
   return (
     <SafeAreaView className="bg-neutrals-neutrals-n20 h-full">
-      <StatusBar backgroundColor="#069494" style="light" />
+      {/* <StatusBar backgroundColor="#069494" style="light" /> */}
       <ParallaxScrollView
         headerBackgroundColor="bg-primary"
         notificationIcon={

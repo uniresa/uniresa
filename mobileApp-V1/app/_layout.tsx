@@ -44,8 +44,8 @@ export default function RootLayout() {
 
   return (
     <Stack>
-      {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(conditions)" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
       {/* <Stack.Screen name="search/[query]" options={{ headerShown: false }} /> */}
@@ -53,5 +53,7 @@ export default function RootLayout() {
   );
 }
 
-{/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-</ThemeProvider> */}
+{
+  /* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+</ThemeProvider> */
+}

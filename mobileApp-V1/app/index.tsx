@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TextButton from "@/components/generalComponents/TextButton";
 export default function HomeScreen() {
   return (
-    <SafeAreaView className="bg-neutral-100 h-full">
+    <SafeAreaView className="bg-neutrals-neutrals-n20 h-full">
       <StatusBar backgroundColor="#069494" style="light" />
       <ParallaxScrollView
         headerBackgroundColor="bg-primary"
