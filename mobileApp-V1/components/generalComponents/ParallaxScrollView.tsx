@@ -54,7 +54,7 @@ export default function ParallaxScrollView({
           {headerImage}
           {notificationIcon}
         </Animated.View>
-        <View className="h-full flex-1 p-4 gap-4 overflow-hidden">
+        <View className="h-full flex-1 py-4 gap-4 overflow-hidden">
           {children}
         </View>
       </Animated.ScrollView>

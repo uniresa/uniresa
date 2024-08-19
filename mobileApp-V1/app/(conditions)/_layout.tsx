@@ -20,7 +20,7 @@ const conditionsLayout = () => {
     </Stack>
 
     {/* <Loader isLoading={loading} /> */}
-    <StatusBar backgroundColor="#161622" style="light" />
+    <StatusBar backgroundColor="#069494" style="light" />
   </>
   )
 }
