@@ -3,6 +3,7 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeResearchBar from "@/components/navigation/ThemeResearchBar";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
+import RecentSearch from "@/components/generalComponents/RecentSearch";
 
 const DATA = [
   {
@@ -18,6 +19,15 @@ const DATA = [
     title: "Third Item",
   },
 ];
+const defaultSearchCriteria: {
+  place: string;
+  minRating: number;
+  maxPrice: number;
+} = {
+  place: "Yaounde",
+  minRating: 2,
+  maxPrice: 150000,
+};
 
 type ItemProps = { title: string };
 
@@ -47,6 +57,14 @@ const Home = () => {
         }
       >
         <ThemeResearchBar />
+        <View className="p-4 ">
+          <Text className="text-xl font-lbold">Hebergements recomandés pour vous</Text>
+          <Text className="text-base mt-2">
+            Destination {defaultSearchCriteria.place}
+          </Text>
+          <RecentSearch searchCriteria={defaultSearchCriteria} />
+        </View>
+
         <FlatList
           data={DATA}
           renderItem={({ item }) => <Item title={item.title} />}
