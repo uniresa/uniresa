@@ -60,6 +60,7 @@ module.exports = {
         rbold: ["Roboto-Bold", "sans-serif"],
         rblack: ["Roboto-Black", "sans-serif"],
       },
+      
     },
   },
 
