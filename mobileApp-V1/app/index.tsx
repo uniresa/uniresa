@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TextButton from "@/components/generalComponents/TextButton";
 export default function HomeScreen() {
   return (
-    <SafeAreaView className="bg-neutral-100 h-full">
+    <SafeAreaView className="bg-neutrals-20 flex-1">
       <StatusBar backgroundColor="#069494" style="light" />
       <ParallaxScrollView
         headerBackgroundColor="bg-primary"
@@ -26,12 +26,12 @@ export default function HomeScreen() {
           />
         }
       >
-        <View className="flex flex-col items-center justify-between pt-4">
-          <View className="p-0 text-justify">
-            <Text className="text-2xl font-bold text-neutrals-neutrals-n900 font-rbold">
+        <View className="flex flex-col items-center justify-between p-4">
+          <View>
+            <Text className="text-2xl font-bold text-neutrals-900 mb-4">
               Parametres des cookies
             </Text>
-            <Text className="text-base mt-6 mb-6 text-justify">
+            <Text className="text-base text-justify text-neutrals-800 leading-6">
               En cliquant sur accpter, vous acceptez l utilisation de cookies
               analytiques et de technologies siilaires utilisees pour obtenir
               des donnees sur l’utilisation de l’appli et pour ameliorer nos
@@ -43,30 +43,28 @@ export default function HomeScreen() {
               partager certains elements directement sur vos reseaux sociaux.
             </Text>
           </View>
-          <View className="flex pt-40">
-            <View className="flex my-8">
-              <Text className="text-base mt-24 text-justify">
-                Gerez vos autorisations et apprenez-en plus sur les cookies et
-                les technologies similaires que nous utilisons.
-              </Text>
+          <View className=" my-8 ">
+            <Text className="text-base mt-12 text-justify text-neutrals-800 leading-6">
+              Gerez vos autorisations et apprenez-en plus sur les cookies et les
+              technologies similaires que nous utilisons.
+            </Text>
+          </View>
+          <View className="flex flex-row gap-4 w-full justify-center">
+            <View className="w-[40%]">
+              <TextButton
+                title="Refuser"
+                containerStyles="bg-primary py-3"
+                textStyle="text-center text-neutrals"
+                handlePress={() => router.push("/notifications")}
+              />
             </View>
-            <View className="flex flex-row gap-6 p-4 items-center">
-              <View className="w-[40%]">
-                <TextButton
-                  title="Refuser"
-                  containerStyles="bg-primary"
-                  textStyle="text-align:center"
-                  handlePress={() => router.push("/notifications")}
-                />
-              </View>
-              <View className="w-[40%]">
-                <TextButton
-                  title="Accepter"
-                  containerStyles="bg-primary"
-                  textStyle="text-align:center"
-                  handlePress={() => router.push("/notifications")}
-                />
-              </View>
+            <View className="w-[40%]">
+              <TextButton
+                title="Accepter"
+                containerStyles="bg-primary py-3"
+                textStyle="text-center text-neutrals"
+                handlePress={() => router.push("/notifications")}
+              />
             </View>
           </View>
         </View>
