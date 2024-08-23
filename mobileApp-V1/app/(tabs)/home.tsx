@@ -1,24 +1,18 @@
-import { View, Text, FlatList, Image } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  ImageBackground,
+  StyleSheet,
+} from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeResearchBar from "@/components/navigation/ThemeResearchBar";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import RecentSearch from "@/components/generalComponents/RecentSearch";
+import DiscountedList from "@/components/generalComponents/DiscountList";
 
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-];
 const defaultSearchCriteria: {
   place: string;
   minRating: number;
@@ -29,13 +23,29 @@ const defaultSearchCriteria: {
   maxPrice: 150000,
 };
 
-type ItemProps = { title: string };
+const getUpcomingWeekendDates = () => {
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // Get the current day of the week (0-6, where 0 is Sunday)
 
-const Item = ({ title }: ItemProps) => (
-  <View>
-    <Text>{title}</Text>
-  </View>
-);
+  const daysUntilFriday = 5 - dayOfWeek;
+  const daysUntilSunday = 7 - dayOfWeek;
+
+  const friday = new Date(today);
+  friday.setDate(today.getDate() + daysUntilFriday);
+
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() + daysUntilSunday);
+
+  const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long" };
+  const fridayFormatted = friday.toLocaleDateString("fr-FR", options);
+  const sundayFormatted = sunday.toLocaleDateString("fr-FR", options);
+
+  return { fridayFormatted, sundayFormatted };
+};
+
+// Function to calculate the upcoming weekend dates
+const { fridayFormatted, sundayFormatted } = getUpcomingWeekendDates();
+
 const Home = () => {
   return (
     <SafeAreaView>
@@ -58,19 +68,42 @@ const Home = () => {
       >
         <ThemeResearchBar />
         <View className="p-4 ">
-          <Text className="text-xl font-lbold">Hebergements recomandés pour vous</Text>
+          <Text className="text-xl font-lbold">
+            Hebergements recomandés pour vous
+          </Text>
           <Text className="text-base mt-2">
             Destination {defaultSearchCriteria.place}
           </Text>
           <RecentSearch searchCriteria={defaultSearchCriteria} />
         </View>
+        <View className="p-4">
+          <ImageBackground
+            source={require("@/assets/images/bgImages/douala.jpg")}
+            className="h-[650px] rounded-xl overflow-hidden"
+            imageStyle={{ borderRadius: 15 }}
+          >
+            {/* Overlay with Opacity */}
 
-        <FlatList
-          data={DATA}
-          renderItem={({ item }) => <Item title={item.title} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-        />
+            <View
+              style={{
+                ...StyleSheet.absoluteFillObject,
+                backgroundColor: "rgba(51, 51, 51, 0.7)",
+                borderRadius: 15,
+              }}
+            />
+            <View className="absolute bottom-4 p-4">
+              <Text className="text-neutrals text-2xl font-lbold">
+                Offres de derniere minute pour le week-end
+              </Text>
+              <Text className="text-neutrals text-lg font-lbold m-2">
+                <Text className="text-neutrals text-lg font-lbold m-2">
+                  Offres affichées: du {fridayFormatted} au {sundayFormatted}
+                </Text>
+              </Text>
+              <DiscountedList />
+            </View>
+          </ImageBackground>
+        </View>
       </ParallaxScrollView>
     </SafeAreaView>
   );

@@ -52,7 +52,7 @@ const RecentSearch: React.FC<Props> = ({ searchCriteria }) => {
     <FlatList
       data={filteredHotels}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <PropertyCard property={item} />}
+      renderItem={({ item }) => <PropertyCard property={item} textColor="text-"/>}
       horizontal
       showsHorizontalScrollIndicator={false}
     />

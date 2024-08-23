@@ -1,9 +1,14 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { Property } from "@/typesDeclaration/types";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 
-const PropertyCard = ({ property }: { property: Property }) => {
+interface PropertyCardProps {
+  property: Property;
+  textColor: string; 
+}
+
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor })=>{
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -63,9 +68,9 @@ const PropertyCard = ({ property }: { property: Property }) => {
           resizeMode="cover"
         />
       </TouchableOpacity>
-      <TouchableOpacity className="flex flex-col">
+      <TouchableOpacity className={`flex flex-col ${textColor}`}>
         <View className="flex flex-row items-center gap-2 justify-start">
-          <Text className="text-lg font-semibold">{property.name}</Text>
+          <Text className={`text-lg font-semibold ${textColor}`}>{property.name}</Text>
           <View className="flex flex-row gap-2 items-center">
             {renderStars()}
           </View>
@@ -95,35 +100,3 @@ const PropertyCard = ({ property }: { property: Property }) => {
 };
 
 export default PropertyCard;
-
-// import { View, Text, Image } from "react-native";
-// import React from "react";
-// import { Property } from "@/typesDeclaration/types";
-
-// // PropertyCard component to display property details in a card format.
-// const PropertyCard = ({ property }: { property: Property }) => {
-//   return (
-//     <View className="flex flex-col p-4 items-center">
-//       <View className="flex flex-row items-center gap-2">
-//         <Image source={{ uri: property.image }} />
-//       </View>
-//       <View className="flex flex-col">
-//         <View className="flex flex-row gap-4">
-//           <Text className="text-lg font-semibold">{property.name}</Text>
-//           <Text className="text-lg font-semibold">{property.rating}</Text>
-//         </View>
-//         <View className="flex flex-row">
-//           <Text>{property.reviewsRating}</Text>
-//           <Text>{property.reviews}</Text>
-//         </View>
-//         <Text>{property.distanceToPoint}</Text>
-//         <View className="flex flex-col">
-//           <Text>Price: {property.oldPrice}</Text>
-//           <Text> {property.newPrice}</Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// };
-
-// export default PropertyCard;
