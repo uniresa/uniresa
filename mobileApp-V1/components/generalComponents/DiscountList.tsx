@@ -46,6 +46,7 @@ const DiscountedList: React.FC = () => {
         <DiscountCard discountedProperty={item} textColor="text-neutrals" />
       )}
       horizontal
+      showsHorizontalScrollIndicator={false}
     />
   );
 };

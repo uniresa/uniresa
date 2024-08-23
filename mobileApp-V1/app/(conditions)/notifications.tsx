@@ -7,8 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TextButton from "@/components/generalComponents/TextButton";
 export default function Notifications() {
   return (
-    <SafeAreaView className="bg-neutrals-neutrals-n20 h-full">
-      {/* <StatusBar backgroundColor="#069494" style="light" /> */}
+    <SafeAreaView className="bg-neutrals-20 flex-1">
       <ParallaxScrollView
         headerBackgroundColor="bg-primary"
         notificationIcon={
@@ -27,50 +26,51 @@ export default function Notifications() {
         }
       >
         <View className="flex flex-col items-center justify-between pt-4">
-          <View className=" text-justify">
-            <Text className="text-xl font-bold text-neutrals-neutrals-n900 font-rbold">
-              Veuillez activer les notifications
+          <View className=" text-justify px-2">
+            <Text className="text-2xl font-bold text-neutrals-900 mb-6">
+              Activez les notifications
             </Text>
-            <Text className="text-base mt-6 mb-2 text-justify">
-              Activez les notifications de uniresa relatives aux voyages et au
-              marketing contenant notamment des promotions, des recompenses, des
-              experiences de voyage et des informations sur les produits et
-              services de uniresa.
+            <Text className="text-base text-neutrals-800 leading-6 text-justify">
+              Recevez des notifications de Uniresa concernant vos voyages,
+              promotions, récompenses, expériences, et informations sur nos
+              produits et services. Restez informé(e) des meilleures offres pour
+              enrichir votre expérience.
             </Text>
           </View>
-          <View className="flex w-full mt-48">
-            <View className="flex ">
-              <Text className="text-lg text-neutrals-neutrals-n900 font-lbold">
-                Vous pouvez les désactiver a tout moment.
+          <View className=" w-full mt-36 px-4">
+            <View className="mb-4 ">
+              <Text className="text-lg text-neutrals-900 font-lbold text-justify">
+                Vous pouvez désactiver les notifications à tout moment dans les
+                paramètres de l’application.
               </Text>
             </View>
-            <View className="flex my-4">
-              <Text className="text-lg text-accents font-lbold">
-                Lire la charte de confidentialite.
+            <View className="my-4">
+              <Text className="text-base text-accents font-lbold">
+                Consultez notre politique de confidentialité.
               </Text>
             </View>
             <View className="flex flex-col gap-3  items-center">
               <View className="w-full">
                 <TextButton
                   title="Accepter"
-                  containerStyles="bg-primary"
-                  textStyle="text-align:center"
+                  containerStyles="bg-primary py-3"
+                  textStyle="text-center text-neutrals"
                   handlePress={() => router.push("/connection")}
                 />
               </View>
-              <View className="w-full">
+              <View className="w-full py-3">
                 <TextButton
                   title="Plus tard"
-                  containerStyles="bg-neutrals border-2 border-primary"
-                  textStyle="text-align:center text-primary"
+                  containerStyles="bg-neutrals-20 border-2 border-primary"
+                  textStyle="text-center text-primary"
                   handlePress={() => router.push("/connection")}
                 />
               </View>
-              <View className="w-full">
+              <View className="w-full py3">
                 <TextButton
                   title="Refuser"
-                  containerStyles="bg-neutrals-neutrals-n20"
-                  textStyle="text-align:center text-primary"
+                  containerStyles="bg-neutrals-20"
+                  textStyle="text-center text-primary"
                   handlePress={() => router.push("/connection")}
                 />
               </View>
