@@ -12,6 +12,7 @@ import ThemeResearchBar from "@/components/navigation/ThemeResearchBar";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import RecentSearch from "@/components/generalComponents/RecentSearch";
 import DiscountedList from "@/components/generalComponents/DiscountList";
+import CityPropertiesList from "@/components/generalComponents/CityPropertiesList";
 
 const defaultSearchCriteria: {
   place: string;
@@ -67,11 +68,11 @@ const Home = () => {
         }
       >
         <ThemeResearchBar />
-        <View className="p-4 ">
-          <Text className="text-xl font-lbold">
+        <View className="m-4  ">
+          <Text className="text-xl font-lbold m-4 ">
             Hebergements recomandés pour vous
           </Text>
-          <Text className="text-base mt-2">
+          <Text className="text-base mx-4">
             Destination {defaultSearchCriteria.place}
           </Text>
           <RecentSearch searchCriteria={defaultSearchCriteria} />
@@ -91,18 +92,22 @@ const Home = () => {
                 borderRadius: 15,
               }}
             />
-            <View className="absolute bottom-4 p-4">
-              <Text className="text-neutrals text-2xl font-lbold">
+            <View className="absolute bottom-0 mx-4">
+              <Text className="text-neutrals text-xl font-lbold">
                 Offres de derniere minute pour le week-end
               </Text>
-              <Text className="text-neutrals text-lg font-lbold m-2">
-                <Text className="text-neutrals text-lg font-lbold m-2">
-                  Offres affichées: du {fridayFormatted} au {sundayFormatted}
-                </Text>
+              <Text className="text-neutrals text-sm font-lbold m-2">
+                Offres affichées: du {fridayFormatted} au {sundayFormatted}
               </Text>
               <DiscountedList />
             </View>
           </ImageBackground>
+        </View>
+        <View className="m-4">
+          <Text className="text-xl font-rbold text-neutrals-900 m-4">
+            Decouvrez les hebergements dans les destinations populaires
+          </Text>
+          <CityPropertiesList />
         </View>
       </ParallaxScrollView>
     </SafeAreaView>

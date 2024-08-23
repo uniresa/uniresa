@@ -1,9 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  Image,
-  Text,
-  View,
-} from "react-native";
+import { Image, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Link, router, useNavigation } from "expo-router";
 import disc from "@jsamr/counter-style/presets/disc";
@@ -13,8 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import TextButton from "@/components/generalComponents/TextButton";
 export default function Connection() {
   return (
-    <SafeAreaView className="bg-neutrals-neutrals-n20 h-full">
-      {/* <StatusBar backgroundColor="#069494" style="light" /> */}
+    <SafeAreaView className="bg-neutrals-20 flex-1">
       <ParallaxScrollView
         headerBackgroundColor="bg-primary"
         notificationIcon={
@@ -32,83 +27,75 @@ export default function Connection() {
           />
         }
       >
-        <View className="flex flex-col items-center pt-2">
-          <View className="text-justify mb-10">
+        <View className="flex flex-col items-center pt-4">
+          <View className="px-6 mb-10">
+            <Text className="text-2xl font-bold text-neutrals-900 mb-4">
+              Bienvenue chez uniresa!
+            </Text>
+            <Text className="text-base text-neutrals-800 mb-6 text-justify">
+              Inscrivez vous et connectez vous pour profiter de divers
+              avantages:
+            </Text>
+
             <View>
-              <Text className="text-xl font-bold text-neutrals-neutrals-n900 font-rbold">
-                Bienvenue chez uniresa!
-              </Text>
-              <Text className="text-base mt-6 mb-4 text-justify">
-                Inscrivez vous et connectez vous pour profiter de divers
-                avantages:
-              </Text>
-            </View>
-            <View className="">
-              <Text className="p-1 font-lregular text-base">
-                <MaterialIcons name="check-circle" size={24} color="#07a872" />{" "}
-                Réservations rapides
-              </Text>
-              <Text className="p-1 font-lregular text-base">
-                <MaterialIcons name="check-circle" size={24} color="#07a872" />{" "}
-                Enregistrer mes recherches et favoris
-              </Text>
-              <Text className="p-1 font-lregular text-base">
-                <MaterialIcons name="check-circle" size={24} color="#07a872" />{" "}
-                Suivi de mes réservations
-              </Text>
-              <Text className="p-1 font-lregular text-base">
-                <MaterialIcons name="check-circle" size={24} color="#07a872" />{" "}
-                Retour sur le déroulé de mes réservations
-              </Text>
-              <Text className="p-1 font-lregular text-base">
-                <MaterialIcons name="check-circle" size={24} color="#07a872" />{" "}
-                Reductions clients fideles
-              </Text>
+              {[
+                "Réservations rapides",
+                "Enregistrer mes recherches et favoris",
+                "Suivi de mes réservations",
+                "Retour sur le déroulé de mes réservations",
+                "Réductions clients fidèles",
+              ].map((item, index) => (
+                <Text
+                  key={index}
+                  className="p-1 text-base font-lregular flex flex-row items-center"
+                >
+                  <MaterialIcons
+                    name="check-circle"
+                    size={24}
+                    color="#07a872"
+                  />{" "}
+                  {item}
+                </Text>
+              ))}
             </View>
           </View>
-          <View className="flex w-full ">
-            <View className="flex flex-col gap-2  items-center">
-              <View className="w-full">
-                <TextButton
-                  title="Se connecter"
-                  containerStyles="bg-primary"
-                  textStyle="text-align:center"
-                  handlePress={() => router.push("/signIn")}
-                />
-              </View>
-              <View className="w-full">
-                <TextButton
-                  title="S'inscrire"
-                  containerStyles="bg-neutrals border-2 border-primary"
-                  textStyle="text-align:center text-primary"
-                  handlePress={() => router.push("/signUp")}
-                />
-              </View>
-              <View className="w-full">
-                <TextButton
-                  title="Continuer sans se connecter"
-                  containerStyles="bg-neutrals-neutrals-n20"
-                  textStyle="text-align:center text-primary"
-                  handlePress={() => router.push("/home")}
-                />
-              </View>
+          <View className="px-6 w-full ">
+            <View className="flex flex-col gap-2  items-center mb-8">
+              <TextButton
+                title="Se connecter"
+                containerStyles="bg-primary py-3 mb-4 w-full"
+                textStyle="text-center text-neutrals"
+                handlePress={() => router.push("/signIn")}
+              />
+              <TextButton
+                title="S'inscrire"
+                containerStyles="bg-neutrals-20 mb-4 border-2 border-primary py-3 w-full"
+                textStyle="text-center text-primary"
+                handlePress={() => router.push("/signUp")}
+              />
+              <TextButton
+                title="Continuer sans se connecter"
+                containerStyles="bg-neutrals-20 py-3  w-full"
+                textStyle="text-center text-primary"
+                handlePress={() => router.push("/home")}
+              />
             </View>
-            <View className="flex mt-10">
-              <Text className="text-base text-neutrals-neutrals-n900 font-lbold">
-                En creant ou en vous connectant a un compte, vous acceptez nos
-                <Text className="text-accents underline hover:underline-offset-4">
+            <View className="mb-6">
+              <Text className="text-sm text-neutrals-800 font-lbold">
+                En créant ou en vous connectant à un compte, vous acceptez nos
+                <Text className="text-accents underline">
                   {" "}
-                  conditions generales{" "}
+                  conditions générales{" "}
                 </Text>{" "}
                 et notre{" "}
-                <Text className="text-accents underline hover:underline-offset-4">
-                  charte de confidentialite
+                <Text className="text-accents underline">
+                  charte de confidentialité
                 </Text>
                 .
               </Text>
             </View>
-            <View className="flex items-center mt-6">
-              <Text className="text-lg font-lbold">
+            <View className="flex items-center mt-4">
+              <Text className="text-sm font-lbold text-center">
                 @2024 copyright uniresa sarl
               </Text>
             </View>

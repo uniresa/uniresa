@@ -1,14 +1,14 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import React, { PropsWithChildren } from "react";
 import { Property } from "@/typesDeclaration/types";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 
 interface PropertyCardProps {
   property: Property;
-  textColor: string; 
+  textColor: string;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor })=>{
+const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -60,42 +60,47 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor })=>{
   };
 
   return (
-    <View className="flex flex-col p-4 items-start border border-spacing-2 border-neutrals-neutrals-n40 gap-2 rounded-lg">
-      <TouchableOpacity className="flex flex-row items-center">
-        <Image
-          source={{ uri: property.propertyImage }}
-          style={{ width: 290, height: 120, borderRadius: 8 }}
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
-      <TouchableOpacity className={`flex flex-col ${textColor}`}>
-        <View className="flex flex-row items-center gap-2 justify-start">
-          <Text className={`text-lg font-semibold ${textColor}`}>{property.name}</Text>
-          <View className="flex flex-row gap-2 items-center">
-            {renderStars()}
-          </View>
-        </View>
-        <View className="flex flex-row items-center justify-start">
-          <View className="flex flex-row gap-2 items-center justify-start">
-            <Image
-              source={require("@/assets/icons/tripAdvisor.png")}
-              style={{ width: 36, height: 20 }} // Adjusted the size for better alignment
-              resizeMode="contain"
-            />
-            {renderReviewRating()}
-          </View>
-          <Text className="ml-2">{property.reviews} Commentaires</Text>
-        </View>
-        <Text>{property.distanceToPoint}</Text>
-        <View className="flex flex-row gap-2 items-center">
-          <Text className="font-lbold">Price:</Text>
-          <Text className="line-through text-lg text-accents">
-            {property.oldPrice}
+    <Pressable className="flex flex-col mx-2 p-4 items-start border  border-neutrals-20 gap-2 rounded-lg">
+      <Image
+        source={{ uri: property.propertyImage }}
+        style={{ width: 290, height: 150, borderRadius: 12 }}
+        resizeMode="cover"
+      />
+      <View className="mt-4 w-full">
+        <View className="flex flex-row items-center justify-between">
+          <Text className={`text-lg font-semibold ${textColor}`}>
+            {property.name}
           </Text>
-          <Text className="font-lbold text-lg">{property.newPrice} Fcfa</Text>
+          <View className="flex flex-row items-center">{renderStars()}</View>
         </View>
-      </TouchableOpacity>
-    </View>
+        <View className="flex flex-row items-center mt-2">
+          <Image
+            source={require("@/assets/icons/tripAdvisor.png")}
+            style={{ width: 36, height: 20 }}
+            resizeMode="contain"
+          />
+          <View className="flex flex-row ml-2">{renderReviewRating()}</View>
+          <Text className="ml-2 text-sm text-neutrals-500">
+            {property.reviews} Commentaires
+          </Text>
+        </View>
+        <Text className="text-sm text-neutrals-500 mt-2">
+          {property.distanceToPoint}
+        </Text>
+        <View className="flex flex-row gap-2 items-center justify-between">
+          <View className="flex flex-row items-center gap-2">
+            <Text className="font-lbold text-lg text-neutrals-900">Price:</Text>
+            <Text className="line-through text-lg text-accents">
+              {property.oldPrice}
+            </Text>
+            <Text className="font-lbold text-lg text-secondary-600">
+              {property.newPrice} Fcfa
+            </Text>
+          </View>
+        </View>
+      </View>
+    </Pressable>
+    // </View>
   );
 };
 

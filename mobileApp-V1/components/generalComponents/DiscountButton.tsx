@@ -23,7 +23,7 @@ const DiscountButton: React.FC<DiscountButtonProps> = ({
       className={`flex flex-row self-start items-center space-x-2 rounded-xl px-2 py-1 ${discountButtonBgColor}`}
     >
       {discuntIcon}
-      <Text className={`font-lbold font-bold text-lg ${buttonTextColor}`}>
+      <Text className={`font-lbold font-bold text-sm ${buttonTextColor}`}>
         {discount
           ? `-${discount} %`
           : discount && buttonText

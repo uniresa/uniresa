@@ -3,8 +3,11 @@ export const data = [
   {
     id: "0",
     place: "Yaounde",
+    region: "Region du Centre",
+    department: "Mfoundi",
+    country: "Cameroun",
     placeImage:
-      "https://uniresa-my.sharepoint.com/:i:/p/yannickdjoa/EblFPSbkYfJGmUmFzjPR9JABS4hv44HcaJz7Cql9gIfSdQ?e=KhfSvq",
+      "https://drive.google.com/uc?id=12UkcX8vJ2-IhWtiBzirYrfJPP63h7vzO",
     shortDescription: "capital city in the center of country , Cameroun",
     properties: [
       {
@@ -432,8 +435,11 @@ export const data = [
   {
     id: "2",
     place: "Kribi",
+    region: "Region du Sud",
+    department: "Ocean",
+    country: "Cameroun",
     placeImage:
-      "https://uniresa-my.sharepoint.com/:i:/p/yannickdjoa/EblFPSbkYfJGmUmFzjPR9JABS4hv44HcaJz7Cql9gIfSdQ?e=KhfSvq",
+      "https://drive.google.com/uc?id=11jSyQ2xshIifvUiPueyz5rGluWZgqrM9",
     shortDescription: "capital city in the center of country , Cameroun",
     properties: [
       {
@@ -861,8 +867,11 @@ export const data = [
   {
     id: "2",
     place: "Douala",
+    region: "Region du Littoral",
+    department: "Wouri",
+    country: "Cameroun",
     placeImage:
-      "https://uniresa-my.sharepoint.com/:i:/p/yannickdjoa/EblFPSbkYfJGmUmFzjPR9JABS4hv44HcaJz7Cql9gIfSdQ?e=KhfSvq",
+      "https://drive.google.com/uc?id=12NKwS-w9rqUHJqlqeAhbrcVIRGFkJV3P",
     shortDescription: "capital city in the center of country , Cameroun",
     properties: [
       {
