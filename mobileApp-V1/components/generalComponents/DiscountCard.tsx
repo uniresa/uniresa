@@ -1,6 +1,7 @@
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, ImageBackground, Pressable } from "react-native";
 import React from "react";
 import { Property } from "@/typesDeclaration/types";
+import DiscountButton from "./DiscountButton";
 
 interface DiscountCardProps {
   discountedProperty: {
@@ -15,62 +16,67 @@ const DiscountCard: React.FC<DiscountCardProps> = ({
   textColor,
 }) => {
   const { place, property } = discountedProperty;
-  const discount = ((property.oldPrice - property.newPrice) / property.oldPrice) * 100;
+  const discount =
+    ((property.oldPrice - property.newPrice) / property.oldPrice) * 100;
 
   return (
-    <View className="p-4 border border-neutrals-neutrals-n40 rounded-xl">
-      <TouchableOpacity className="relative">
-        <Image
+    <View className="mr-4 rounded-xl ">
+      <Pressable className="relative gap-2">
+        <ImageBackground
           source={{ uri: property.propertyImage }}
-          className="w-[340px] h-[190px] rounded-xl"
+          className="w-[320px] h-[190px] rounded-xl"
+          imageStyle={{ borderRadius: 15 }}
           resizeMode="cover"
-        />
-        <View className="absolute top-2 left-2 bg-warning m-2 rounded-lg p-2 opacity-90">
-          <View className="flex flex-row items-center gap-2">
-            <Image source={require("@/assets/icons/discountFilledOnBg.png")} />
-            <Text className="font-lbold text-neutrals-neutrals-n700 text-lg">
-              Prix membre: {discount.toFixed(0)}%
-            </Text>
+        >
+          <View className="absolute top-2 left-2 m-2 rounded-lg">
+            <DiscountButton
+              buttonText="Prix membre"
+              discountButtonBgColor="bg-warning"
+              buttonTextColor="text-neutrals-900"
+              discuntIcon={
+                <Image
+                  source={require("@/assets/icons/discountOutline.png")}
+                  className="w-6 h-6"
+                  resizeMode="contain"
+                />
+              }
+            />
           </View>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity className={`mt-4 ${textColor}`}>
-        <Text className="text-lg font-semibold">
-          {place}
-        </Text>
-        <Text className="text-2xl font-bold">
+        </ImageBackground>
+        <Text className="text-lg text-neutrals font-semibold">{place}</Text>
+        <Text className="text-2xl text-neutrals font-bold">
           {property.name}
         </Text>
-        <Text className="text-lg">
-          {property.distanceToPoint}
-        </Text>
-
-        <Text className="mt-2 text-neutrals">
-          Deja {property.reviews} Commentaires
-        </Text>
-
         <View className="mt-2">
-          <View className="flex flex-row items-center">
-            <Text className="font-lbold">Price:</Text>
-            <Text className="line-through text-lg text-accents ml-2">
-              {property.oldPrice}
-            </Text>
-            <Text className="font-lbold text-lg ml-2">
+          <View className="flex flex-row items-center justify-start gap-6">
+            <Text className="font-lbold text-neutrals text-lg">
               {property.newPrice} Fcfa
             </Text>
+            <Text className="line-through text-lg text-neutrals">
+              {property.oldPrice}
+            </Text>
           </View>
-          <Text className="text-lg">
-            pour 2 nuits
-          </Text>
-          <Text className="text-lg">
+          <Text className="text-lg text-neutrals">pour 2 nuits</Text>
+          <Text className="text-lg text-neutrals">
             {property.newPrice / 2} Fcfa par nuit
           </Text>
-          <Text className="text-lg">
-            taxes et frais compris
-          </Text>
+          <Text className="text-lg text-neutrals">taxes et frais compris</Text>
         </View>
-      </TouchableOpacity>
+        <View className="mt-2">
+          <DiscountButton
+            discount={discount.toFixed(0)}
+            discountButtonBgColor="bg-accents"
+            buttonTextColor="text-neutrals"
+            discuntIcon={
+              <Image
+                source={require("@/assets/icons/discountOutlineOnBg.png")}
+                className="w-6 h-6"
+                resizeMode="contain"
+              />
+            }
+          />
+        </View>
+      </Pressable>
     </View>
   );
 };

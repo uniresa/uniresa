@@ -9,7 +9,7 @@ export const data = [
     properties: [
       {
         id: "10",
-        name: "Hilton Hotel",
+        name: "Hilton Hotel de Yaounde",
         propertyType: "hotel",
         registrationDate: "2022-05-01",
         propertyImage:
@@ -96,7 +96,7 @@ export const data = [
       },
       {
         id: "11",
-        name: "Djeuga Palace Hotel",
+        name: "Djeuga Palace Hotel de Yaounde",
         propertyType: "hotel",
         registrationDate: "2024-05-21",
         propertyImage:
@@ -183,7 +183,7 @@ export const data = [
       },
       {
         id: "12",
-        name: "Cofe Hotel",
+        name: "Cofe Hotel de Yaounde",
         propertyType: "hotel",
         registrationDate: "2024-06-20",
         propertyImage:
@@ -265,7 +265,7 @@ export const data = [
       },
       {
         id: "13",
-        name: "MERINA HOTEL",
+        name: "MERINA HOTEL de Yaounde",
         propertyType: "hotel",
         registrationDate: "2023-07-20",
         propertyImage:
@@ -347,7 +347,7 @@ export const data = [
       },
       {
         id: "14",
-        name: "Village Noah",
+        name: "Village Noah de Yaounde",
         propertyType: "appartement meuble",
         registrationDate: "2024-07-20",
         propertyImage:
@@ -438,7 +438,7 @@ export const data = [
     properties: [
       {
         id: "200",
-        name: "Hilton Hotel",
+        name: "Hilton Hotel de Kribi",
         propertyType: "hotel",
         registrationDate: "2022-05-01",
         propertyImage:
@@ -525,7 +525,7 @@ export const data = [
       },
       {
         id: "2011",
-        name: "Djeuga Palace Hotel",
+        name: "Djeuga Palace Hotel de Kribi",
         propertyType: "hotel",
         registrationDate: "2024-05-21",
         propertyImage:
@@ -612,7 +612,7 @@ export const data = [
       },
       {
         id: "2012",
-        name: "Cofe Hotel",
+        name: "Cofe Hotel de Kribi",
         propertyType: "hotel",
         registrationDate: "2024-06-20",
         propertyImage:
@@ -694,7 +694,7 @@ export const data = [
       },
       {
         id: "2013",
-        name: "MERINA HOTEL",
+        name: "MERINA HOTEL de Kribi",
         propertyType: "hotel",
         registrationDate: "2023-07-20",
         propertyImage:
@@ -776,7 +776,7 @@ export const data = [
       },
       {
         id: "2014",
-        name: "Village Noah",
+        name: "Village Noah de Kribi",
         propertyType: "appartement meuble",
         registrationDate: "2024-07-20",
         propertyImage:
@@ -867,7 +867,7 @@ export const data = [
     properties: [
       {
         id: "3200",
-        name: "Hilton Hotel",
+        name: "Hilton Hotel de Douala",
         propertyType: "hotel",
         registrationDate: "2022-05-01",
         propertyImage:
@@ -954,7 +954,7 @@ export const data = [
       },
       {
         id: "32011",
-        name: "Djeuga Palace Hotel",
+        name: "Djeuga Palace Hotel Douala",
         propertyType: "hotel",
         registrationDate: "2024-05-21",
         propertyImage:
@@ -964,7 +964,7 @@ export const data = [
         reviewsRating: 4,
         address: "1 Avenue Narvick, Yaoundé 2659, Cameroon ",
         oldPrice: 70000,
-        newPrice: 65000,
+        newPrice: 50000,
         latitude: "13.0359",
         longitude: "77.6431",
         distanceToPoint: "5 km to the city center",
@@ -1041,7 +1041,7 @@ export const data = [
       },
       {
         id: "32012",
-        name: "Cofe Hotel",
+        name: "Cofe Hotel de Douala",
         propertyType: "hotel",
         registrationDate: "2024-06-20",
         propertyImage:
@@ -1123,7 +1123,7 @@ export const data = [
       },
       {
         id: "32013",
-        name: "MERINA HOTEL",
+        name: "MERINA HOTEL de Douala",
         propertyType: "hotel",
         registrationDate: "2023-07-20",
         propertyImage:
@@ -1205,7 +1205,7 @@ export const data = [
       },
       {
         id: "32014",
-        name: "Village Noah",
+        name: "Village Noah de Douala",
         propertyType: "appartement meuble",
         registrationDate: "2024-07-20",
         propertyImage:

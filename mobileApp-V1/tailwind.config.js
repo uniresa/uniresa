@@ -26,6 +26,8 @@ module.exports = {
           50: "rgba(245, 231, 230, 1)",
           100: "rgba(223, 179, 176, 1)",
           200: "rgba(207, 143, 138, 1)",
+          400: "rgba(172, 60, 52, 1)",
+          700: "rgba(107, 8, 1, 1)",
           800: "rgba(83, 6, 1, 1)",
         },
         warning: {
@@ -37,14 +39,14 @@ module.exports = {
         },
         neutrals: {
           DEFAULT: "rgba(255, 255, 255, 1)",
-          "neutrals-n20": "rgba(247, 247, 247, 1)",
-          "neutrals-n40": "rgba(228, 228, 228, 1)",
-          "neutrals-n100": "rgba(145, 145, 145, 1)",
-          "neutrals-n300": "rgba(120, 120, 120, 1)",
-          "neutrals-n500": "rgba(98, 98, 98, 1)",
+          20: "rgba(247, 247, 247, 1)",
+          40: "rgba(228, 228, 228, 1)",
+          100: "rgba(145, 145, 145, 1)",
+          300: "rgba(120, 120, 120, 1)",
+          500: "rgba(98, 98, 98, 1)",
           "surface-information": "rgba(255, 214, 138, 1)",
-          "neutrals-n700": "rgba(73, 73, 73, 1)",
-          "neutrals-n900": "rgba(51, 51, 51, 1)",
+          700: "rgba(73, 73, 73, 1)",
+          900: "rgba(51, 51, 51, 1)",
         },
       },
       fontFamily: {
@@ -60,7 +62,6 @@ module.exports = {
         rbold: ["Roboto-Bold", "sans-serif"],
         rblack: ["Roboto-Black", "sans-serif"],
       },
-      
     },
   },
 
