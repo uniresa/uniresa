@@ -1,14 +1,37 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Redirect, Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
-const _layout = () => {
+const conditionsLayout = () => {
   return (
-    <View>
-      <Text>_layout</Text>
-    </View>
+    <>
+    <Stack>
+      <Stack.Screen
+        name="notifications"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="connection"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
+
+    {/* <Loader isLoading={loading} /> */}
+    <StatusBar backgroundColor="#069494" style="light" />
+  </>
   )
 }
 
-export default _layout
+export default conditionsLayout 
 
-const styles = StyleSheet.create({})
+
+// import { Loader } from "../../components";
+// import { useGlobalContext } from "../../context/GlobalProvider";
+
+
+  // const { loading, isLogged } = useGlobalContext();
+
+  // if (!loading && isLogged) return <Redirect href="/home" />;
