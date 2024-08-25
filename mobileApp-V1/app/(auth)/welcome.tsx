@@ -1,13 +1,10 @@
-import { StatusBar } from "expo-status-bar";
 import { Image, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Link, router, useNavigation } from "expo-router";
-import disc from "@jsamr/counter-style/presets/disc";
-import MarkedList from "@jsamr/react-native-li";
+import { router } from "expo-router";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TextButton from "@/components/generalComponents/TextButton";
-export default function Connection() {
+import CustomButton from "@/components/generalComponents/CustomButton";
+export default function Welcome() {
   return (
     <SafeAreaView className="bg-neutrals-20 flex-1">
       <ParallaxScrollView
@@ -61,22 +58,21 @@ export default function Connection() {
           </View>
           <View className="px-6 w-full ">
             <View className="flex flex-col gap-2  items-center mb-8">
-              <TextButton
+              <CustomButton
                 title="Se connecter"
-                containerStyles="bg-primary py-3 mb-4 w-full"
-                textStyle="text-center text-neutrals"
+                className="bg-primary py-3 mb-4 w-full"
                 handlePress={() => router.push("/signIn")}
               />
-              <TextButton
+              <CustomButton
                 title="S'inscrire"
-                containerStyles="bg-neutrals-20 mb-4 border-2 border-primary py-3 w-full"
-                textStyle="text-center text-primary"
+                className="bg-neutrals-20 mb-4 border-2 border-primary py-3 w-full"
+                textVariant="primary"
                 handlePress={() => router.push("/signUp")}
               />
-              <TextButton
+              <CustomButton
                 title="Continuer sans se connecter"
-                containerStyles="bg-neutrals-20 py-3  w-full"
-                textStyle="text-center text-primary"
+                className="bg-neutrals-20 py-3  w-full"
+                textVariant="primary"
                 handlePress={() => router.push("/home")}
               />
             </View>
