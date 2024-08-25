@@ -1,10 +1,8 @@
-import { StatusBar } from "expo-status-bar";
 import { Image, Text, View } from "react-native";
-import { Link, router, useNavigation } from "expo-router";
-import { useLayoutEffect } from "react";
+import { Href, router } from "expo-router";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TextButton from "@/components/generalComponents/TextButton";
+import CustomButton from "@/components/generalComponents/CustomButton";
 export default function Notifications() {
   return (
     <SafeAreaView className="bg-neutrals-20 flex-1">
@@ -51,27 +49,32 @@ export default function Notifications() {
             </View>
             <View className="flex flex-col gap-3  items-center">
               <View className="w-full">
-                <TextButton
+                <CustomButton
                   title="Accepter"
-                  containerStyles="bg-primary py-3"
-                  textStyle="text-center text-neutrals"
-                  handlePress={() => router.push("/connection")}
+                  className="bg-primary py-3"
+                  handlePress={() =>
+                    router.push("/welcome" as Href<"/welcome">)
+                  }
                 />
               </View>
               <View className="w-full py-3">
-                <TextButton
+                <CustomButton
                   title="Plus tard"
-                  containerStyles="bg-neutrals-20 border-2 border-primary"
-                  textStyle="text-center text-primary"
-                  handlePress={() => router.push("/connection")}
+                  className="bg-neutrals-20 border-2 border-primary"
+                  textVariant="primary"
+                  handlePress={() =>
+                    router.push("/welcome" as Href<"/welcome">)
+                  }
                 />
               </View>
               <View className="w-full py3">
-                <TextButton
+                <CustomButton
                   title="Refuser"
-                  containerStyles="bg-neutrals-20"
-                  textStyle="text-center text-primary"
-                  handlePress={() => router.push("/connection")}
+                  className="bg-neutrals-20"
+                  textVariant="primary"
+                  handlePress={() =>
+                    router.push("/welcome" as Href<"/welcome">)
+                  }
                 />
               </View>
             </View>

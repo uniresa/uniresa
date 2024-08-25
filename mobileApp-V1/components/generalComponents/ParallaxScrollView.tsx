@@ -11,14 +11,16 @@ const HEADER_HEIGHT = 120;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
-  notificationIcon: ReactElement;
+  notificationIcon?: ReactElement;
   headerBackgroundColor: string;
+  closingButton?: ReactElement;
 }>;
 
 export default function ParallaxScrollView({
   children,
   headerImage,
   notificationIcon,
+  closingButton,
   headerBackgroundColor,
 }: Props) {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -51,6 +53,7 @@ export default function ParallaxScrollView({
         <Animated.View
           className={`h-[60px] overflow-hidden items-center justify-center ${headerBackgroundColor}`}
         >
+          {closingButton}
           {headerImage}
           {notificationIcon}
         </Animated.View>
