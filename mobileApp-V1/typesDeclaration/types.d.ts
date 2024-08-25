@@ -1,3 +1,5 @@
+import { TextInputProps } from "react-native";
+
 export interface Photo {
   id: string;
   image: string;
@@ -38,4 +40,29 @@ export interface Place {
   placeImage: string;
   shortDescription: string;
   properties: Property[];
+}
+
+export interface InputFieldProps extends TextInputProps {
+  label?: string;
+  icon?: any;
+  hidePassIcon1?: any;
+  hidePassIconStyle1?: string;
+  hidePassIcon2?: any;
+  hidePassIconStyle2?: string;
+  // secureTextEntry?: boolean;
+  labelStyle?: string;
+  containerStyle?: string;
+  inputStyle?: string;
+  iconStyle?: string;
+  className?: string;
+}
+
+export interface ButtonProps extends TouchableOpacityProps {
+  title: string;
+  handlePress?: ((event: GestureResponderEvent) => void) | undefined;
+  bgVariant?: "primary" | "secondary" | "warning" | "outline" | "success";
+  textVariant?: "primary" | "default" | "secondary" | "danger" | "success";
+  IconLeft?: React.ComponentType<any>;
+  IconRight?: React.ComponentType<any>;
+  className?: string;
 }
