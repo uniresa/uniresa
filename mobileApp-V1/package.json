@@ -19,7 +19,7 @@
     "@jsamr/counter-style": "^2.0.2",
     "@jsamr/react-native-li": "^2.3.1",
     "@react-navigation/native": "^6.0.2",
-    "expo": "~51.0.28",
+    "expo": "^51.0.31",
     "expo-constants": "~16.0.2",
     "expo-font": "~12.0.9",
     "expo-linking": "~6.3.1",

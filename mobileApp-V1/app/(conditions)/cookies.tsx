@@ -1,10 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import { Image, Text, View } from "react-native";
-import { router } from "expo-router";
+import { Link, router, useNavigation } from "expo-router";
+import { useLayoutEffect } from "react";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/components/generalComponents/CustomButton";
-export default function HomeScreen() {
+export default function Cookies() {
   return (
     <SafeAreaView className="bg-neutrals-20 flex-1">
       <StatusBar backgroundColor="#069494" style="light" />
