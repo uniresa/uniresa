@@ -66,3 +66,28 @@ export interface ButtonProps extends TouchableOpacityProps {
   IconRight?: React.ComponentType<any>;
   className?: string;
 }
+export interface Profile {
+  // id: string;
+  firstName: string;
+  surName: string;
+  email: string;
+  phoneNumber: string;
+  avatarUrl?: string;
+  bio?: string;
+  birthDate?: Date;
+  address?: {
+    street: string;
+    quartier: string;
+    city: string;
+    subRegion: string;
+    region: string;
+    country: string;
+  };
+  socialLinks?: {
+    twitter?: string;
+    facebook?: string;
+    linkedin?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}

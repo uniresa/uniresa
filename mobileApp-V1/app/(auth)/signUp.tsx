@@ -8,7 +8,7 @@ import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollVie
 
 const SignUp = () => {
   const [form, setForm] = useState({
-    firstname: "",
+    firstName: "",
     surName: "",
     phoneNumber: "",
     email: "",
@@ -67,8 +67,8 @@ const SignUp = () => {
             <InputField
               placeholder="Prenom"
               textContentType="name"
-              value={form.firstname}
-              onChangeText={(value) => setForm({ ...form, firstname: value })}
+              value={form.firstName}
+              onChangeText={(value) => setForm({ ...form, firstName: value })}
               containerStyle="mb-2"
             />
             <InputField
