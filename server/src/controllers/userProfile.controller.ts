@@ -14,7 +14,7 @@ const createUserProfile = async (req: Request, res: Response) => {
       return res.status(400).json({
         status: "failed",
         message:
-          "Missing required fields: firstName, surName, email, password, or phoneNumber.",
+          "verifiez les cases obligatoires: firstName, surName, email, password, or phoneNumber.",
       });
     }
 
