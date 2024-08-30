@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import { ServiceAccount } from "firebase-admin";
-import serviceAccount from "./serviceAccount.json";
+import serviceAccount from "./serviceAccountKey"; // Update this with your file path
+
 
 // Initialize Firebase Admin SDK with Firestore
 admin.initializeApp({
