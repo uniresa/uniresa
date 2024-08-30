@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import express, { Express, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -21,13 +20,6 @@ const port = process.env.OUT_PORT || 8080;
 // );
 const app = express();
 app.use(express.json());
-=======
-
-import express, { Express, Request, Response } from "express";
-const port = 8000;
-
-const app = express();
->>>>>>> b18d40ed528b70211948bbf4adfafc95328caf9b
 
 app.get("/", (req, res) => {
   res.send("Hello, World! ts");
