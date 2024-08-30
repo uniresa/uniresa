@@ -1,7 +1,10 @@
 import * as admin from "firebase-admin";
 import { ServiceAccount } from "firebase-admin";
-import serviceAccount from "./serviceAccountKey"; // Update this with your file path
-
+import { getAuth, UserRecord } from "firebase-admin/auth";
+import dotenv from "dotenv";
+dotenv.config();
+import serviceAccount from "./serviceAccountKey.json";
+// const serviceAccount = require(process.env.SERVICEACCOUNTPATH as string);
 
 // Initialize Firebase Admin SDK with Firestore
 admin.initializeApp({
@@ -10,5 +13,6 @@ admin.initializeApp({
 
 // Initialize Firestore
 const db = admin.firestore();
+const auth = getAuth();
 
-export { admin, db };
+export { admin, db, auth };

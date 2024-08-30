@@ -48,10 +48,12 @@ export interface Place {
 }
 
 export interface UserProfile {
-  userId: string;
+  userId?: string;
   firstName: string;
   surName: string;
+
   email: string;
+  password: string;
   phoneNumber: string;
   avatarUrl?: string;
   bio?: string;
@@ -76,7 +78,6 @@ export interface UserProfile {
   preferredCurrency?: string; // Example: "USD", "EUR"
   preferredLanguage?: string; // Example: "en", "fr"
   preferredPaymentMethod?: string; //"Credit Card", "MoMo", "OM"
-  specialRequests?: string[]; // Any specific preferences or requests (like "non-smoking room")
 
   // Booking History
   bookingHistory?: BookingDetails[];
@@ -94,14 +95,11 @@ export interface UserProfile {
   // Favorites
   favoriteProperties: string[]; // List of property IDs that the user has marked as favorite
 
-  // cookies
-  hasAcceptedCookies: boolean;
-
   //Search
   searchHistory: SearchHistoryItem[]; // An array of SearchHistoryItem
 
   // Account Status
-  isVerified: boolean;
+  emailVerified: boolean;
   isActive: boolean;
   lastLoginAt?: Date;
   createdAt: Date;
