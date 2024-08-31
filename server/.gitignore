@@ -22,6 +22,6 @@ serviceAccountKey.json
 *.ntvs*
 *.njsproj
 *.sln
-
+server/serviceAccountKey.json
 *.sw?
 .env
