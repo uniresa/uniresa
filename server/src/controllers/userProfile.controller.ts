@@ -1,12 +1,16 @@
 import { db, auth } from "../../firebaseConfig";
 import { Request, Response } from "express";
-import { UserProfile } from "../typesDeclaration/types";
+import {
+  UserProfile,
+  BookingDetails,
+  SearchHistoryItem,
+  Property,
+} from "../typesDeclaration/types";
 import bcryptjs from "bcryptjs";
 
 // Implement the createUserProfile function to create a new user profile in Firestore Database.
 const createUserProfile = async (req: Request, res: Response) => {
   try {
-    //    { const userProfile: UserProfile = req.body;}
     const { firstName, surName, email, password, phoneNumber } =
       req.body as UserProfile;
     // Validate required fields
@@ -14,7 +18,7 @@ const createUserProfile = async (req: Request, res: Response) => {
       return res.status(400).json({
         status: "failed",
         message:
-          "verifiez les informations obligatoires: firstName, surName, email, password, or phoneNumber.",
+          "verifiez les informations obligatoires: prenom, nom, email, mot de passe, ou le numero de telephone",
       });
     }
 
@@ -26,27 +30,41 @@ const createUserProfile = async (req: Request, res: Response) => {
     //   });
     // }
     // Check if email is already in use
-    const existingUser = await db
+    const existingEmail = await db
       .collection("users")
       .where("email", "==", email)
       .limit(1)
       .get();
 
-    if (!existingUser.empty) {
+    if (!existingEmail.empty) {
       return res.status(400).json({
         status: "failed",
         message: "Email is already in use.",
       });
     }
+    // Check if phone number is already in use
+    const existingPhone = await db
+      .collection("users")
+      .where("phoneNumber", "==", phoneNumber)
+      .limit(1)
+      .get();
+
+    if (!existingPhone.empty) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Phone number is already in use.",
+      });
+    }
     // Combine firstName and surName to create a displayName
     const displayName = `${firstName} ${surName}`;
+
     const userCredential = await auth.createUser({
       email,
       password,
       phoneNumber,
       displayName,
     });
-    console.log(userCredential.uid);
+
     const hashPassword = await bcryptjs.hash(password, 10);
     const userRef = db.collection("users").doc(userCredential.uid);
     await userRef.set({
@@ -92,16 +110,26 @@ const createUserProfile = async (req: Request, res: Response) => {
         smsNotifications: true,
         pushNotifications: false, // Set to false until the user accepts the push notification
       },
+      bookingHistory: [],
+      searchHistory: [],
       favoriteProperties: [],
     });
 
     const searchHistoryRef = userRef.collection("searchHistory");
+    const searchHistoryItems: SearchHistoryItem[] = [];
     await searchHistoryRef.doc().set({
-      searches: [],
+      SearchHistoryItems: searchHistoryItems,
     });
+
     const favoritePropertiesRef = userRef.collection("favoriteProperties");
+    const favoriteItems: Property[] = [];
     await favoritePropertiesRef.doc().set({
-      favoris: [],
+      FavoriteItems: favoriteItems,
+    });
+    const bookingHistoryRef = userRef.collection("bookingHistory");
+    const bookings: BookingDetails[] = []; // Set to an empty array until the user makes a booking.
+    await bookingHistoryRef.doc().set({
+      Bookings: bookings,
     });
 
     return res.status(200).json({

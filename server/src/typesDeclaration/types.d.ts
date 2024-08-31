@@ -93,17 +93,17 @@ export interface UserProfile {
     pushNotifications: boolean;
   };
   // Favorites
-  favoriteProperties: string[]; // List of property IDs that the user has marked as favorite
+  favoriteProperties?: Property[]; // List of property IDs that the user has marked as favorite
 
   //Search
-  searchHistory: SearchHistoryItem[]; // An array of SearchHistoryItem
+  searchHistory?: SearchHistoryItem[]; // An array of SearchHistoryItem
 
   // Account Status
-  emailVerified: boolean;
-  isActive: boolean;
+  emailVerified?: boolean;
+  isActive?: boolean;
   lastLoginAt?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 interface BookingDetails {
