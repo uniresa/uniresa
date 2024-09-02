@@ -1,33 +1,98 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import { Link, router } from "expo-router";
 import InputField from "@/components/generalComponents/InputField";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import OAuth from "@/components/generalComponents/Oauth";
+import auth, { signInWithEmailAndPassword } from "@react-native-firebase/auth";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const SignIn = () => {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        // Fetch CSRF token from the backend
+        const response = await axios.get(
+          "http://192.168.1.181:8080/api/csrf-token",
+          { withCredentials: true }
+        );
+        Cookies.set("XSRF-TOKEN", response.data.csrfToken); // Store CSRF token in cookies
+      } catch (error) {
+        console.error("Error fetching CSRF token:", error);
+        Alert.alert("Error", "Failed to fetch CSRF token.");
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
-  const onSignInPress = () => {
-    // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
+  const onSignInPress = async () => {
+    setLoading(true);
+    try {
+      const userCredential = await auth().signInWithEmailAndPassword(
+        form.email,
+        form.password
+      );
+      const idToken = await userCredential.user.getIdToken(); // Get Firebase ID Token
+
+      console.log("User signed in:", userCredential.user);
+      console.log("Token:", idToken);
+
+      // Fetch CSRF token if not available
+      if (!Cookies.get("XSRF-TOKEN")) {
+        const response = await axios.get(
+          "http://192.168.1.181:8080/api/csrf-token",
+          { withCredentials: true }
+        );
+        Cookies.set("XSRF-TOKEN", response.data.csrfToken);
+      }
+
+      // Send token to your backend server for verification or other purposes
+      await axios.post(
+        "http://192.168.1.181:8080/api/auth/verify-token",
+        { idToken },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+            "CSRF-Token": Cookies.get("XSRF-TOKEN"), // Include CSRF token from cookies
+          },
+          withCredentials: true,
+        }
+      );
+
+      Alert.alert("Success", "Signed in successfully!");
+      router.push("/userProfile");
+    } catch (error: any) {
+      console.error("Error signing in:", error);
+      Alert.alert("Error", error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false); // Stop loading
+    }
   };
   const handleGoogleSignIn = async () => {
     // TODO: Implement sign in logic here
     console.log("Sign in with email: ", form.email);
     console.log("Sign in with password: ", form.password);
   };
-  const handleFacebookSignIn = async () => {
-    // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
-  };
+
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
       <ParallaxScrollView
@@ -105,18 +170,18 @@ const SignIn = () => {
               oAuthTitle="Se connecter avec Google"
               handleOAuth={handleGoogleSignIn}
             />
-            <OAuth
+            {/* <OAuth
               oauthIcon={require("@/assets/icons/facebook.png")}
               oAuthTitle="Se connecter avec Facebook"
               handleOAuth={handleFacebookSignIn}
-            />
-            <View className="mt-8">
+            /> */}
+            <View className="mt-20">
               <Text className="text-lg text-center text-neutrals-800">
                 Pas de compte?{" "}
               </Text>
               <Link
                 href="/signUp"
-                className="text-lg text-center text-primary "
+                className="text-xl text-center text-primary mt-2"
               >
                 S'inscrire ici
               </Link>
