@@ -5,6 +5,7 @@ import CustomButton from "@/components/generalComponents/CustomButton";
 import { Link, router } from "expo-router";
 import InputField from "@/components/generalComponents/InputField";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
+import axios from "axios";
 
 const SignUp = () => {
   const [userForm, setUserForm] = useState({
@@ -23,26 +24,28 @@ const SignUp = () => {
       return;
     }
     try {
-      const res = await fetch(
+      const response = await axios.post(
         "http://192.168.1.181:8080/api/userProfile/create",
         {
-          method: "POST",
-          // credentials: 'include', // This ensures cookies are sent with the request
+          ...userForm,
+        },
+        {
           headers: {
-            "content-type": "application/json",
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...userForm,
-          }),
+          withCredentials: true,
         }
       );
-      const data = await res.json();
+
+      const data = response.data;
       if (data.status === "success") {
         console.log(data.message);
       }
-      return;
-    } catch (error) {
-      console.log("error detected", error);
+    } catch (error: any) {
+      console.log(
+        "Error detected:",
+        error.response?.data?.message || error.message
+      );
     }
   };
   const handleGoogleSignUp = async () => {

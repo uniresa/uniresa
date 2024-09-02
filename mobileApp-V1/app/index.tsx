@@ -4,6 +4,8 @@ import { router } from "expo-router";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/components/generalComponents/CustomButton";
+import firebase from "@react-native-firebase/app";
+import auth from "@react-native-firebase/auth";
 export default function HomeScreen() {
   return (
     <SafeAreaView className="bg-neutrals-20 flex-1">
