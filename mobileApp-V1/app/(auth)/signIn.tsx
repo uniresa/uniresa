@@ -54,37 +54,32 @@ const SignIn = () => {
       console.log("User signed in:", userCredential.user);
       console.log("Token:", idToken);
 
-      // Fetch CSRF token if not available
-      if (!Cookies.get("XSRF-TOKEN")) {
-        const response = await axios.get(
-          "http://192.168.1.181:8080/api/csrf-token",
-          { withCredentials: true }
-        );
-        Cookies.set("XSRF-TOKEN", response.data.csrfToken);
-      }
-
       // Send token to your backend server for verification or other purposes
-      await axios.post(
+      const response = await axios.get(
         "http://192.168.1.181:8080/api/auth/verify-token",
-        { idToken },
         {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
             Authorization: `Bearer ${idToken}`,
-            "CSRF-Token": Cookies.get("XSRF-TOKEN"), // Include CSRF token from cookies
           },
           withCredentials: true,
         }
       );
-
+      const userData = response.data;
+      if (userData.status === "failed") {
+        Alert.alert("Error", userData.message);
+        return;
+      }
+      console.log(userData);
       Alert.alert("Success", "Signed in successfully!");
+      setUser(userData.user);
       router.push("/userProfile");
     } catch (error: any) {
       console.error("Error signing in:", error);
       Alert.alert("Error", error.response?.data?.message || error.message);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
   const handleGoogleSignIn = async () => {
