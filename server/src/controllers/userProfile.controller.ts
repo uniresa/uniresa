@@ -8,12 +8,11 @@ import {
 } from "../typesDeclaration/types";
 import bcryptjs from "bcryptjs";
 
-// Implement the createUserProfile function to create a new user profile in Firestore Database.
-const createUserProfile = async (req: Request, res: Response) => {
+export const createUserProfile = async (req: Request, res: Response) => {
+
   try {
     const { firstName, surName, email, password, phoneNumber } =
       req.body as UserProfile;
-    // Validate required fields
     if (!firstName || !surName || !email || !password || !phoneNumber) {
       return res.status(400).json({
         status: "failed",
@@ -55,7 +54,7 @@ const createUserProfile = async (req: Request, res: Response) => {
         message: "Phone number is already in use.",
       });
     }
-    // Combine firstName and surName to create a displayName
+
     const displayName = `${firstName} ${surName}`;
 
     const userCredential = await auth.createUser({
@@ -147,4 +146,30 @@ const createUserProfile = async (req: Request, res: Response) => {
   }
 };
 
-export default createUserProfile;
+
+export const getUserProfile= async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.uid;
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        status: "failed",
+        message: "User not found",
+      });
+    }
+    const user = userDoc.data() as UserProfile;
+    return res.status(200).json({
+      status: "success",
+      user,
+    });
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      return res.status(500).json({
+        status: "failed",
+        message: "Error fetching user profile.",
+        error,
+      });
+    }
+
+}
