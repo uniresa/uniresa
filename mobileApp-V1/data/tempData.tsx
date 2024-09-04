@@ -1298,7 +1298,7 @@ export const data = [
   },
 ];
 
-const filters = [
+export const filters = [
   {
     id: "0",
     filter: "cost:Low to High",
@@ -1309,7 +1309,7 @@ const filters = [
   },
 ];
 
-const services = [
+export const services = [
   {
     id: "0",
     name: "room service",
@@ -1337,5 +1337,71 @@ const services = [
   {
     id: "7",
     name: "Fitness center",
+  },
+];
+export const userData = [
+  {
+    id: "100000",
+    profile: {
+      firstName: "Yannick",
+      surName: "Djoa",
+      email: "john.doe@example.com",
+      phoneNumber: "0612345678",
+      address: {
+        street: "10 arret nkoabang",
+        quartier: "Bitotol",
+        city: "Yaounde",
+        subRegion: "Nkolafamba",
+        region: "Centre",
+        country: "Cameroun",
+      },
+      avatarUrl: "https://drive.google.com/uc?id=12Vg_9IJ17-NrEZVTHra3r5vqSH6cTDGJ",
+      createdAt: new Date("2022-01-30"),
+      updatedAt: new Date("2022-01-30"),
+    },
+
+    reservations: [
+      {
+        id: "11120",
+        propertyId: "10",
+        startDate: "2022-01-01",
+        endDate: "2022-01-15",
+        numberOfNights: 14,
+        totalPrice: 100000,
+        status: "Confirmed",
+      },
+      {
+        id: "11221",
+        propertyId: "11",
+        startDate: "2022-02-01",
+        endDate: "2022-02-15",
+        numberOfNights: 14,
+        totalPrice: 120000,
+        status: "Cancelled",
+      },
+      {
+        id: "11122",
+        propertyId: "200",
+        startDate: "2022-03-01",
+        endDate: "2022-03-15",
+        numberOfNights: 14,
+        totalPrice: 100000,
+        status: "Confirmed",
+      },
+    ],
+    reviews: [
+      {
+        id: "0",
+        propertyId: "32012",
+        rating: 4.5,
+        comment: "Excellent property, perfect location.",
+      },
+      {
+        id: "1",
+        propertyId: "32013",
+        rating: 5,
+        comment: "Love the location, everything was perfect.",
+      },
+    ],
   },
 ];

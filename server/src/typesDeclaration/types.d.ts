@@ -1,5 +1,3 @@
-import { TextInputProps } from "react-native";
-
 export interface Photo {
   id: string;
   image: string;
@@ -28,7 +26,14 @@ export interface Property {
   rooms: Room[];
   registrationDate: string;
   distanceToPoint: string;
-  propertyType: string;
+  propertyType:
+    | "Hotel"
+    | "Apartment"
+    | "House"
+    | "treeHouse"
+    | "Bungalow"
+    | "Chalet"
+    | "TerreBattue";
   reviews: number;
   reviewsRating: number;
   description?: string;
@@ -42,55 +47,6 @@ export interface Place {
   properties: Property[];
 }
 
-export interface InputFieldProps extends TextInputProps {
-  label?: string;
-  icon?: any;
-  hidePassIcon1?: any;
-  hidePassIconStyle1?: string;
-  hidePassIcon2?: any;
-  hidePassIconStyle2?: string;
-  // secureTextEntry?: boolean;
-  labelStyle?: string;
-  containerStyle?: string;
-  inputStyle?: string;
-  iconStyle?: string;
-  className?: string;
-}
-
-export interface ButtonProps extends TouchableOpacityProps {
-  title: string;
-  handlePress?: ((event: GestureResponderEvent) => void) | undefined;
-  bgVariant?: "primary" | "secondary" | "warning" | "outline" | "success";
-  textVariant?: "primary" | "default" | "secondary" | "danger" | "success";
-  IconLeft?: React.ComponentType<any>;
-  IconRight?: React.ComponentType<any>;
-  className?: string;
-}
-export interface Profile {
-  // id: string;
-  firstName: string;
-  surName: string;
-  email: string;
-  phoneNumber: string;
-  avatarUrl?: string;
-  bio?: string;
-  birthDate?: Date;
-  address?: {
-    street: string;
-    quartier: string;
-    city: string;
-    subRegion: string;
-    region: string;
-    country: string;
-  };
-  socialLinks?: {
-    twitter?: string;
-    facebook?: string;
-    linkedin?: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
 export interface UserProfile {
   userId?: string;
   firstName: string;
@@ -190,4 +146,3 @@ interface SearchHistoryItem {
   location: string; // Place where the search was made
   searchDate: Date; // Date and time when the search was made
 }
-
