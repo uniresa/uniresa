@@ -170,3 +170,4 @@ export const getUserProfile = async (req: Request, res: Response) => {
     });
   }
 };
+export const signOut = (req: Request, res: Response) => {};

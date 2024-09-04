@@ -92,7 +92,7 @@ const SignIn = () => {
             </View>
 
             <CustomButton
-              title={loading ? "Signing In..." : "Sign In"}
+              title={loading ? "En cours..." : "Se connecter"}
               handlePress={onSignInPress}
               className="mt-6"
             />
