@@ -5,10 +5,11 @@ import CustomButton from "@/components/generalComponents/CustomButton";
 import { Link, router } from "expo-router";
 import InputField from "@/components/generalComponents/InputField";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
+import axios from "axios";
 
 const SignUp = () => {
-  const [form, setForm] = useState({
-    firstname: "",
+  const [userForm, setUserForm] = useState({
+    firstName: "",
     surName: "",
     phoneNumber: "",
     email: "",
@@ -16,20 +17,46 @@ const SignUp = () => {
     passwordConfirmation: "",
   });
 
-  const onSignUpPress = () => {
-    // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
+  const onSignUpPress = async () => {
+    if (userForm.password !== userForm.passwordConfirmation) {
+      console.log("Passwords do not match");
+      alert("Les mots de passe ne sont pas identiques. Merci de reverifier");
+      return;
+    }
+    try {
+      const response = await axios.post(
+        "http://192.168.1.181:8080/api/userProfile/create",
+        {
+          ...userForm,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      const data = response.data;
+      if (data.status === "success") {
+        console.log(data.message);
+      }
+    } catch (error: any) {
+      console.log(
+        "Error detected:",
+        error.response?.data?.message || error.message
+      );
+    }
   };
   const handleGoogleSignUp = async () => {
     // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
+    console.log("Sign in with email: ", userForm.email);
+    console.log("Sign in with password: ", userForm.password);
   };
   const handleFacebookSignUp = async () => {
     // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
+    console.log("Sign in with email: ", userForm.email);
+    console.log("Sign in with password: ", userForm.password);
   };
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
@@ -67,29 +94,37 @@ const SignUp = () => {
             <InputField
               placeholder="Prenom"
               textContentType="name"
-              value={form.firstname}
-              onChangeText={(value) => setForm({ ...form, firstname: value })}
+              value={userForm.firstName}
+              onChangeText={(value) =>
+                setUserForm({ ...userForm, firstName: value })
+              }
               containerStyle="mb-2"
             />
             <InputField
               placeholder="Nom"
               textContentType="familyName"
-              value={form.surName}
-              onChangeText={(value) => setForm({ ...form, surName: value })}
+              value={userForm.surName}
+              onChangeText={(value) =>
+                setUserForm({ ...userForm, surName: value })
+              }
               containerStyle="mb-2"
             />
             <InputField
               placeholder="Numéro de téléphone"
               textContentType="telephoneNumber"
-              value={form.phoneNumber}
-              onChangeText={(value) => setForm({ ...form, phoneNumber: value })}
+              value={userForm.phoneNumber}
+              onChangeText={(value) =>
+                setUserForm({ ...userForm, phoneNumber: value })
+              }
               containerStyle="mb-2"
             />
             <InputField
               placeholder="Addresse e-mail"
               textContentType="emailAddress"
-              value={form.email}
-              onChangeText={(value) => setForm({ ...form, email: value })}
+              value={userForm.email}
+              onChangeText={(value) =>
+                setUserForm({ ...userForm, email: value })
+              }
               containerStyle="mb-2"
             />
             <InputField
@@ -99,8 +134,10 @@ const SignUp = () => {
               // iconStyle="absolute right-4"
               secureTextEntry={true}
               textContentType="password"
-              value={form.password}
-              onChangeText={(value) => setForm({ ...form, password: value })}
+              value={userForm.password}
+              onChangeText={(value) =>
+                setUserForm({ ...userForm, password: value })
+              }
             />
             <InputField
               placeholder="Confirmation du mot de passe"
@@ -108,9 +145,9 @@ const SignUp = () => {
               hidePassIcon2={require("@/assets/icons/eyeOn.png")}
               secureTextEntry={true}
               textContentType="password"
-              value={form.passwordConfirmation}
+              value={userForm.passwordConfirmation}
               onChangeText={(value) =>
-                setForm({ ...form, passwordConfirmation: value })
+                setUserForm({ ...userForm, passwordConfirmation: value })
               }
             />
             <CustomButton
@@ -120,7 +157,7 @@ const SignUp = () => {
             />
             <Text className="text-sm text-justify  text-neutrals-800 mt-4">
               En vous inscrivant, vous adhérez a nos conditions générales
-              d’utilisation (CGU). vous pouvez trouver des informations
+              d’utilisation (CGU). vous pouvez trouver des inuserFormations
               supplémentaires dans notre{" "}
               <Link href={"/home"} className="text-primary-400">
                 déclaration de confidentialité.

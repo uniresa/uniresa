@@ -1,33 +1,97 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import { Link, router } from "expo-router";
 import InputField from "@/components/generalComponents/InputField";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import OAuth from "@/components/generalComponents/Oauth";
+import auth, { signInWithEmailAndPassword } from "@react-native-firebase/auth";
+import axios from "axios";
+import { useDispatch, UseDispatch, useSelector } from "react-redux";
+import { logedIn, logedOut } from "@/redux/slices/authSlice";
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from "@/redux/slices/userSlice";
+import { RootState } from "@/redux/store";
 
 const SignIn = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector(
+    (state: RootState) => state.userProfile
+  );
 
-  const onSignInPress = () => {
-    // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
+  // const { isLoggedIn } = useSelector((state: RootState) => state.userAuth);
+
+  const onSignInPress = async () => {
+    dispatch(loginStart());
+    try {
+      const userCredential = await auth().signInWithEmailAndPassword(
+        form.email,
+        form.password
+      );
+      if (!userCredential.user) {
+        dispatch(loginFailure("Failed to sign in"));
+        Alert.alert("Error", "Failed to sign in");
+        return;
+      }
+
+      const idToken = await userCredential.user.getIdToken(); // Get Firebase ID Token
+
+      console.log("User signed in:", userCredential.user.uid);
+      console.log("Token:", idToken);
+
+      // Send token to your backend server for verification or other purposes
+      const response = await axios.get(
+        `http://192.168.1.181:8080/api/userProfile/get/${userCredential.user.uid}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          withCredentials: true,
+        }
+      );
+      const userData = response.data;
+
+      if (userData.status === "failed") {
+        dispatch(loginFailure(userData.message));
+        Alert.alert("Error", userData.message);
+        return;
+      }
+      console.log("User data received from backend:", userData);
+
+      dispatch(loginSuccess(userData.user));
+      dispatch(logedIn());
+
+      Alert.alert("Success", "Signed in successfully!");
+      router.push("/home");
+    } catch (error: any) {
+      console.error("Error signing in:", error);
+      dispatch(loginFailure(error.response?.data?.message || error.message));
+      Alert.alert("Error", error.response?.data?.message || error.message);
+    }
   };
   const handleGoogleSignIn = async () => {
     // TODO: Implement sign in logic here
     console.log("Sign in with email: ", form.email);
     console.log("Sign in with password: ", form.password);
   };
-  const handleFacebookSignIn = async () => {
-    // TODO: Implement sign in logic here
-    console.log("Sign in with email: ", form.email);
-    console.log("Sign in with password: ", form.password);
-  };
+
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
       <ParallaxScrollView
@@ -91,7 +155,7 @@ const SignIn = () => {
             </View>
 
             <CustomButton
-              title="Sign In"
+              title={loading ? "Signing In..." : "Sign In"}
               handlePress={onSignInPress}
               className="mt-6"
             />
@@ -105,18 +169,18 @@ const SignIn = () => {
               oAuthTitle="Se connecter avec Google"
               handleOAuth={handleGoogleSignIn}
             />
-            <OAuth
+            {/* <OAuth
               oauthIcon={require("@/assets/icons/facebook.png")}
               oAuthTitle="Se connecter avec Facebook"
               handleOAuth={handleFacebookSignIn}
-            />
-            <View className="mt-8">
+            /> */}
+            <View className="mt-20">
               <Text className="text-lg text-center text-neutrals-800">
                 Pas de compte?{" "}
               </Text>
               <Link
                 href="/signUp"
-                className="text-lg text-center text-primary "
+                className="text-xl text-center text-primary mt-2"
               >
                 S'inscrire ici
               </Link>
