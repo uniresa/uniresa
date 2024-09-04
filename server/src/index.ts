@@ -11,12 +11,7 @@ const port = process.env.OUT_PORT || 3500;
 
 //  app.use(express.urlencoded({ extended: true }));
 // app.use(cookieParser());
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: 'https://www.yannickdjoa.org',
-//   })
-// );
+
 const app = express();
 app.use(
   cors({

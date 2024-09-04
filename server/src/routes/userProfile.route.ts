@@ -8,6 +8,6 @@ import verifyUser from "../utils/verifyUser";
 const userProfileRouter = express.Router();
 
 userProfileRouter.post("/create", createUserProfile);
-userProfileRouter.post("/get/:id", verifyUser, getUserProfile);
+userProfileRouter.get("/get/:id", verifyUser, getUserProfile);
 
 export default userProfileRouter;
