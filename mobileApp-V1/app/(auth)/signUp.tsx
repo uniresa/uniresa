@@ -6,8 +6,11 @@ import { Link, router } from "expo-router";
 import InputField from "@/components/generalComponents/InputField";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import axios from "axios";
+import { signInUser } from "@/utils/authUtils";
+import { useDispatch } from "react-redux";
 
 const SignUp = () => {
+  const dispatch = useDispatch();
   const [userForm, setUserForm] = useState({
     firstName: "",
     surName: "",
@@ -16,8 +19,10 @@ const SignUp = () => {
     password: "",
     passwordConfirmation: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const onSignUpPress = async () => {
+    setLoading(true);
     if (userForm.password !== userForm.passwordConfirmation) {
       console.log("Passwords do not match");
       alert("Les mots de passe ne sont pas identiques. Merci de reverifier");
@@ -40,12 +45,15 @@ const SignUp = () => {
       const data = response.data;
       if (data.status === "success") {
         console.log(data.message);
+        await signInUser(userForm.email, userForm.password, dispatch, router);
+        setLoading(false);
       }
     } catch (error: any) {
       console.log(
         "Error detected:",
         error.response?.data?.message || error.message
       );
+      setLoading(false);
     }
   };
   const handleGoogleSignUp = async () => {
@@ -151,7 +159,7 @@ const SignUp = () => {
               }
             />
             <CustomButton
-              title="Enregistrement"
+              title={loading ? "creation du client..." : "Enregistrement"}
               handlePress={onSignUpPress}
               className="mt-4"
             />
