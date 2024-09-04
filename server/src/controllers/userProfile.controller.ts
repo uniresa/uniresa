@@ -9,7 +9,6 @@ import {
 import bcryptjs from "bcryptjs";
 
 export const createUserProfile = async (req: Request, res: Response) => {
-
   try {
     const { firstName, surName, email, password, phoneNumber } =
       req.body as UserProfile;
@@ -146,8 +145,7 @@ export const createUserProfile = async (req: Request, res: Response) => {
   }
 };
 
-
-export const getUserProfile= async (req: Request, res: Response) => {
+export const getUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.uid;
     const userRef = db.collection("users").doc(userId);
@@ -163,13 +161,12 @@ export const getUserProfile= async (req: Request, res: Response) => {
       status: "success",
       user,
     });
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      return res.status(500).json({
-        status: "failed",
-        message: "Error fetching user profile.",
-        error,
-      });
-    }
-
-}
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return res.status(500).json({
+      status: "failed",
+      message: "Error fetching user profile.",
+      error,
+    });
+  }
+};

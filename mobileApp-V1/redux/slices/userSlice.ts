@@ -7,7 +7,7 @@ const initialState = {
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: "userProfile",
   initialState,
   reducers: {
     loginStart: (state) => {
@@ -16,6 +16,7 @@ const userSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.loading = false;
+      state.error = null;
       state.user = action.payload;
     },
     loginFailure: (state, action) => {

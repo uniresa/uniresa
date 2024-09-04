@@ -15,48 +15,48 @@ import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollVie
 import OAuth from "@/components/generalComponents/Oauth";
 import auth, { signInWithEmailAndPassword } from "@react-native-firebase/auth";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { useDispatch, UseDispatch, useSelector } from "react-redux";
+import { logedIn, logedOut } from "@/redux/slices/authSlice";
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from "@/redux/slices/userSlice";
+import { RootState } from "@/redux/store";
 
 const SignIn = () => {
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        // Fetch CSRF token from the backend
-        const response = await axios.get(
-          "http://192.168.1.181:8080/api/csrf-token",
-          { withCredentials: true }
-        );
-        Cookies.set("XSRF-TOKEN", response.data.csrfToken); // Store CSRF token in cookies
-      } catch (error) {
-        console.error("Error fetching CSRF token:", error);
-        Alert.alert("Error", "Failed to fetch CSRF token.");
-      }
-    };
-    fetchCsrfToken();
-  }, []);
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector(
+    (state: RootState) => state.userProfile
+  );
+
+  // const { isLoggedIn } = useSelector((state: RootState) => state.userAuth);
 
   const onSignInPress = async () => {
-    setLoading(true);
+    dispatch(loginStart());
     try {
       const userCredential = await auth().signInWithEmailAndPassword(
         form.email,
         form.password
       );
+      if (!userCredential.user) {
+        dispatch(loginFailure("Failed to sign in"));
+        Alert.alert("Error", "Failed to sign in");
+        return;
+      }
+
       const idToken = await userCredential.user.getIdToken(); // Get Firebase ID Token
 
-      console.log("User signed in:", userCredential.user);
+      console.log("User signed in:", userCredential.user.uid);
       console.log("Token:", idToken);
 
       // Send token to your backend server for verification or other purposes
       const response = await axios.get(
-        "http://192.168.1.181:8080/api/auth/verify-token",
+        `http://192.168.1.181:8080/api/userProfile/get/${userCredential.user.uid}`,
         {
           headers: {
             Accept: "application/json",
@@ -67,19 +67,23 @@ const SignIn = () => {
         }
       );
       const userData = response.data;
+
       if (userData.status === "failed") {
+        dispatch(loginFailure(userData.message));
         Alert.alert("Error", userData.message);
         return;
       }
-      console.log(userData);
+      console.log("User data received from backend:", userData);
+
+      dispatch(loginSuccess(userData.user));
+      dispatch(logedIn());
+
       Alert.alert("Success", "Signed in successfully!");
-      setUser(userData.user);
-      router.push("/userProfile");
+      router.push("/home");
     } catch (error: any) {
       console.error("Error signing in:", error);
+      dispatch(loginFailure(error.response?.data?.message || error.message));
       Alert.alert("Error", error.response?.data?.message || error.message);
-    } finally {
-      setLoading(false);
     }
   };
   const handleGoogleSignIn = async () => {
@@ -151,7 +155,7 @@ const SignIn = () => {
             </View>
 
             <CustomButton
-              title="Sign In"
+              title={loading ? "Signing In..." : "Sign In"}
               handlePress={onSignInPress}
               className="mt-6"
             />
