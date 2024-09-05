@@ -5,6 +5,7 @@ import {
   BookingDetails,
   SearchHistoryItem,
   Property,
+  Transaction,
 } from "../typesDeclaration/types";
 import bcryptjs from "bcryptjs";
 
@@ -101,6 +102,7 @@ export const createUserProfile = async (req: Request, res: Response) => {
       preferredLanguage: "fr",
       preferredCurrency: "Fcfa",
       preferredPaymentMethod: "OM",
+      accountBalance: { amount: 0, currency: "Fcfa" },
       loyaltyPoints: 0,
       membershipTier: null,
       notificationPreferences: {
@@ -110,6 +112,7 @@ export const createUserProfile = async (req: Request, res: Response) => {
       },
       bookingHistory: [],
       searchHistory: [],
+      transactionHistory: [],
       favoriteProperties: [],
     });
 
@@ -125,15 +128,19 @@ export const createUserProfile = async (req: Request, res: Response) => {
       FavoriteItems: favoriteItems,
     });
     const bookingHistoryRef = userRef.collection("bookingHistory");
-    const bookings: BookingDetails[] = []; // Set to an empty array until the user makes a booking.
+    const bookings: BookingDetails[] = [];
     await bookingHistoryRef.doc().set({
       Bookings: bookings,
+    });
+    const transactionHistoryRef = userRef.collection("transactionHistory");
+    const transactions: Transaction[] = [];
+    await transactionHistoryRef.doc().set({
+      Transactions: transactions,
     });
 
     return res.status(200).json({
       status: "success",
       message: "User Profile created successfully",
-      //   user: { userId: userCredential.uid, email },
     });
   } catch (error) {
     console.error("Error creating user:", error);

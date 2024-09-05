@@ -61,10 +61,9 @@ const SignIn = () => {
             Connectez vous à votre compte
           </Text>
 
-          <View className="w-full mt-8">
+          <View className="w-full mt-4">
             <InputField
               placeholder="Veuillez saisir votre email"
-              // icon={icons.email}
               textContentType="emailAddress"
               value={form.email}
               onChangeText={(value) => setForm({ ...form, email: value })}
@@ -76,7 +75,6 @@ const SignIn = () => {
                 placeholder="Mot de passe"
                 hidePassIcon1={require("@/assets/icons/eyeOff.png")}
                 hidePassIcon2={require("@/assets/icons/eyeOn.png")}
-                // iconStyle="absolute right-4"
                 secureTextEntry={true}
                 textContentType="password"
                 value={form.password}
@@ -111,7 +109,7 @@ const SignIn = () => {
               oAuthTitle="Se connecter avec Facebook"
               handleOAuth={handleFacebookSignIn}
             /> */}
-            <View className="mt-20">
+            <View className="mt-8">
               <Text className="text-lg text-center text-neutrals-800">
                 Pas de compte?{" "}
               </Text>
@@ -122,6 +120,12 @@ const SignIn = () => {
                 S'inscrire ici
               </Link>
             </View>
+            <CustomButton
+              title="Continuer sans se connecter"
+              className="bg-neutrals-20 py-3 mt-8 w-full"
+              textVariant="primary"
+              handlePress={() => router.push("/home")}
+            />
           </View>
         </View>
       </ParallaxScrollView>
