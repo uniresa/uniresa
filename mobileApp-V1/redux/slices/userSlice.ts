@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { UserProfile } from "@/typesDeclaration/types";
 
+interface UserState {
+  user: UserProfile | null;
+  loading: boolean;
+  error: string | null;
+}
 const initialState = {
   user: null,
   loading: false,
