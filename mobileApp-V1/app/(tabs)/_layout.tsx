@@ -1,11 +1,24 @@
-import { Tabs, Redirect } from "expo-router";
+import { Tabs, Redirect, router } from "expo-router";
 import React from "react";
-
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { StatusBar } from "expo-status-bar";
-import { Image, View } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { UserProfile } from "@/typesDeclaration/types";
+import { Pressable } from "react-native";
 
 export default function TabLayout() {
+  const { user } = useSelector((state: RootState) => state.userProfile) as {
+    user: UserProfile | null;
+  };
+
+  const UserProfileNavigation = () => {
+    if (user) {
+      router.push("/userProfile"); // Navigate to userProfile screen
+    } else {
+      router.push("/signIn"); // Navigate to signIn screen if no user
+    }
+  };
   return (
     <>
       <Tabs
@@ -30,30 +43,6 @@ export default function TabLayout() {
           name="home"
           options={{
             title: "Acceuil",
-            // headerTitle: () => (
-            //   <View className="relative flex-row items-center justify-center w-96 gap-8 border ">
-            //     {/* <View className="flex items-center justify-center"> */}
-            //     <Image
-            //       source={require("@/assets/images/logoblanc24.png")}
-            //       style={{ width: 120, height: 40 }}
-            //       resizeMode="contain"
-            //     />
-            //     {/* </View>
-            //     <View className="absolute right-1"> */}
-            //     <Image
-            //       source={require("@/assets/icons/notificationDefault.png")}
-            //       style={{
-            //         width: 24,
-            //         height: 24,
-            //         tintColor: "#ffffff",
-            //         position: "absolute",
-            //         right: 16,
-            //       }}
-            //       resizeMode="contain"
-            //     />
-            //     {/* </View> */}
-            //   </View>
-            // ),
             tabBarIcon: ({ color, focused }) => (
               <TabBarIcon
                 name="Acceuil"
@@ -111,13 +100,21 @@ export default function TabLayout() {
           options={{
             title: "userProfile",
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon
-                name="Profile"
-                color={color}
-                icon={require("@/assets/icons/profileIcon.png")}
-                focused={focused}
-              />
+              <Pressable onPress={UserProfileNavigation}>
+                <TabBarIcon
+                  name={user ? "Profile" : "Se connecter"}
+                  color={color}
+                  icon={require("@/assets/icons/profileIcon.png")}
+                  focused={focused}
+                />
+              </Pressable>
             ),
+          }}
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              UserProfileNavigation();
+            },
           }}
         />
       </Tabs>
