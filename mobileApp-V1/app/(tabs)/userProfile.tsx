@@ -10,10 +10,13 @@ import { RootState } from "@/redux/store";
 import { logout } from "@/redux/slices/userSlice";
 import { logedOut } from "@/redux/slices/authSlice";
 import { router } from "expo-router";
+import { UserProfile } from "@/typesDeclaration/types";
 
-const UserProfile = () => {
+const UserAccount = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.userProfile);
+  const { user } = useSelector((state: RootState) => state.userProfile) as {
+    user: UserProfile | null;
+  };
   const onSignOut = async () => {
     try {
       await auth().signOut();
@@ -42,7 +45,7 @@ const UserProfile = () => {
               <Text className="text-base text-neutrals-800 font-lregular mb-4">
                 Vous avez actuellement:{" "}
                 <Text className="text-base text-neutrals-900 font-lbold">
-                  1000 uniPoints
+                  {user.loyaltyPoints} uniPoints
                 </Text>
               </Text>
               <View className="flex flex-row  my-1 gap-x-3">
@@ -56,7 +59,7 @@ const UserProfile = () => {
               <Text className="text-xl font-lbold text-secondary-800 mb-2">
                 Solde:{" "}
                 <Text className="text-lg font-bold text-warning-600">
-                  15000 Fcfa
+                  {user.accountBalance?.amount} {user.accountBalance?.currency}
                 </Text>
               </Text>
               <Text className="text-base font-lregular text-secondary-800 mb-2">
@@ -150,11 +153,13 @@ const UserProfile = () => {
                 </Text>
               </Pressable>
             </View>
-            <CustomButton
-              title="Se deconnecter"
-              handlePress={onSignOut}
-              className="my-6"
-            />
+            <View className="px-4">
+              <CustomButton
+                title="Se deconnecter"
+                handlePress={onSignOut}
+                className="my-6 bg-accents-400"
+              />
+            </View>
           </>
         ) : (
           ""
@@ -164,4 +169,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default UserAccount;

@@ -91,6 +91,7 @@ export interface Profile {
   createdAt: Date;
   updatedAt: Date;
 }
+
 export interface UserProfile {
   userId?: string;
   firstName: string;
@@ -122,6 +123,7 @@ export interface UserProfile {
   preferredCurrency?: string; // Example: "USD", "EUR"
   preferredLanguage?: string; // Example: "en", "fr"
   preferredPaymentMethod?: string; //"Credit Card", "MoMo", "OM"
+  accountBalance?: { amount: number; currency: string };
 
   // Booking History
   bookingHistory?: BookingDetails[];
@@ -141,6 +143,12 @@ export interface UserProfile {
 
   //Search
   searchHistory?: SearchHistoryItem[]; // An array of SearchHistoryItem
+
+  // Transaction History
+  transactionHistory?: Transaction[];
+
+  // credit cards list
+  creditCards?: CreditCard[];
 
   // Account Status
   emailVerified?: boolean;
@@ -191,3 +199,61 @@ interface SearchHistoryItem {
   searchDate: Date; // Date and time when the search was made
 }
 
+interface CreditCard {
+  // Credit
+  cardNumber: string;
+  expirationDate: string;
+  cvv: string;
+}
+
+interface Transaction {
+  transactionId: string;
+  type: "Deposit" | "Withdrawal" | "Payment";
+  amount: number;
+  currency: string;
+  date: Date;
+  description?: string;
+  // Transaction Details
+  transactionDetails?: TransactionDetails[];
+}
+
+interface TransactionDetails {
+  transactionDetailId: string;
+  bookingId?: string;
+  propertyId?: string;
+  bookingDetailsId?: string;
+  amount: number;
+  currency: string;
+  date: Date;
+  description?: string;
+  // Payment Details
+  paymentDetails?: PaymentDetails[];
+}
+
+interface PaymentDetails {
+  paymentDetailId: string;
+  paymentMethod: "Credit Card" | "MoMo" | "OM";
+  paymentStatus: "Paid" | "Failed";
+  paymentDate: Date;
+  paymentReference?: string;
+  // Payment Method Details
+  paymentMethodDetails?: PaymentMethodDetails[];
+}
+
+interface PaymentMethodDetails {
+  paymentMethodDetailId: string;
+  paymentMethod: "Credit Card" | "MoMo" | "OM";
+  cardNumber?: string;
+  expirationDate?: string;
+  cvv?: string;
+  // Payment Method Specific Details (e.g., for MoMo, transactionId, etc.)
+  paymentMethodSpecificDetails?: PaymentMethodSpecificDetails[];
+}
+
+interface PaymentMethodSpecificDetails {
+  paymentMethodSpecificDetailId: string;
+  paymentMethod: "MoMo";
+  transactionId: string;
+  // MoMo Specific Details (e.g., transactionId, status, etc.)
+  moMoSpecificDetails?: MoMoSpecificDetails[];
+}
