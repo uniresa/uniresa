@@ -212,3 +212,153 @@ interface PaymentMethodSpecificDetails {
   // MoMo Specific Details (e.g., transactionId, status, etc.)
   moMoSpecificDetails?: MoMoSpecificDetails[];
 }
+
+export interface AccommodationProperty {
+  propertyId: string;
+  propertyName: string;
+  propertyType:
+    | "Hotel"
+    | "Bungalow"
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  description: string;
+  location: LocationDetails;
+  images: ImageDetails[];
+  amenities: Amenities;
+  policies: Policies; // Policies related to the property
+  checkInDetails: CheckInDetails;
+  priceDetails: PriceDetails;
+  finalCleaning: FinalCleaning;
+  numberOfStars: number; // stars (1-5 scale)
+  reviews?: Review[];
+  availability: AvailabilityDetails[]; // Availability details by date range
+  roomTypes: RoomType[];
+  distanceFromCityCenter?: number;
+  distanceFromSea?: number;
+  popularFacilities?: string[]; // Popular facilities like "Free Wi-Fi", "Swimming Pool", etc.
+  hostDetails?: HostDetails;
+  nearbyAttractions?: NearbyAttraction[];
+  healthAndSafetyMeasures?: HealthAndSafetyMeasures;
+  cancellationPolicy?: string;
+  keyCollection?: KeyCollection;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LocationDetails {
+  street: string;
+  quartier?: string; // Specific area within a city
+  city: string;
+  district?: string;
+  region: string;
+  postalCode?: string;
+  country: string;
+  latitude?: number; // Geographical latitude
+  longitude?: number; // Geographical longitude
+}
+
+export interface ImageDetails {
+  url: string; // Image URL
+  description?: string; // Optional description of the image
+}
+
+export interface Amenities {
+  freeWiFi: boolean;
+  parking: boolean;
+  swimmingPool?: boolean;
+  airConditioning: boolean;
+  kitchen?: boolean;
+  privateBathroom?: boolean;
+  balcony?: boolean;
+  petFriendly?: boolean;
+  breakfastIncluded?: boolean;
+  gym?: boolean;
+  laundryService?: boolean;
+  [key: string]: boolean | undefined; // Allows for additional amenities
+}
+
+export interface Policies {
+  isSmokingAllowed: boolean;
+  isPetsAllowed: boolean;
+  childrenAllowed: boolean;
+  additionalPolicies?: string;
+}
+
+export interface CheckInDetails {
+  checkInFrom: string; // Example: "14:00"
+  checkInTo: string; // Example: "22:00"
+  checkOutFrom: string; // Example: "07:00"
+  checkOutTo: string; // Example: "12:00"
+}
+
+export interface PriceDetails {
+  currency: string;
+  pricePerNight: number;
+  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
+  taxesAndFees?: number;
+  discount?: number;
+}
+
+export interface Review {
+  reviewId: string;
+  reviewerName: string;
+  rating: number; // 1-5 scale
+  comment: string;
+  createdAt: Date;
+}
+
+export interface AvailabilityDetails {
+  startDate: Date; // Start of availability
+  endDate: Date; // End of availability
+  isAvailable: boolean; // Availability status
+}
+
+export interface RoomType {
+  type: string; // Example: "Double Room", "Suite", etc.
+  size: number; // surface
+  capacity: number; // Number of people the room can accommodate
+  amenities?: Amenities;
+  priceDetails: PriceDetails;
+}
+
+export interface HostDetails {
+  hostName: string; // Name of the host or manager
+  contactNumber?: string; // Contact phone number
+  email?: string;
+  hostRating?: number;
+  responseRate?: string;
+}
+
+export interface NearbyAttraction {
+  name: string;
+  distance: number;
+  type: "Restaurant" | "Museum" | "Park" | "Landmark" | "Shopping Center";
+}
+
+export interface HealthAndSafetyMeasures {
+  enhancedCleaning: boolean; // Whether enhanced cleaning is practiced
+  contactlessCheckIn: boolean; // Whether contactless check-in is available
+  handSanitizerAvailable: boolean; // Whether hand sanitizers are available
+  [key: string]: boolean | undefined; // Allows for additional health measures
+}
+
+export interface FinalCleaning {
+  finalCleaningincluded: boolean;
+  cleaningFee: number;
+  currency?: string;
+}
+
+export interface KeyCollection {
+  toBeCollectedInProperty: boolean;
+  address?: string;
+  contactNumber?: string;
+  email?: string;
+  code?: string;
+  keyHolderName?: string;
+  details?: string;
+}

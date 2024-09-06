@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import userProfileRouter from "./routes/userProfile.route";
+import accomodationRouter from "./routes/accomodation.route";
 dotenv.config();
 
 const port = process.env.OUT_PORT || 3500;
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/userProfile", userProfileRouter);
+app.use("/api/accomodation", accomodationRouter);
 
 app.listen(port, () => {
   console.log(`app listening on port ${port}`);
