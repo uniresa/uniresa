@@ -115,27 +115,25 @@ export const createUserProfile = async (req: Request, res: Response) => {
       transactionHistory: [],
       favoriteProperties: [],
     });
-
-    const searchHistoryRef = userRef.collection("searchHistory");
-    const searchHistoryItems: SearchHistoryItem[] = [];
-    await searchHistoryRef.doc().set({
-      SearchHistoryItems: searchHistoryItems,
-    });
-
-    const favoritePropertiesRef = userRef.collection("favoriteProperties");
-    const favoriteItems: Property[] = [];
-    await favoritePropertiesRef.doc().set({
-      FavoriteItems: favoriteItems,
-    });
     const bookingHistoryRef = userRef.collection("bookingHistory");
     const bookings: BookingDetails[] = [];
     await bookingHistoryRef.doc().set({
       Bookings: bookings,
     });
+    const searchHistoryRef = userRef.collection("searchHistory");
+    const searchHistoryItems: SearchHistoryItem[] = [];
+    await searchHistoryRef.doc().set({
+      SearchHistoryItems: searchHistoryItems,
+    });
     const transactionHistoryRef = userRef.collection("transactionHistory");
     const transactions: Transaction[] = [];
     await transactionHistoryRef.doc().set({
       Transactions: transactions,
+    });
+    const favoritePropertiesRef = userRef.collection("favoriteProperties");
+    const favoriteItems: Property[] = [];
+    await favoritePropertiesRef.doc().set({
+      FavoriteItems: favoriteItems,
     });
 
     return res.status(200).json({
