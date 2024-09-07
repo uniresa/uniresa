@@ -115,16 +115,21 @@ export interface UserProfile {
 
 interface BookingDetails {
   bookingId: string;
+  userId: string;
+  propertyId: string;
   propertyName: string;
   propertyType:
     | "Hotel"
-    | "Apartment"
-    | "House"
-    | "treeHouse"
     | "Bungalow"
-    | "Chalet"
-    | "TerreBattue";
-  roomType?: string;
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  roomType: string;
+  roomId: string;
   checkInDate: Date;
   checkOutDate: Date;
   totalAmount: number;
@@ -143,12 +148,14 @@ interface SearchHistoryItem {
   numberOfRooms: number;
   propertyType?:
     | "Hotel"
-    | "Apartment"
-    | "House"
-    | "treeHouse"
     | "Bungalow"
-    | "Chalet"
-    | "TerreBattue";
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
   filtersApplied?: { [key: string]: string | number }; // Optional filters (e.g., price range, amenities)
   location: string; // Place where the search was made
   searchDate: Date; // Date and time when the search was made
@@ -236,7 +243,7 @@ export interface AccommodationProperty {
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
-  availability: AvailabilityDetails[]; // Availability details by date range
+  propertyAvailabilities: AvailabilityDetails[]; // Availability details by date range
   roomTypes: RoomType[];
   distanceFromCityCenter?: number;
   distanceFromSea?: number;
@@ -246,6 +253,7 @@ export interface AccommodationProperty {
   healthAndSafetyMeasures?: HealthAndSafetyMeasures;
   cancellationPolicy?: string;
   keyCollection?: KeyCollection;
+  propertyBookings?: BookingDetails[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -306,24 +314,34 @@ export interface PriceDetails {
 
 export interface Review {
   reviewId: string;
+  bookingId: string;
+  propertyId: string;
   reviewerName: string;
   rating: number; // 1-5 scale
-  comment: string;
+  comments: string[];
   createdAt: Date;
+  updatedAt: Date;
+  // Additional review details (e.g., photos, amenities mentioned, etc.)
+  bookingDetails?: BookingDetails; // Additional details related to the booking, if applicable
+  bookingDetailsId?: string; // Additional details related to the booking, if applicable
 }
 
 export interface AvailabilityDetails {
-  startDate: Date; // Start of availability
-  endDate: Date; // End of availability
-  isAvailable: boolean; // Availability status
+  startDate: string; // Start date of the availability or booking period
+  endDate: string; // End date of the availability or booking period
+  isAvailable: boolean; // Indicates if the property is available during this period
+  bookingId?: string; // Optional: The ID of a booking if the property is booked
+  notes?: string; // Optional: Additional notes or reasons for unavailability
 }
 
 export interface RoomType {
+  roomId: string;
   type: string; // Example: "Double Room", "Suite", etc.
   size: number; // surface
   capacity: number; // Number of people the room can accommodate
   amenities?: Amenities;
   priceDetails: PriceDetails;
+  roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
 }
 
 export interface HostDetails {
