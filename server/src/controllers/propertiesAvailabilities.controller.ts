@@ -44,6 +44,8 @@ export const checkPropertyAvailability = async (
 
         for (const doc of roomAvailabilitiesSnapshot.docs) {
           const availability = doc.data() as AvailabilityDetails;
+          //   console.log(availability.startDate, availability.endDate);
+          console.log(checkInDate, checkOutDate);
           if (
             checkDatesOverlap(
               new Date(availability.startDate),
