@@ -4,6 +4,7 @@ import { db } from "../../firebaseConfig";
 import { checkPropertyAvailability } from "./propertiesAvailabilities.controller";
 import { GenerateCustomID, genericPassword } from "../utils/customIdGenerator";
 import { createUser } from "../utils/createUser";
+import { parse, isValid } from "date-fns";
 
 export const createBooking = async (req: Request, res: Response) => {
   const {
@@ -38,6 +39,17 @@ export const createBooking = async (req: Request, res: Response) => {
     });
   }
 
+  // Parse dates using date-fns
+  const parsedCheckInDate = parse(checkInDate, "MM/dd/yyyy", new Date());
+  const parsedCheckOutDate = parse(checkOutDate, "MM/dd/yyyy", new Date());
+  // Check if checkInDate and checkOutDate are valid
+  if (!isValid(parsedCheckInDate) || !isValid(parsedCheckOutDate)) {
+    return res.status(400).json({
+      status: "failed",
+      message:
+        "Invalid date format for check-in or check-out date. Use MM/DD/YYYY format.",
+    });
+  }
   try {
     // Check if the user exists and create one if they don't
     let userRef: string | null = null;

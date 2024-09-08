@@ -12,33 +12,6 @@ export interface Room {
   bed: string;
 }
 
-export interface Property {
-  id: string;
-  name: string;
-  propertyImage: string;
-  rating: number;
-  address: string;
-  oldPrice: number;
-  newPrice: number;
-  latitude: string;
-  longitude: string;
-  photos: Photo[];
-  rooms: Room[];
-  registrationDate: string;
-  distanceToPoint: string;
-  propertyType:
-    | "Hotel"
-    | "Apartment"
-    | "House"
-    | "treeHouse"
-    | "Bungalow"
-    | "Chalet"
-    | "TerreBattue";
-  reviews: number;
-  reviewsRating: number;
-  description?: string;
-}
-
 export interface Place {
   id: string;
   place: string;
@@ -49,24 +22,16 @@ export interface Place {
 
 export interface UserProfile {
   userId?: string;
+  title?: string;
   firstName: string;
   surName: string;
-
   email: string;
   password: string;
   phoneNumber: string;
   avatarUrl?: string;
   bio?: string;
   birthDate?: Date;
-  address?: {
-    street: string;
-    quartier: string;
-    city: string;
-    district: string;
-    region: string;
-    postalCode?: string;
-    country: string;
-  };
+  address?: Address;
   socialLinks?: {
     twitter?: string;
     facebook?: string;
@@ -116,6 +81,8 @@ export interface UserProfile {
 interface BookingDetails {
   bookingId: string;
   userId: string;
+  bookingPerson: BookingPerson;
+  coTravellersNames?: string[];
   propertyId: string;
   propertyName: string;
   propertyType:
@@ -128,16 +95,44 @@ interface BookingDetails {
     | "Guesthouse"
     | "Hostel"
     | "Resort";
-  roomType: string;
-  roomId: string;
-  checkInDate: Date;
-  checkOutDate: Date;
+  specificRoomTypeIds: string[];
+  numberOfRooms: number;
+  checkInDate: string;
+  checkOutDate: string;
   totalAmount: number;
+  travellers?: number;
   currency: string;
+  bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
+  bookingChannel?: string;
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
   specialRequests?: string[]; // Any specific requests made during booking
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+//interface for the person making the booking request
+
+interface BookingPerson {
+  title?: string;
+  firstName: string;
+  surName: string;
+  email: string;
+  phoneNumber: string;
+  birthDate?: Date;
+  address: Address;
+}
+//address interface
+interface Address {
+  street?: string;
+  quartier?: string;
+  city: string;
+  district?: string;
+  region?: string;
+  postalCode?: string;
+  country: string;
+}
+
 // Interface for Search History Item
 interface SearchHistoryItem {
   searchId: string;

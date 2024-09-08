@@ -9,3 +9,9 @@ export const GenerateCustomID = (initialNumber: number | string) => {
   const random = Math.floor(Math.random() * 1000);
   return `${initialNumber}${generationDate}${random}${timestamp}`;
 };
+
+export const genericPassword = () => {
+  const timestamp = Date.now().toString(36);
+  const random = Math.floor(Math.random() * 10000).toString(36);
+  return `${random}${timestamp}`;
+};

@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express";
-import { createAccomodation } from "../controllers/accomodation.controller";
+import { createAccommodation } from "../controllers/accommodation.controller";
 import verifyUser from "../utils/verifyUser";
 
 const accomodationRouter = express.Router();
 
-accomodationRouter.post("/createProperty", createAccomodation);
+accomodationRouter.post("/createProperty", createAccommodation);
 
 export default accomodationRouter;
