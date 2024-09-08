@@ -103,7 +103,7 @@ const setDefaultAccommodationValues = (
   };
 };
 
-export const createAccomodation = async (req: Request, res: Response) => {
+export const createAccommodation = async (req: Request, res: Response) => {
   const accomodationInput: Partial<AccommodationProperty> =
     req.body as AccommodationProperty;
 
@@ -113,7 +113,7 @@ export const createAccomodation = async (req: Request, res: Response) => {
   try {
     // Check if a property with the same name already exists in the database
     const existingPropertyName = await db
-      .collection("accomodations")
+      .collection("accommodations")
       .where("propertyName", "==", newAccommodation.propertyName)
       .limit(1)
       .get();
@@ -127,7 +127,7 @@ export const createAccomodation = async (req: Request, res: Response) => {
     }
     // Check if a property with the same propertyId already exists in the database
     const existingPropertyId = await db
-      .collection("accomodations")
+      .collection("accommodations")
       .where("propertyId", "==", newAccommodation.propertyId)
       .limit(1)
       .get();
@@ -141,7 +141,7 @@ export const createAccomodation = async (req: Request, res: Response) => {
     }
 
     const accommodationRef = db
-      .collection("accomodations")
+      .collection("accommodations")
       .doc(newAccommodation.propertyId);
 
     const filteredAccommodation = removeUndefinedFields({
@@ -149,7 +149,7 @@ export const createAccomodation = async (req: Request, res: Response) => {
       // Exclude subcollection data from the main Collection document
       propertyAvailabilities: undefined,
       propertyBookings: undefined,
-      roomTypes: undefined,
+      //   roomTypes: undefined,
       reviews: undefined,
     });
     await accommodationRef.set(filteredAccommodation);
@@ -213,22 +213,6 @@ export const createAccomodation = async (req: Request, res: Response) => {
         RoomType: [],
       });
     }
-
-    // );
-    // // Add availability data if provided in the request
-    // if (
-    //   newAccommodation.propertyAvailabilities &&
-    //   newAccommodation.propertyAvailabilities.length > 0
-    // ) {
-    //   for (const availability of newAccommodation.propertyAvailabilities) {
-    //     await availabilityRef.doc(GenerateCustomID("AV")).set(availability);
-    //   }
-    // } else {
-    //   // If no availability data is provided, create an empty document or handle it as needed
-    //   await availabilityRef.doc(GenerateCustomID("initial")).set({
-    //     Availability: [],
-    //   });
-    // }
 
     return res.status(201).json({
       status: "success",
