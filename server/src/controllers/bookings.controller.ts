@@ -111,7 +111,7 @@ export const createBooking = async (req: Request, res: Response) => {
       await db
         .collection("accommodations")
         .doc(propertyId)
-        .collection("bookings")
+        .collection("propertyBookings")
         .doc(bookingId)
         .set({
           bookingId,
