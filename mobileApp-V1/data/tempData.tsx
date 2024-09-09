@@ -23,8 +23,8 @@ export const data = [
         address: "Bd du 20 mai, Yaoundé, Cameroon ",
         oldPrice: 4600,
         newPrice: 3312,
-        latitude: "13.0359",
-        longitude: "77.6431",
+        latitude: "3.8649635",
+        longitude: "11.5135511",
         distanceToPoint: "2 km to the city center",
         photos: [
           {
