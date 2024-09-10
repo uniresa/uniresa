@@ -230,7 +230,7 @@ export interface AccommodationProperty {
     | "Resort";
   description: string;
   location: LocationDetails;
-  images: ImageDetails[];
+  images: string[];
   amenities: Amenities;
   policies: Policies; // Policies related to the property
   checkInDetails: CheckInDetails;
@@ -238,6 +238,8 @@ export interface AccommodationProperty {
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
+  numberOfReviews: number; 
+  reviewsRating?: number;
   propertyAvailabilities: AvailabilityDetails[]; // Availability details by date range
   roomTypes: RoomType[];
   distanceFromCityCenter?: number;
@@ -337,6 +339,8 @@ export interface RoomType {
   amenities?: Amenities;
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
+  discountList: DiscountDetails[];
+  ongoingDiscountPercentages: number[]; 
 }
 
 export interface HostDetails {

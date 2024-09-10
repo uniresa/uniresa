@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, FlatList, StyleSheet } from "react-native";
 import { data } from "@/data/tempData";
-import { Place, Property } from "@/typesDeclaration/types";
+import { Place, AccommodationProperty } from "@/typesDeclaration/types";
 import PropertyCard from "./PropertyCard";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface Props {
   searchCriteria: {
@@ -13,12 +15,19 @@ interface Props {
 }
 
 const RecentSearch: React.FC<Props> = ({ searchCriteria }) => {
-  const [filteredHotels, setFilteredHotels] = useState<Property[]>([]);
+  const { accommodations } = useSelector(
+    (state: RootState) => state.accommodationsList
+  );
+  const [filteredHotels, setFilteredHotels] = useState<AccommodationProperty[]>(
+    []
+  );
 
   useEffect(() => {
-    const results = data
+    const results = accommodations
       .filter((place) =>
-        place.place.toLowerCase().includes(searchCriteria.place.toLowerCase())
+        place.location.city
+          .toLowerCase()
+          .includes(searchCriteria.place.toLowerCase())
       )
       .flatMap((place) => place.properties)
       .filter(
@@ -52,7 +61,9 @@ const RecentSearch: React.FC<Props> = ({ searchCriteria }) => {
     <FlatList
       data={filteredHotels}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <PropertyCard property={item} textColor="text-"/>}
+      renderItem={({ item }) => (
+        <PropertyCard property={item} textColor="text-" />
+      )}
       horizontal
       showsHorizontalScrollIndicator={false}
     />

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, FlatList } from "react-native";
 import { data } from "@/data/tempData"; // Assuming this is your data source
-import { Property } from "@/typesDeclaration/types";
+import { AccommodationProperty } from "@/typesDeclaration/types";
 import DiscountCard from "./DiscountCard";
 
 const DiscountedList: React.FC = () => {
   const [topDiscountedHotels, setTopDiscountedHotels] = useState<
-    { place: string; property: Property }[]
+    { place: string; property: AccommodationProperty }[]
   >([]);
 
   useEffect(() => {
