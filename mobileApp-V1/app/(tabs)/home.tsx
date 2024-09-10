@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   View,
   Text,
@@ -6,13 +7,21 @@ import {
   ImageBackground,
   StyleSheet,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeResearchBar from "@/components/navigation/ThemeResearchBar";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import RecentSearch from "@/components/generalComponents/RecentSearch";
 import DiscountedList from "@/components/generalComponents/DiscountList";
 import CityPropertiesList from "@/components/generalComponents/CityPropertiesList";
+import {
+  fetchAccommodationsStart,
+  fetchAccommodationsSuccess,
+  fetchAccommodationsError,
+  accommodationsList,
+} from "@/redux/slices/accommodationSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const defaultSearchCriteria: {
   place: string;
@@ -48,6 +57,49 @@ const getUpcomingWeekendDates = () => {
 const { fridayFormatted, sundayFormatted } = getUpcomingWeekendDates();
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { accommodations, loading, error } = useSelector(
+    (state: RootState) => state.accommodationsList
+  );
+  const listOfAccommodations = async () => {
+    // Fetch data from Firestore Database using your Firebase SDK
+    // Example:
+    // const accommodationsRef = db.collection("accommodations");
+    // const accommodationsSnapshot = await accommodationsRef.get();
+    // const accommodations = accommodationsSnapshot.docs.map((doc) => doc.data());
+    // return accommodations;
+    dispatch(fetchAccommodationsStart());
+    try {
+      const response = await axios.get(
+        "http://192.168.1.181:8080/api/userProfile/create",
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      const accommodationsData = response.data;
+      if (accommodationsData.status === "success") {
+        dispatch(fetchAccommodationsSuccess(accommodationsData.data));
+        console.log(accommodationsData);
+      } else {
+        // Handle the case where the status is not 'success'
+        dispatch(fetchAccommodationsError("Failed to fetch accommodations"));
+        console.error(
+          "Failed to fetch accommodations:",
+          accommodationsData.message
+        );
+      }
+    } catch (error: any) {
+      dispatch(fetchAccommodationsError(error.message));
+      console.log("Error fetching accommodations:", error.message);
+    }
+  };
+  useEffect(() => {
+    listOfAccommodations();
+  }, []);
   return (
     <SafeAreaView>
       <ParallaxScrollView
