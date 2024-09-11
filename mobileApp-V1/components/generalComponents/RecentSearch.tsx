@@ -7,16 +7,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
 interface Props {
-  searchCriteria: {
-    place: string;
-    minRating: number;
-    maxPrice: number;
-  };
+  userId: string; // Adding userId to identify recent search for each user
 }
 
-const RecentSearch: React.FC<Props> = ({ searchCriteria }) => {
+const RecentSearch: React.FC<Props> = ({ userId }) => {
   const { accommodations } = useSelector(
     (state: RootState) => state.accommodationsList
+  );
+  const recentSearch = useSelector(
+    (state: RootState) => state.userSearchHistory[userId]?.recentSearch
   );
   const [filteredHotels, setFilteredHotels] = useState<AccommodationProperty[]>(
     []
