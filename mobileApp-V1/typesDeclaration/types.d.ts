@@ -425,7 +425,7 @@ export interface RoomType {
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
   discountList: DiscountDetails[];
-  ongoingDiscountPercentages: number[]
+  ongoingDiscountPercentages: number[];
 }
 
 export interface HostDetails {
@@ -464,3 +464,20 @@ export interface KeyCollection {
   keyHolderName?: string;
   details?: string;
 }
+
+interface SearchCriteria {
+  place: string;
+  minRating: number;
+  maxPrice: number;
+  minStars: number;
+  minGuests: number;
+  minRooms: number;
+  amenities: Amenities;
+}
+
+interface UserSearchHistory {
+  recentSearch: SearchCriteria | null; // Store the most recent search for the user
+  history: SearchCriteria[]; // Store all past searches for the user
+}
+
+
