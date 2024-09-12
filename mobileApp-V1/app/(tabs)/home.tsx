@@ -61,13 +61,8 @@ const Home = () => {
   const { accommodations, loading, error } = useSelector(
     (state: RootState) => state.accommodationsList
   );
+  const { user } = useSelector((state: RootState) => state.userProfile);
   const listOfAccommodations = async () => {
-    // Fetch data from Firestore Database using your Firebase SDK
-    // Example:
-    // const accommodationsRef = db.collection("accommodations");
-    // const accommodationsSnapshot = await accommodationsRef.get();
-    // const accommodations = accommodationsSnapshot.docs.map((doc) => doc.data());
-    // return accommodations;
     dispatch(fetchAccommodationsStart());
     try {
       const response = await axios.get(
@@ -127,7 +122,7 @@ const Home = () => {
           <Text className="text-base mx-4">
             Destination {defaultSearchCriteria.place}
           </Text>
-          <RecentSearch searchCriteria={defaultSearchCriteria} />
+          {user ? <RecentSearch userId={user.userId} /> : ""}
         </View>
         <View className="p-4">
           <ImageBackground
