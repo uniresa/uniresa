@@ -1,58 +1,114 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, FlatList, StyleSheet } from "react-native";
 import { data } from "@/data/tempData";
-import { Place, Property } from "@/typesDeclaration/types";
+import {
+  Place,
+  AccommodationProperty,
+  Amenities,
+} from "@/typesDeclaration/types";
 import PropertyCard from "./PropertyCard";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface Props {
-  searchCriteria: {
-    place: string;
-    minRating: number;
-    maxPrice: number;
-  };
+  userId: string; // Adding userId to identify recent search for each user
 }
-
-const RecentSearch: React.FC<Props> = ({ searchCriteria }) => {
-  const [filteredHotels, setFilteredHotels] = useState<Property[]>([]);
+const defaultSearchCriteria: {
+  place: string;
+  minRating: number;
+  maxPrice: number;
+  minStars: number;
+  minGuests: number;
+  minRooms: number;
+  amenities: Amenities;
+} = {
+  place: "Yaounde",
+  minRating: 2,
+  maxPrice: 10000,
+  minStars: 3,
+  minGuests: 2,
+  minRooms: 2,
+  amenities: {
+    freeWiFi: true,
+    parking: true,
+    swimmingPool: true,
+    airConditioning: true,
+    kitchen: true,
+  },
+};
+const RecentSearch: React.FC<Props> = ({ userId }) => {
+  const [filteredHotels, setFilteredHotels] = useState<AccommodationProperty[]>(
+    []
+  );
+  const { accommodations } = useSelector(
+    (state: RootState) => state.accommodationsList
+  );
+  // Use recent search if available, otherwise use default criteria
+  const recentSearch =
+    useSelector((state: RootState) =>
+      userId ? state.userSearchHistory[userId]?.recentSearch : null
+    ) || defaultSearchCriteria;
 
   useEffect(() => {
-    const results = data
-      .filter((place) =>
-        place.place.toLowerCase().includes(searchCriteria.place.toLowerCase())
-      )
-      .flatMap((place) => place.properties)
-      .filter(
-        (property) =>
-          property.rating >= searchCriteria.minRating &&
-          property.newPrice <= searchCriteria.maxPrice
-      )
-      .map((property) => ({
-        id: property.id,
-        name: property.name,
-        propertyImage: property.propertyImage,
-        rating: property.rating,
-        address: property.address,
-        oldPrice: property.oldPrice,
-        newPrice: property.newPrice,
-        latitude: property.latitude,
-        longitude: property.longitude,
-        photos: property.photos,
-        rooms: property.rooms,
-        registrationDate: property.registrationDate,
-        distanceToPoint: property.distanceToPoint,
-        propertyType: property.propertyType,
-        reviews: property.reviews,
-        reviewsRating: property.reviewsRating,
-        description: property.description,
-      }));
-    setFilteredHotels(results);
-  }, [searchCriteria]);
+    if (recentSearch) {
+      const results = accommodations
+        .filter((accomodation) =>
+          accomodation.location.city
+            .toLowerCase()
+            .includes(recentSearch.place.toLowerCase())
+        )
+        .flatMap((accommodation) => accommodation)
+        .filter(
+          (property) =>
+            property.numberOfStars >= recentSearch.minRating &&
+            Object.values(property.roomTypes).some(
+              (roomType) =>
+                roomType.priceDetails.pricePerNight <= recentSearch.maxPrice
+            )
+        )
+        .map((property) => ({
+          propertyId: property.propertyId,
+          propertyName: property.propertyName,
+          propertyType: property.propertyType,
+          description: property.description,
+          location: property.location,
+          images: property.images,
+          amenities: property.amenities,
+          policies: property.policies,
+          checkInDetails: property.checkInDetails,
+          priceDetails: property.priceDetails,
+          finalCleaning: property.finalCleaning,
+          numberOfStars: property.numberOfStars,
+          reviews: property.reviews,
+          numberOfReviews: property.numberOfReviews,
+          reviewsRating: property.reviewsRating,
+          propertyAvailabilities: property.propertyAvailabilities,
+          roomTypes: property.roomTypes,
+          distanceFromCityCenter: property.distanceFromCityCenter,
+          distanceFromSea: property.distanceFromSea,
+          popularFacilities: property.popularFacilities,
+          hostDetails: property.hostDetails,
+          nearbyAttractions: property.nearbyAttractions,
+          healthAndSafetyMeasures: property.healthAndSafetyMeasures,
+          cancellationPolicy: property.cancellationPolicy,
+          keyCollection: property.keyCollection,
+          propertyBookings: property.propertyBookings,
+          createdAt: property.createdAt,
+          updatedAt: property.updatedAt,
+        }));
+      setFilteredHotels(results);
+    } else {
+      setFilteredHotels([]); // Reset if no recent search is available
+    }
+  }, [recentSearch, accommodations]);
 
   return (
     <FlatList
       data={filteredHotels}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <PropertyCard property={item} textColor="text-"/>}
+      keyExtractor={(item) => item.propertyId}
+      renderItem={({ item }) => (
+        <PropertyCard property={item} textColor="text-" />
+      )}
       horizontal
       showsHorizontalScrollIndicator={false}
     />

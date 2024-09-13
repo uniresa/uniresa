@@ -341,10 +341,33 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
         (doc) => doc.data() as Review
       );
 
-      // Set room types
-      accommodation.roomTypes = roomTypesSnapshots[index].docs.map(
-        (doc) => doc.data() as RoomType
-      );
+      // Set room types and calculate discount percentages
+      accommodation.roomTypes = roomTypesSnapshots[index].docs.map((doc) => {
+        const roomType = doc.data() as RoomType;
+
+        // Variable to store discount percentages for the roomType
+        const ongoingDiscountPercentages: number[] = [];
+
+        // Calculate the discount percentages for the ongoing discount campaigns
+        const today = new Date();
+        const activeDiscounts = roomType.discountList.filter(
+          (discount) =>
+            discount.isActive &&
+            discount.discountType === "percentage" &&
+            discount.startDate <= today &&
+            discount.endDate >= today
+        );
+
+        // Store each active discount percentage in the array
+        activeDiscounts.forEach((discount) => {
+          ongoingDiscountPercentages.push(discount.discountPercentage);
+        });
+
+        // Attach ongoing discounts to the roomType object
+        roomType.ongoingDiscountPercentages = ongoingDiscountPercentages;
+
+        return roomType;
+      });
     });
 
     // Fetch room availabilities concurrently for all room types

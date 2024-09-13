@@ -1,21 +1,39 @@
 import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import React, { PropsWithChildren } from "react";
-import { Property } from "@/typesDeclaration/types";
+import { AccommodationProperty } from "@/typesDeclaration/types";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 
 interface PropertyCardProps {
-  property: Property;
+  property: AccommodationProperty;
   textColor: string;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
+  let currentPrices = property.roomTypes.map((roomType) => {
+    // Calculate the discount amount if there are ongoing discounts
+    const discountAmount =
+      roomType.ongoingDiscountPercentages.length > 0
+        ? roomType.ongoingDiscountPercentages.reduce(
+            (acc, discount) =>
+              acc + roomType.priceDetails.pricePerNight * (discount / 100),
+            0
+          )
+        : 0;
+
+    // Calculate the current price after applying the discount
+    const discountedPrice =
+      roomType.priceDetails.pricePerNight - discountAmount;
+
+    // Return the computed price
+    return discountedPrice;
+  });
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <FontAwesome
           key={i}
-          name={i <= property.rating ? "star" : "star-o"}
+          name={i <= property.numberOfStars ? "star" : "star-o"}
           size={16}
           color="#E89600"
         />
@@ -62,14 +80,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
   return (
     <Pressable className="flex flex-col mx-2 p-4 items-start border  border-neutrals-20 gap-2 rounded-lg">
       <Image
-        source={{ uri: property.propertyImage }}
+        source={{ uri: property.images[0] }}
         style={{ width: 290, height: 150, borderRadius: 12 }}
         resizeMode="cover"
       />
       <View className="mt-4 w-full">
         <View className="flex flex-row items-center justify-between">
           <Text className={`text-lg font-semibold ${textColor}`}>
-            {property.name}
+            {property.propertyName}
           </Text>
           <View className="flex flex-row items-center">{renderStars()}</View>
         </View>
@@ -81,20 +99,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
           />
           <View className="flex flex-row ml-2">{renderReviewRating()}</View>
           <Text className="ml-2 text-sm text-neutrals-500">
-            {property.reviews} Commentaires
+            {property.numberOfReviews} Commentaires
           </Text>
         </View>
         <Text className="text-sm text-neutrals-500 mt-2">
-          {property.distanceToPoint}
+          {property.distanceFromCityCenter}
         </Text>
         <View className="flex flex-row gap-2 items-center justify-between">
           <View className="flex flex-row items-center gap-2">
             <Text className="font-lbold text-lg text-neutrals-900">Price:</Text>
             <Text className="line-through text-lg text-accents">
-              {property.oldPrice}
+              {property.priceDetails.pricePerNight}
             </Text>
             <Text className="font-lbold text-lg text-secondary-600">
-              {property.newPrice} Fcfa
+              {currentPrices} Fcfa
             </Text>
           </View>
         </View>
