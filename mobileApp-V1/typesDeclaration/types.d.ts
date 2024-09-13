@@ -14,25 +14,25 @@ export interface Room {
   bed: string;
 }
 
-export interface Property {
-  id: string;
-  name: string;
-  propertyImage: string;
-  rating: number;
-  address: string;
-  oldPrice: number;
-  newPrice: number;
-  latitude: string;
-  longitude: string;
-  photos: Photo[];
-  rooms: Room[];
-  registrationDate: string;
-  distanceToPoint: string;
-  propertyType: string;
-  reviews: number;
-  reviewsRating: number;
-  description?: string;
-}
+// export interface Property {
+//   id: string;
+//   name: string;
+//   propertyImage: string;
+//   rating: number;
+//   address: string;
+//   oldPrice: number;
+//   newPrice: number;
+//   latitude: string;
+//   longitude: string;
+//   photos: Photo[];
+//   rooms: Room[];
+//   registrationDate: string;
+//   distanceToPoint: string;
+//   propertyType: string;
+//   reviews: number;
+//   reviewsRating: number;
+//   description?: string;
+// }
 
 export interface Place {
   id: string;
@@ -94,24 +94,16 @@ export interface Profile {
 
 export interface UserProfile {
   userId?: string;
+  title?: string;
   firstName: string;
   surName: string;
-
   email: string;
   password: string;
   phoneNumber: string;
   avatarUrl?: string;
   bio?: string;
   birthDate?: Date;
-  address?: {
-    street: string;
-    quartier: string;
-    city: string;
-    district: string;
-    region: string;
-    postalCode?: string;
-    country: string;
-  };
+  address?: Address;
   socialLinks?: {
     twitter?: string;
     facebook?: string;
@@ -160,24 +152,59 @@ export interface UserProfile {
 
 interface BookingDetails {
   bookingId: string;
+  userId: string;
+  bookingPerson: BookingPerson;
+  coTravellersNames?: string[];
+  propertyId: string;
   propertyName: string;
   propertyType:
     | "Hotel"
-    | "Apartment"
-    | "House"
-    | "treeHouse"
     | "Bungalow"
-    | "Chalet"
-    | "TerreBattue";
-  roomType?: string;
-  checkInDate: Date;
-  checkOutDate: Date;
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  specificRoomTypeIds: string[];
+  numberOfRooms: number;
+  checkInDate: string;
+  checkOutDate: string;
   totalAmount: number;
+  travellers?: number;
   currency: string;
+  bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
+  bookingChannel?: string;
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
   specialRequests?: string[]; // Any specific requests made during booking
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+//interface for the person making the booking request
+
+interface BookingPerson {
+  title?: string;
+  firstName: string;
+  surName: string;
+  email: string;
+  phoneNumber: string;
+  birthDate?: Date;
+  address: Address;
+}
+//address interface
+interface Address {
+  street?: string;
+  quartier?: string;
+  city: string;
+  district?: string;
+  region?: string;
+  postalCode?: string;
+  country: string;
+}
+
 // Interface for Search History Item
 interface SearchHistoryItem {
   searchId: string;
@@ -188,12 +215,14 @@ interface SearchHistoryItem {
   numberOfRooms: number;
   propertyType?:
     | "Hotel"
-    | "Apartment"
-    | "House"
-    | "treeHouse"
     | "Bungalow"
-    | "Chalet"
-    | "TerreBattue";
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
   filtersApplied?: { [key: string]: string | number }; // Optional filters (e.g., price range, amenities)
   location: string; // Place where the search was made
   searchDate: Date; // Date and time when the search was made
@@ -257,3 +286,198 @@ interface PaymentMethodSpecificDetails {
   // MoMo Specific Details (e.g., transactionId, status, etc.)
   moMoSpecificDetails?: MoMoSpecificDetails[];
 }
+
+export interface AccommodationProperty {
+  propertyId: string;
+  propertyName: string;
+  propertyType:
+    | "Hotel"
+    | "Bungalow"
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  description: string;
+  location: LocationDetails;
+  images: string[];
+  amenities: Amenities;
+  policies: Policies; // Policies related to the property
+  checkInDetails: CheckInDetails;
+  priceDetails: PriceDetails;
+
+  finalCleaning: FinalCleaning;
+  numberOfStars: number; // stars (1-5 scale)
+  reviews?: Review[];
+  numberOfReviews: number;
+  reviewsRating: number;
+  propertyAvailabilities: AvailabilityDetails[]; // Availability details by date range
+  roomTypes: RoomType[];
+  distanceFromCityCenter?: number;
+  distanceFromSea?: number;
+  popularFacilities?: string[]; // Popular facilities like "Free Wi-Fi", "Swimming Pool", etc.
+  hostDetails?: HostDetails;
+  nearbyAttractions?: NearbyAttraction[];
+  healthAndSafetyMeasures?: HealthAndSafetyMeasures;
+  cancellationPolicy?: string;
+  keyCollection?: KeyCollection;
+  propertyBookings?: BookingDetails[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DiscountDetails {
+  discountId: string;
+  discountPercentage: number;
+  startDate: Date;
+  endDate: Date;
+  discountType: "percentage" | "fixed"; // Type of discount ("percentage" or "fixed")
+  isActive: boolean; // Is the discount active or not
+  createdAt: Date;
+  updatedAt: Date;
+  bookings?: BookingDetails[];
+}
+
+export interface LocationDetails {
+  street: string;
+  quartier?: string; // Specific area within a city
+  city: string;
+  district?: string;
+  region: string;
+  postalCode?: string;
+  country: string;
+  latitude?: number; // Geographical latitude
+  longitude?: number; // Geographical longitude
+}
+
+// export interface ImageDetails {
+//   url: string; // Image URL
+//   description?: string; // Optional description of the image
+// }
+
+export interface Amenities {
+  freeWiFi: boolean;
+  parking: boolean;
+  swimmingPool?: boolean;
+  airConditioning: boolean;
+  kitchen?: boolean;
+  privateBathroom?: boolean;
+  balcony?: boolean;
+  petFriendly?: boolean;
+  breakfastIncluded?: boolean;
+  gym?: boolean;
+  laundryService?: boolean;
+  [key: string]: boolean | undefined; // Allows for additional amenities
+}
+
+export interface Policies {
+  isSmokingAllowed: boolean;
+  isPetsAllowed: boolean;
+  childrenAllowed: boolean;
+  additionalPolicies?: string;
+}
+
+export interface CheckInDetails {
+  checkInFrom: string; // Example: "14:00"
+  checkInTo: string; // Example: "22:00"
+  checkOutFrom: string; // Example: "07:00"
+  checkOutTo: string; // Example: "12:00"
+}
+
+export interface PriceDetails {
+  currency: string;
+  pricePerNight: number;
+  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
+  taxesAndFees?: number;
+  discount?: DiscountDetails;
+}
+
+export interface Review {
+  reviewId: string;
+  bookingId: string;
+  propertyId: string;
+  reviewerName: string;
+  rating: number; // 1-5 scale
+  comments: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  // Additional review details (e.g., photos, amenities mentioned, etc.)
+  bookingDetails?: BookingDetails; // Additional details related to the booking, if applicable
+  bookingDetailsId?: string; // Additional details related to the booking, if applicable
+}
+
+export interface AvailabilityDetails {
+  startDate: string; // Start date of the availability or booking period
+  endDate: string; // End date of the availability or booking period
+  isAvailable: boolean; // Indicates if the property is available during this period
+  bookingId?: string; // Optional: The ID of a booking if the property is booked
+  notes?: string; // Optional: Additional notes or reasons for unavailability
+}
+
+export interface RoomType {
+  roomId: string;
+  type: string; // Example: "Double Room", "Suite", etc.
+  size: number; // surface
+  capacity: number; // Number of people the room can accommodate
+  amenities?: Amenities;
+  priceDetails: PriceDetails;
+  roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
+  discountList: DiscountDetails[];
+  ongoingDiscountPercentages: number[];
+}
+
+export interface HostDetails {
+  hostName: string; // Name of the host or manager
+  contactNumber?: string; // Contact phone number
+  email?: string;
+  hostRating?: number;
+  responseRate?: string;
+}
+
+export interface NearbyAttraction {
+  name: string;
+  distance: number;
+  type: "Restaurant" | "Museum" | "Park" | "Landmark" | "Shopping Center";
+}
+
+export interface HealthAndSafetyMeasures {
+  enhancedCleaning: boolean; // Whether enhanced cleaning is practiced
+  contactlessCheckIn: boolean; // Whether contactless check-in is available
+  handSanitizerAvailable: boolean; // Whether hand sanitizers are available
+  [key: string]: boolean | undefined; // Allows for additional health measures
+}
+
+export interface FinalCleaning {
+  finalCleaningincluded: boolean;
+  cleaningFee: number;
+  currency?: string;
+}
+
+export interface KeyCollection {
+  toBeCollectedInProperty: boolean;
+  address?: string;
+  contactNumber?: string;
+  email?: string;
+  code?: string;
+  keyHolderName?: string;
+  details?: string;
+}
+
+interface SearchCriteria {
+  place: string;
+  minRating: number;
+  maxPrice: number;
+  minStars: number;
+  minGuests: number;
+  minRooms: number;
+  amenities: Amenities;
+}
+
+interface UserSearchHistory {
+  recentSearch: SearchCriteria | null; // Store the most recent search for the user
+  history: SearchCriteria[]; // Store all past searches for the user
+}
+
+

@@ -1,10 +1,12 @@
 import { View, Text, FlatList, Pressable, Image } from "react-native";
 import React, { useState } from "react";
-import { Property } from "@/typesDeclaration/types";
+import { AccommodationProperty } from "@/typesDeclaration/types";
 import { data } from "@/data/tempData";
 
 const CityPropertiesList = () => {
-  const [hotelsPerCity, setHotelsPerCity] = useState<Property[]>([]);
+  const [hotelsPerCity, setHotelsPerCity] = useState<AccommodationProperty[]>(
+    []
+  );
   return (
     <FlatList
       data={data}
