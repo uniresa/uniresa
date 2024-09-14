@@ -466,7 +466,8 @@ export interface KeyCollection {
 }
 
 interface SearchCriteria {
-  place: string;
+  destination: string;
+  dates: { checkInDate: Date; checkOutDate: Date };
   minRating: number;
   maxPrice: number;
   minStars: number;
@@ -480,4 +481,7 @@ interface UserSearchHistory {
   history: SearchCriteria[]; // Store all past searches for the user
 }
 
-
+interface Guests {
+  adults: number;
+  children: number;
+}
