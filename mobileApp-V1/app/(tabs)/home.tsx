@@ -122,7 +122,7 @@ const Home = () => {
           <Text className="text-base mx-4">
             Destination {defaultSearchCriteria.place}
           </Text>
-          {user ? <RecentSearch userId={user.userId} /> : ""}
+          {/* {user? <RecentSearch userId={user.userId} /> : ""} */}
         </View>
         <View className="p-4">
           <ImageBackground
