@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, FlatList, StyleSheet } from "react-native";
 import { data } from "@/data/tempData";
-import {
-  Place,
-  AccommodationProperty,
-  Amenities,
-} from "@/typesDeclaration/types";
+import { AccommodationProperty, Amenities } from "@/typesDeclaration/types";
 import PropertyCard from "./PropertyCard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
 interface Props {
-  userId: string; // Adding userId to identify recent search for each user
+  userId?: string; // Adding userId to identify recent search for each user
 }
 const defaultSearchCriteria: {
   place: string;
@@ -103,15 +99,23 @@ const RecentSearch: React.FC<Props> = ({ userId }) => {
   }, [recentSearch, accommodations]);
 
   return (
-    <FlatList
-      data={filteredHotels}
-      keyExtractor={(item) => item.propertyId}
-      renderItem={({ item }) => (
-        <PropertyCard property={item} textColor="text-" />
+    <View>
+      {filteredHotels.length > 0 ? (
+        <FlatList
+          data={filteredHotels}
+          keyExtractor={(item) => item.propertyId}
+          renderItem={({ item }) => (
+            <PropertyCard property={item} textColor="text-" />
+          )}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        />
+      ) : (
+        <Text className="text-center text-neutrals-800 mt-4 font-lbold">
+          No results found.
+        </Text>
       )}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-    />
+    </View>
   );
 };
 
