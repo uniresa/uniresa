@@ -169,8 +169,7 @@ interface BookingDetails {
     | "Resort";
   specificRoomTypeIds: string[];
   numberOfRooms: number;
-  checkInDate: string;
-  checkOutDate: string;
+  bookingDates: BookingDates;
   totalAmount: number;
   travellers?: number;
   currency: string;
@@ -183,6 +182,10 @@ interface BookingDetails {
   updatedAt?: Date;
 }
 
+interface BookingDates {
+  checkInDate: string;
+  checkOutDate: string;
+}
 //interface for the person making the booking request
 
 interface BookingPerson {

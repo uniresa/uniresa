@@ -6,25 +6,33 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import InputField from "@/components/generalComponents/InputField";
 import { router } from "expo-router";
 import CustomButton from "@/components/generalComponents/CustomButton";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import GuestPickerModal from "@/components/generalComponents/GuestPickerModal";
-import { Guests } from "@/typesDeclaration/types";
+import { Guests, BookingDates } from "@/typesDeclaration/types";
+import DatePickerModal from "@/components/generalComponents/DatePickerModal";
+import moment from "moment";
+import "moment/locale/fr";
 
 const accommodationsListing = () => {
-  const [destination, setDestination] = useState("");
-  const [dates, setDates] = useState({
-    checkIn: new Date(),
-    checkOut: new Date(new Date().setDate(new Date().getDate() + 1)),
-  });
-  const [guests, setGuests] = useState({ adults: 2, children: 0 });
+  moment.locale("fr");
+  const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
+  const [showGuestsPicker, setShowGuestsPicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Calendar states
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedRange, setSelectedRange] = useState<BookingDates>({
+    checkInDate: "",
+    checkOutDate: "",
+  });
+  const handleDatePickerConfirm = (newBookingDates: BookingDates) => {
+    setSelectedRange(newBookingDates);
+    setShowDatePicker(false);
+  };
+
+  const [destination, setDestination] = useState("");
   const [selectedAccommodations, setSelectedAccommodations] = useState([]);
-  //   const handleDateChange = (event, selectedDate, field) => {
-  //     const currentDate = selectedDate || dates[field];
-  //     setDates({ ...dates, [field]: currentDate });
-  //   };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -33,8 +41,8 @@ const accommodationsListing = () => {
     try {
       const query = {
         destination,
-        checkIn: dates.checkIn,
-        checkOut: dates.checkOut,
+        // checkIn: dates.checkIn,
+        // checkOut: dates.checkOut,
         adults: guests.adults,
         children: guests.children,
       };
@@ -48,36 +56,13 @@ const accommodationsListing = () => {
       setLoading(false);
     }
   };
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showGuestsPicker, setShowGuestsPicker] = useState(false);
+
   const handleGuestPickerConfirm = (newGuests: Guests, newRooms: number) => {
     setGuests(newGuests);
     setRooms(newRooms);
     setShowGuestsPicker(false);
   };
-  //   const [selectedDate, setSelectedDate] = useState(new Date());
-  //   const handleSearch = () => {
-  //     setLoading(true);
-  //     // Add search functionality here
-  //     setTimeout(() => setLoading(false), 1500); // Mock loading
-  //   };
-  //   const handleDateChange = (event: any, date?: Date) => {
-  //     setShowDatePicker(false);
-  //     if (date) {
-  //       setSelectedDate(date);
-  //       setForm({ ...form, dates: date.toLocaleDateString() });
-  //     }
-  //   };
-  //   type GuestType = "adults" | "children";
-  //   const updateGuests = (type: GuestType, action: "increment" | "decrement") => {
-  //     setForm((prevState) => {
-  //       let newValue = prevState[type];
-  //       newValue =
-  //         action === "increment" ? newValue + 1 : Math.max(0, newValue - 1);
 
-  //       return { ...prevState, [type]: newValue };
-  //     });
-  //   };
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
       <ParallaxScrollView
@@ -109,6 +94,25 @@ const accommodationsListing = () => {
           </Text>
 
           <View className="w-full mt-4">
+            {/* Date Picker (Opens Modal) */}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <View className="flex flex-row p-2 border-2 border-neutrals-60 mb-3 items-center">
+                <Image
+                  source={require("@/assets/icons/calander.png")}
+                  className="w-6 h-6 mr-6"
+                />
+                <Text className="text-neutrals-800 font-semibold text-lg">
+                  {selectedRange.checkInDate && selectedRange.checkOutDate
+                    ? `Du ${moment(selectedRange.checkInDate).format(
+                        "ddd DD MMM"
+                      )} -Au ${moment(selectedRange.checkOutDate).format(
+                        "ddd DD MMM"
+                      )}`
+                    : "choisissez vos dates de voyage"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
             {/* Guests Selector (Opens Modal) */}
             <TouchableOpacity onPress={() => setShowGuestsPicker(true)}>
               <View className="flex flex-row p-2 border-2 border-neutrals-60 mb-3 items-center">
@@ -140,6 +144,14 @@ const accommodationsListing = () => {
               className="mt-6"
             />
           </View>
+          {/* Date Picker Modal (Calendar for selecting date range) */}
+          <DatePickerModal
+            isVisible={showDatePicker}
+            bookingDates={selectedRange}
+            onClose={() => setShowDatePicker(false)}
+            onConfirm={handleDatePickerConfirm}
+          />
+
           {/* Guest Picker Modal */}
           <GuestPickerModal
             isVisible={showGuestsPicker}
@@ -179,10 +191,12 @@ export default accommodationsListing;
 //   />
 // </TouchableOpacity>
 // {showDatePicker && (
-//   <DateTimePicker
-//     value={selectedDate}
-//     mode="date"
-//     display="default"
-//     onChange={handleDateChange}
-//   />
+{
+  /* <DateTimePicker
+  value={selectedDate}
+  mode="date"
+  display="default"
+  onChange={handleDateChange}
+/>; */
+}
 // )}
