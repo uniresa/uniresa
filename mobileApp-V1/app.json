@@ -35,6 +35,7 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-firebase/crashlytics",
+      "expo-font",
       [
         "expo-build-properties",
         {
@@ -51,6 +52,7 @@
       "router": {
         "origin": false
       },
+
       "eas": {
         "projectId": "30e81c62-baf6-45c6-b5c4-8155d1d75dfe"
       }

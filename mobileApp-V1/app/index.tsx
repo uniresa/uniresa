@@ -3,7 +3,9 @@ import store, { RootState } from "@/redux/store";
 import { Provider, useSelector } from "react-redux";
 
 const EntryPoint = () => {
-  const isLoggedIn = useSelector((state: RootState) => state.userAuth.isLoggedIn);
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.userAuth.isLoggedIn
+  );
   if (isLoggedIn) {
     return <Redirect href="/(tabs)/home" />;
   } else {

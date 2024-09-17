@@ -1,9 +1,8 @@
-import { View, Text, Image } from "react-native";
-import React, { useState } from "react";
+import { View, Text, Image, Modal } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import InputField from "@/components/generalComponents/InputField";
 import { router } from "expo-router";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import GuestPickerModal from "@/components/generalComponents/GuestPickerModal";
@@ -11,16 +10,17 @@ import { Guests, BookingDates } from "@/typesDeclaration/types";
 import DatePickerModal from "@/components/generalComponents/DatePickerModal";
 import moment from "moment";
 import "moment/locale/fr";
+import DestinationPickerModal from "@/components/generalComponents/DestinationPickerModal";
 
 const accommodationsListing = () => {
   moment.locale("fr");
+  const [guestDestination, setGuestDestination] = useState<string>("");
+  const [showDestinationPicker, setShowDestinationPicker] = useState(false);
   const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
   const [showGuestsPicker, setShowGuestsPicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Calendar states
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedRange, setSelectedRange] = useState<BookingDates>({
     checkInDate: "",
@@ -31,7 +31,12 @@ const accommodationsListing = () => {
     setShowDatePicker(false);
   };
 
-  const [destination, setDestination] = useState("");
+
+  const handleDestinationPickerConfirm = (newDestination: string) => {
+    setGuestDestination(newDestination);
+    setShowDestinationPicker(false);
+  };
+
   const [selectedAccommodations, setSelectedAccommodations] = useState([]);
 
   const handleSearch = async () => {
@@ -40,7 +45,7 @@ const accommodationsListing = () => {
 
     try {
       const query = {
-        destination,
+        guestDestination,
         // checkIn: dates.checkIn,
         // checkOut: dates.checkOut,
         adults: guests.adults,
@@ -93,10 +98,25 @@ const accommodationsListing = () => {
             Saisissez vos criteres de recherche
           </Text>
 
-          <View className="w-full mt-4">
+          <View className="w-full mt-4 border-2 border-neutrals-60 rounded-3xl">
+            {/* Destination Picker (Opens Modal) */}
+            <TouchableOpacity
+              onPress={() => setShowDestinationPicker(true)}
+              className=" rounded-2xl"
+            >
+              <View className="flex flex-row border-b-2 border-neutrals-60 my-3 p-2 items-center justify-start">
+                <Image
+                  source={require("@/assets/icons/mapLocation.png")}
+                  className="w-6 h-8 mr-6"
+                />
+                <Text className="text-neutrals-800 font-semibold text-lg">
+                  {guestDestination ? `${guestDestination}` : "Destination"}
+                </Text>
+              </View>
+            </TouchableOpacity>
             {/* Date Picker (Opens Modal) */}
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <View className="flex flex-row p-2 border-2 border-neutrals-60 mb-3 items-center">
+              <View className="flex flex-row border-b-2 border-neutrals-60 my-3 p-2 items-center justify-start">
                 <Image
                   source={require("@/assets/icons/calander.png")}
                   className="w-6 h-6 mr-6"
@@ -115,7 +135,7 @@ const accommodationsListing = () => {
 
             {/* Guests Selector (Opens Modal) */}
             <TouchableOpacity onPress={() => setShowGuestsPicker(true)}>
-              <View className="flex flex-row p-2 border-2 border-neutrals-60 mb-3 items-center">
+              <View className="flex flex-row border-b-2 border-neutrals-60 my-3 p-2 items-center justify-start">
                 <Image
                   source={require("@/assets/icons/personWithKid.png")}
                   className="w-6 h-6 mr-6"
@@ -137,13 +157,21 @@ const accommodationsListing = () => {
                 </Text>
               </View>
             </TouchableOpacity>
-
-            <CustomButton
-              title={loading ? "En cours..." : "Rechercher"}
-              handlePress={handleSearch}
-              className="mt-6"
-            />
+            <View className="mt-12 mb-3 mx-6">
+              <CustomButton
+                title={loading ? "En cours..." : "Rechercher"}
+                handlePress={handleSearch}
+              />
+            </View>
           </View>
+          {/* Destination Picker Modal (Calendar for selecting date range) */}
+          <DestinationPickerModal
+            isVisible={showDestinationPicker}
+            searchDestination={guestDestination}
+            onClose={() => setShowDestinationPicker(false)}
+            onConfirm={handleDestinationPickerConfirm}
+          />
+
           {/* Date Picker Modal (Calendar for selecting date range) */}
           <DatePickerModal
             isVisible={showDatePicker}
@@ -169,34 +197,69 @@ const accommodationsListing = () => {
 export default accommodationsListing;
 
 {
-  /* Destination Input */
+  /* <Modal
+            visible={showDestinationPicker}
+            animationType="slide"
+            onRequestClose={() => setShowDestinationPicker(false)}
+          >
+            <GooglePlacesAutocomplete
+              keyboardShouldPersistTaps="handled"
+              placeholder="Saisissez la destination"
+              fetchDetails={true}
+              debounce={200}
+              styles={{
+                container: {
+                  flex: 1,
+                  //   position: "absolute", // Make sure the suggestions container is absolute
+                  //   top: 0, // Adjust position as needed
+                  //   left: 0,
+                  //   right: 0,
+                  //   zIndex: 1000,
+                },
+                listView: {
+                  backgroundColor: "white",
+                  zIndex: 1000, // Ensure dropdown stays above other elements
+                },
+                textInputContainer: {
+                  flexDirection: "row",
+                },
+                textInput: {
+                  height: 38,
+                  color: "#5d5d5d",
+                  fontSize: 16,
+                },
+                predefinedPlacesDescription: {
+                  color: "#1faadb",
+                },
+              }}
+              onPress={(data, details = null) => {
+                console.log("Selected data:", data);
+                if (details) {
+                  console.log("Selected details:", details);
+                } else {
+                  console.log("No details fetched.");
+                }
+
+                if (data && data.description) {
+                  setGuestDestination(data.description);
+                  setShowDestinationPicker(false); // Close the modal
+                } else {
+                  console.error("No destination selected");
+                }
+              }}
+              query={{
+                key: "AIzaSyBgcgKoZOsYOSeLW2SZXCXAIhI_rznUyDM",
+                language: "fr", // Language for search results
+              }}
+              renderLeftButton={() => (
+                <View className="justify-center items-center w-6 h-6">
+                  <Image
+                    source={require("@/assets/icons/searchIcon.png")}
+                    className="w-6 h-6"
+                    resizeMode="contain"
+                  />
+                </View>
+              )}
+            />
+          </Modal> */
 }
-//   <InputField
-//   icon={require("@/assets/icons/mapLocation.png")}
-//   placeholder="Saisir une destination"
-//   value={destination}
-//   onChangeText={(value) => setDestination(value)}
-//   containerStyle="mb-4 p-2"
-// />
-// {/* Date Picker */}
-// <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-//   <InputField
-//     placeholder="Choisir vos dates"
-//     // textContentType= "Date"
-//     value={dates}
-//     icon={require("@/assets/icons/calander.png")}
-//     editable={false}
-//     //   onChangeText={(value) => setForm({ ...form, dates: value })}
-//     containerStyle="mb-4 p-2"
-//   />
-// </TouchableOpacity>
-// {showDatePicker && (
-{
-  /* <DateTimePicker
-  value={selectedDate}
-  mode="date"
-  display="default"
-  onChange={handleDateChange}
-/>; */
-}
-// )}
