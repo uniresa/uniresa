@@ -8,9 +8,8 @@ import {
   ModalTitle,
   SlideAnimation,
 } from "react-native-modals";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import {
-  Calendar,
   CalendarList,
   CalendarProps,
   LocaleConfig,
@@ -155,7 +154,7 @@ const DatePickerModal: React.FC<GuestPickerModalProps> = ({
               calendarBackground: "#ffffff",
               textSectionTitleColor: "#333333",
               textSectionTitleDisabledColor: "#d9e1e8",
-              selectedDayBackgroundColor: "#333333",
+              selectedDayBackgroundColor: "#069494",
               selectedDayTextColor: "#ffffff",
               todayTextColor: "#00adf5",
               dayTextColor: "#333333",
@@ -197,7 +196,7 @@ const DatePickerModal: React.FC<GuestPickerModalProps> = ({
             }}
             onDayPress={onDayPress}
             pastScrollRange={0} // Prevent scrolling back to previous months
-            futureScrollRange={24} // Allow scrolling to 24 months in the future
+            futureScrollRange={12} // Allow scrolling to 24 months in the future
           />
         </View>
       </ModalContent>
