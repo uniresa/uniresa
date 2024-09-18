@@ -72,6 +72,7 @@ const setDefaultAccommodationValues = (
     },
     numberOfStars: accommodation.numberOfStars || 0, // Default rating to 0
     reviews: accommodation.reviews || [],
+    numberOfReviews: accommodation.numberOfReviews || 0,
     propertyAvailabilities: accommodation.propertyAvailabilities || [],
     roomTypes: accommodation.roomTypes || [],
     propertyBookings: accommodation.propertyBookings || [],
