@@ -11,7 +11,12 @@ const screensLayout = () => {
             headerShown: false,
           }}
         />
-        
+        <Stack.Screen
+          name="destinationPicker"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
 
       {/* <Loader isLoading={loading} /> */}
