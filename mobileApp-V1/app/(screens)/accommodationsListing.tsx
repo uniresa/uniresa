@@ -3,19 +3,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { router } from "expo-router";
+import { Href, router, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import GuestPickerModal from "@/components/generalComponents/GuestPickerModal";
 import { Guests, BookingDates } from "@/typesDeclaration/types";
 import DatePickerModal from "@/components/generalComponents/DatePickerModal";
 import moment from "moment";
 import "moment/locale/fr";
-import DestinationPickerModal from "@/components/generalComponents/DestinationPickerModal";
 
 const accommodationsListing = () => {
   moment.locale("fr");
   const [guestDestination, setGuestDestination] = useState<string>("");
-  const [showDestinationPicker, setShowDestinationPicker] = useState(false);
   const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
   const [showGuestsPicker, setShowGuestsPicker] = useState(false);
@@ -26,17 +24,25 @@ const accommodationsListing = () => {
     checkInDate: "",
     checkOutDate: "",
   });
+
+  const params = useLocalSearchParams();
+
+  // Set the guest destination if received from the destinationPicker screen
+  useEffect(() => {
+    if (params.selectedDestination) {
+      setGuestDestination(params.selectedDestination as string);
+    }
+  }, [params.selectedDestination]);
+
   const handleDatePickerConfirm = (newBookingDates: BookingDates) => {
     setSelectedRange(newBookingDates);
     setShowDatePicker(false);
   };
-
-
-  const handleDestinationPickerConfirm = (newDestination: string) => {
-    setGuestDestination(newDestination);
-    setShowDestinationPicker(false);
+  const handleGuestPickerConfirm = (newGuests: Guests, newRooms: number) => {
+    setGuests(newGuests);
+    setRooms(newRooms);
+    setShowGuestsPicker(false);
   };
-
   const [selectedAccommodations, setSelectedAccommodations] = useState([]);
 
   const handleSearch = async () => {
@@ -60,12 +66,6 @@ const accommodationsListing = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleGuestPickerConfirm = (newGuests: Guests, newRooms: number) => {
-    setGuests(newGuests);
-    setRooms(newRooms);
-    setShowGuestsPicker(false);
   };
 
   return (
@@ -101,7 +101,9 @@ const accommodationsListing = () => {
           <View className="w-full mt-4 border-2 border-neutrals-60 rounded-3xl">
             {/* Destination Picker (Opens Modal) */}
             <TouchableOpacity
-              onPress={() => setShowDestinationPicker(true)}
+              onPress={() =>
+                router.push("/destinationPicker" as Href<"/destinationPicker">)
+              }
               className=" rounded-2xl"
             >
               <View className="flex flex-row border-b-2 border-neutrals-60 my-3 p-2 items-center justify-start">
@@ -164,13 +166,6 @@ const accommodationsListing = () => {
               />
             </View>
           </View>
-          {/* Destination Picker Modal (Calendar for selecting date range) */}
-          <DestinationPickerModal
-            isVisible={showDestinationPicker}
-            searchDestination={guestDestination}
-            onClose={() => setShowDestinationPicker(false)}
-            onConfirm={handleDestinationPickerConfirm}
-          />
 
           {/* Date Picker Modal (Calendar for selecting date range) */}
           <DatePickerModal
@@ -195,71 +190,3 @@ const accommodationsListing = () => {
 };
 
 export default accommodationsListing;
-
-{
-  /* <Modal
-            visible={showDestinationPicker}
-            animationType="slide"
-            onRequestClose={() => setShowDestinationPicker(false)}
-          >
-            <GooglePlacesAutocomplete
-              keyboardShouldPersistTaps="handled"
-              placeholder="Saisissez la destination"
-              fetchDetails={true}
-              debounce={200}
-              styles={{
-                container: {
-                  flex: 1,
-                  //   position: "absolute", // Make sure the suggestions container is absolute
-                  //   top: 0, // Adjust position as needed
-                  //   left: 0,
-                  //   right: 0,
-                  //   zIndex: 1000,
-                },
-                listView: {
-                  backgroundColor: "white",
-                  zIndex: 1000, // Ensure dropdown stays above other elements
-                },
-                textInputContainer: {
-                  flexDirection: "row",
-                },
-                textInput: {
-                  height: 38,
-                  color: "#5d5d5d",
-                  fontSize: 16,
-                },
-                predefinedPlacesDescription: {
-                  color: "#1faadb",
-                },
-              }}
-              onPress={(data, details = null) => {
-                console.log("Selected data:", data);
-                if (details) {
-                  console.log("Selected details:", details);
-                } else {
-                  console.log("No details fetched.");
-                }
-
-                if (data && data.description) {
-                  setGuestDestination(data.description);
-                  setShowDestinationPicker(false); // Close the modal
-                } else {
-                  console.error("No destination selected");
-                }
-              }}
-              query={{
-                key: "AIzaSyBgcgKoZOsYOSeLW2SZXCXAIhI_rznUyDM",
-                language: "fr", // Language for search results
-              }}
-              renderLeftButton={() => (
-                <View className="justify-center items-center w-6 h-6">
-                  <Image
-                    source={require("@/assets/icons/searchIcon.png")}
-                    className="w-6 h-6"
-                    resizeMode="contain"
-                  />
-                </View>
-              )}
-            />
-          </Modal> */
-}
