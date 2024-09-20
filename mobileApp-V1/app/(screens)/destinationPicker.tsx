@@ -1,25 +1,20 @@
-import {
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-} from "react-native";
-import React, { useState } from "react";
+import { View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const destinationPicker = () => {
+  const googleKey = process.env.EXPO_PUBLIC_GOOGLEAUTOCOMPLETE_URL;
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
-      <View className="flex flex-row py-3 mt-12 mx-4">
+      <View className="flex flex-row py-3 mx-4">
         <TouchableOpacity
           onPress={() => router.push("/accommodationsListing")}
           className="mr-3"
         >
           <Image
             source={require("@/assets/icons/closingTag.png")}
-            className="w-6 h-6"
+            className="w-8 h-8"
             resizeMode="contain"
           />
         </TouchableOpacity>
@@ -38,7 +33,7 @@ const destinationPicker = () => {
           }
         }}
         query={{
-          key: "",
+          key: googleKey,
           language: "fr", // Set language
         }}
         styles={{
