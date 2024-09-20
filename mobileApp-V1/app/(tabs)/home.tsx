@@ -11,7 +11,6 @@ import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ThemeResearchBar from "@/components/navigation/ThemeResearchBar";
 import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
-import RecentSearch from "@/components/generalComponents/RecentSearch";
 import DiscountedList from "@/components/generalComponents/DiscountList";
 import CityPropertiesList from "@/components/generalComponents/CityPropertiesList";
 import {
@@ -57,6 +56,7 @@ const getUpcomingWeekendDates = () => {
 const { fridayFormatted, sundayFormatted } = getUpcomingWeekendDates();
 
 const Home = () => {
+  const backendApi: string | undefined = process.env.EXPO_PUBLIC_BASE_URL;
   const dispatch = useDispatch();
   const { accommodations, loading, error } = useSelector(
     (state: RootState) => state.accommodationsList
@@ -64,17 +64,18 @@ const Home = () => {
   const { user } = useSelector((state: RootState) => state.userProfile);
   const listOfAccommodations = async () => {
     dispatch(fetchAccommodationsStart());
+    if (!backendApi) {
+      throw new Error("URL missing");
+      return;
+    }
     try {
-      const response = await axios.get(
-        "http://192.168.1.181:8080/api/userProfile/create",
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(backendApi, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       const accommodationsData = response.data;
       if (accommodationsData.status === "success") {
         dispatch(fetchAccommodationsSuccess(accommodationsData.data));

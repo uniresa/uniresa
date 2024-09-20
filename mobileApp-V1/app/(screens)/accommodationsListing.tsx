@@ -1,8 +1,8 @@
+import axios from "axios";
 import { View, Text, Image, Modal } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ParallaxScrollView from "@/components/generalComponents/ParallaxScrollView";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Href, router, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import GuestPickerModal from "@/components/generalComponents/GuestPickerModal";
@@ -10,21 +10,28 @@ import { Guests, BookingDates } from "@/typesDeclaration/types";
 import DatePickerModal from "@/components/generalComponents/DatePickerModal";
 import moment from "moment";
 import "moment/locale/fr";
+import {
+  fetchSearchResultsError,
+  fetchSearchResultsStart,
+  fetchSearchResultsSuccess,
+  searchResults,
+} from "@/redux/slices/searchResultSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const accommodationsListing = () => {
+  const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   moment.locale("fr");
+  const [loading, error] = useSelector(searchResults);
   const [guestDestination, setGuestDestination] = useState<string>("");
   const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
   const [showGuestsPicker, setShowGuestsPicker] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedRange, setSelectedRange] = useState<BookingDates>({
     checkInDate: "",
     checkOutDate: "",
   });
-
+  const dispatch = useDispatch();
   const params = useLocalSearchParams();
 
   // Set the guest destination if received from the destinationPicker screen
@@ -43,62 +50,66 @@ const accommodationsListing = () => {
     setRooms(newRooms);
     setShowGuestsPicker(false);
   };
-  const [selectedAccommodations, setSelectedAccommodations] = useState([]);
 
   const handleSearch = async () => {
-    setLoading(true);
-    setError(null);
-
+    dispatch(fetchSearchResultsStart());
+    if (!backendApi) {
+      throw new Error("URL missing");
+    }
     try {
       const query = {
-        guestDestination,
-        // checkIn: dates.checkIn,
-        // checkOut: dates.checkOut,
-        adults: guests.adults,
-        children: guests.children,
+        destination: guestDestination,
+        checkInDate: selectedRange.checkInDate,
+        checkOutDate: selectedRange.checkOutDate,
+        capacity: guests.adults + guests.children,
+        rooms: rooms,
       };
-
-      // Assume fetchAccommodations is an API call that fetches search results
-      //   const results = await fetchAccommodations(query);
-      //   setSelectedAccommodations(results);
+      const response = await axios.post(
+        backendApi,
+        {
+          body: JSON.stringify(query),
+        },
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      const results = await response.data;
+      if (!results || results.length === 0) {
+        throw new Error(
+          "Aucun résultat trouvé pour ces critères de recherche."
+        );
+        return;
+      }
+      dispatch(fetchSearchResultsSuccess(results));
+      router.push("/searchResults" as Href<"/searchResults">);
     } catch (err) {
-      //   setError("An error occurred while searching. Please try again.");
-    } finally {
-      setLoading(false);
+      dispatch(fetchSearchResultsError(err));
     }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
-      <ParallaxScrollView
-        headerBackgroundColor="bg-primary"
-        closingButton={
-          <TouchableOpacity
-            onPress={() => router.push("/home")}
-            className="absolute bottom-6 left-0"
-          >
-            <Image
-              source={require("@/assets/icons/backArrow.png")}
-              className=" w-6 h-6"
-              resizeMode="contain"
-            />
-            {/* <Text className="text-neutrals-800 text-3xl font-lbold">X</Text> */}
-          </TouchableOpacity>
-        }
-        headerImage={
+      <ScrollView>
+        <TouchableOpacity
+          onPress={() => router.push("/home")}
+          className="mx-4 my-2"
+        >
           <Image
-            source={require("@/assets/images/logoblanc24.png")}
-            className=" w-18 h-10"
+            source={require("@/assets/icons/backArrowActive.png")}
+            className=" w-8 h-8"
             resizeMode="contain"
           />
-        }
-      >
+        </TouchableOpacity>
         <View className="flex flex-col items-center justify-between mt-4 px-4">
           <Text className="text-2xl text-neutrals-900 font-lbold mb-8 ">
             Saisissez vos criteres de recherche
           </Text>
 
-          <View className="w-full mt-4 border-2 border-neutrals-60 rounded-3xl">
+          <View className="w-full mt-2 border-2 border-neutrals-60 rounded-3xl">
             {/* Destination Picker (Opens Modal) */}
             <TouchableOpacity
               onPress={() =>
@@ -184,7 +195,7 @@ const accommodationsListing = () => {
             onConfirm={handleGuestPickerConfirm}
           />
         </View>
-      </ParallaxScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 };
