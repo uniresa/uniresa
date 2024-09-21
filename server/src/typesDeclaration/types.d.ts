@@ -238,7 +238,7 @@ export interface AccommodationProperty {
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
-  numberOfReviews: number; 
+  numberOfReviews: number;
   reviewsRating?: number;
   propertyAvailabilities: AvailabilityDetails[]; // Availability details by date range
   roomTypes: RoomType[];
@@ -340,7 +340,8 @@ export interface RoomType {
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
   discountList: DiscountDetails[];
-  ongoingDiscountPercentages: number[]; 
+  ongoingDiscountPercentages: number[];
+  numberOfBedrooms: number;
 }
 
 export interface HostDetails {

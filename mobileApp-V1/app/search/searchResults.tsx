@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { searchResults } from "@/redux/slices/searchResultSlice";
 
 const searchResultsPage = () => {
-  const [loading, error, accommodations] = useSelector(searchResults);
+  const { loading, error, accommodations } = useSelector(searchResults);
   return (
     <SafeAreaView className="flex-1 bg-neutrals-20">
       <ScrollView>
@@ -63,7 +63,11 @@ const searchResultsPage = () => {
           </Text>
         </View>
         {/* Property Cards */}
-        <PropertyCard property={accommodations} />
+        <View>
+          {accommodations.map((property) => (
+            <PropertyCard key={property.propertyId} property={property} />
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

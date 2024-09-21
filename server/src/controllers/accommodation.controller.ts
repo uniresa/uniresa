@@ -8,6 +8,7 @@ import {
 } from "../typesDeclaration/types";
 import { db } from "../../firebaseConfig";
 import { GenerateCustomID } from "../utils/customIdGenerator";
+import { checkPropertyAvailability } from "./propertiesAvailabilities.controller";
 
 // Implement the createAccommodationProperty function to create a new accommodation property in Firestore Database.
 const removeUndefinedFields = (obj: any) => {
@@ -396,6 +397,112 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("Error getting all accommodations:", error);
+    return res.status(500).json({
+      status: "failed",
+      message: "Erreur lors de la récupération des logements.",
+      error: error.message,
+    });
+  }
+};
+export const getSearchedAccommodations = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { destination, checkInDate, checkOutDate, capacity, rooms } =
+      req.body;
+    const accommodationRef = db.collection("accommodations");
+
+    // Filter accommodations by destination
+    const accommodationQuery = accommodationRef.where(
+      "location.city",
+      "==",
+      destination
+    );
+    const accommodationsSnapshot = await accommodationQuery.get();
+
+    if (accommodationsSnapshot.empty) {
+      return res.status(404).json({
+        status: "failed",
+        message: "Aucun logement disponible pour cette destination.",
+      });
+    }
+
+    const accommodations = accommodationsSnapshot.docs.map(
+      (doc) => doc.data() as AccommodationProperty
+    );
+
+    // Filter accommodations by capacity
+    const filteredAccommodations: AccommodationProperty[] = [];
+
+    for (const accommodation of accommodations) {
+      const roomTypesSnapshot = await accommodationRef
+        .doc(accommodation.propertyId)
+        .collection("roomTypes")
+        .get();
+
+      let matchingRooms = roomTypesSnapshot.docs.map(
+        (doc) => doc.data() as RoomType
+      );
+
+      // Filter rooms based on the capacity requirement
+      matchingRooms = matchingRooms.filter((roomType) => {
+        const totalCapacity = roomType.capacity;
+        return totalCapacity >= capacity;
+      });
+
+      // If no rooms match the capacity requirement, continue to the next accommodation
+      if (matchingRooms.length === 0) {
+        continue;
+      }
+
+      // // Filter accommodations by the number of rooms
+      // matchingRooms = matchingRooms.filter((roomType) => {
+      //   return roomType.numberOfBedrooms >= rooms; // Match rooms based on number of bedrooms
+      // });
+
+      // // If no rooms match the number of rooms requirement, continue to the next accommodation
+      // if (matchingRooms.length === 0) {
+      //   continue;
+      // }
+
+      // Collect specific room type IDs for availability check
+      const specificRoomTypeIds = matchingRooms.map(
+        (roomType) => roomType.roomId
+      );
+
+      // Check availability by calling the checkPropertyAvailability function
+      const isAvailable = await checkPropertyAvailability(
+        accommodation.propertyId,
+        new Date(checkInDate),
+        new Date(checkOutDate),
+        specificRoomTypeIds
+      );
+
+      // If the property is not available, skip this accommodation
+      if (!isAvailable) {
+        continue;
+      }
+
+      // If available, add accommodation to filtered list
+      accommodation.roomTypes = matchingRooms;
+      filteredAccommodations.push(accommodation);
+    }
+    // Return the filtered accommodations or an error if no matches were found
+    if (filteredAccommodations.length === 0) {
+      return res.status(404).json({
+        status: "failed",
+        message: "Aucun logement disponible pour ces critères de recherche.",
+      });
+    }
+    console.log(filteredAccommodations, filteredAccommodations.length);
+    return res.status(200).json({
+      status: "success",
+      message: "Logements trouvés avec succès.",
+      data: filteredAccommodations,
+    });
+  } catch (error: any) {
+    console.error("Error getting searched accommodations:", error);
     return res.status(500).json({
       status: "failed",
       message: "Erreur lors de la récupération des logements.",

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { View, Text, Image, Modal } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 const accommodationsListing = () => {
   const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   moment.locale("fr");
-  const [loading, error] = useSelector(searchResults);
+  const { loading, error } = useSelector(searchResults);
   const [guestDestination, setGuestDestination] = useState<string>("");
   const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
@@ -64,6 +64,7 @@ const accommodationsListing = () => {
         capacity: guests.adults + guests.children,
         rooms: rooms,
       };
+      console.log(query);
       const response = await axios.post(
         backendApi,
         {
@@ -77,6 +78,7 @@ const accommodationsListing = () => {
           withCredentials: true,
         }
       );
+      console.log(response);
       const results = await response.data;
       if (!results || results.length === 0) {
         throw new Error(
@@ -86,8 +88,17 @@ const accommodationsListing = () => {
       }
       dispatch(fetchSearchResultsSuccess(results));
       router.push("/searchResults" as Href<"/searchResults">);
-    } catch (err) {
-      dispatch(fetchSearchResultsError(err));
+    } catch (error) {
+      // Type-check if error is an AxiosError
+      if (error instanceof AxiosError) {
+        // Dispatch only the serializable parts of the Axios error (message)
+        dispatch(fetchSearchResultsError({ message: error.message }));
+      } else {
+        // Handle generic errors (non-Axios errors)
+        dispatch(
+          fetchSearchResultsError({ message: "An unexpected error occurred" })
+        );
+      }
     }
   };
 

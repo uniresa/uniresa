@@ -4,7 +4,7 @@ import { AccommodationProperty } from "@/typesDeclaration/types";
 const initialState = {
   accommodations: [] as AccommodationProperty[],
   loading: false,
-  error: null,
+  error: null as string | null, // Ensure error is a serializable string
 };
 
 const searchResultsSlice = createSlice({
@@ -22,7 +22,7 @@ const searchResultsSlice = createSlice({
     },
     fetchSearchResultsError: (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload.message || "An error occurred";
     },
   },
 });
@@ -33,7 +33,7 @@ export const {
   fetchSearchResultsError,
 } = searchResultsSlice.actions;
 
-export const searchResults = (state: typeof initialState) =>
-  state.accommodations;
+export const searchResults = (state: { searchResults: typeof initialState }) =>
+  state.searchResults;
 
 export default searchResultsSlice.reducer;

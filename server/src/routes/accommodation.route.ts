@@ -3,6 +3,7 @@ import {
   createAccommodation,
   getAllAccommodations,
   getSingleAccommodation,
+  getSearchedAccommodations,
 } from "../controllers/accommodation.controller";
 import verifyUser from "../utils/verifyUser";
 
@@ -14,5 +15,6 @@ accomodationRouter.get(
   getSingleAccommodation
 );
 accomodationRouter.get("/getAllAccommodations", getAllAccommodations);
+accomodationRouter.post("/getSearchedAccomodations", getSearchedAccommodations);
 
 export default accomodationRouter;
