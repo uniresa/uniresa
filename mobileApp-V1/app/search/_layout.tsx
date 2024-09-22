@@ -1,18 +1,12 @@
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-const screensLayout = () => {
+const searchLayout = () => {
   return (
     <>
       <Stack>
         <Stack.Screen
-          name="accommodationsListing"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="destinationPicker"
+          name="searchResults"
           options={{
             headerShown: false,
           }}
@@ -25,4 +19,4 @@ const screensLayout = () => {
   );
 };
 
-export default screensLayout;
+export default searchLayout;
