@@ -307,6 +307,7 @@ export interface PriceDetails {
   taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
   taxesAndFees?: number;
   discount?: number;
+  finalPrice?: number;
 }
 
 export interface Review {
@@ -339,8 +340,8 @@ export interface RoomType {
   amenities?: Amenities;
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
-  discountList: DiscountDetails[];
-  ongoingDiscountPercentages: number[];
+  discountList?: DiscountDetails[];
+  ongoingDiscountPercentages?: number[];
   numberOfBedrooms: number;
 }
 
@@ -379,4 +380,25 @@ export interface KeyCollection {
   code?: string;
   keyHolderName?: string;
   details?: string;
+}
+export interface DiscountDetails {
+  discountId: string;
+  discountType: "Percentage" | "Flat Fee";
+  discountValue: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  roomTypeId: string;
+  propertyId: string;
+  bookingIds?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Query {
+  destination: string;
+  checkInDate: string;
+  checkOutDate: string;
+  capacity: number;
+  rooms: number;
 }
