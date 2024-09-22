@@ -344,11 +344,11 @@ export interface DiscountDetails {
 }
 
 export interface LocationDetails {
-  street: string;
+  street?: string;
   quartier?: string; // Specific area within a city
   city: string;
   district?: string;
-  region: string;
+  region?: string;
   postalCode?: string;
   country: string;
   latitude?: number; // Geographical latitude
@@ -469,14 +469,14 @@ export interface KeyCollection {
 }
 
 interface SearchCriteria {
-  destination: string;
-  dates: { checkInDate: Date; checkOutDate: Date };
-  minRating: number;
-  maxPrice: number;
-  minStars: number;
+  destination: LocationDetails;
+  dates: { checkInDate: string; checkOutDate: string };
   minGuests: number;
   minRooms: number;
-  amenities: Amenities;
+  minRating?: number;
+  maxPrice?: number;
+  minStars?: number;
+  amenities?: Amenities;
 }
 
 interface UserSearchHistory {
@@ -487,4 +487,12 @@ interface UserSearchHistory {
 interface Guests {
   adults: number;
   children: number;
+}
+
+interface Query {
+  destination: string;
+  checkInDate: string;
+  checkOutDate: string;
+  capacity: number;
+  rooms: number;
 }

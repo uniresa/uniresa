@@ -5,7 +5,7 @@ import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 
 interface PropertyCardProps {
   property: AccommodationProperty;
-  textColor: string;
+  textColor?: string;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {

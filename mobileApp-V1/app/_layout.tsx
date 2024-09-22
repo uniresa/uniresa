@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
-import { ModalPortal } from 'react-native-modals';
+import { ModalPortal } from "react-native-modals";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -53,6 +53,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="(conditions)" options={{ headerShown: false }} />
           <Stack.Screen name="(screens)" options={{ headerShown: false }} />
+          {/* <Stack.Screen name="(search)" options={{ headerShown: false }} /> */}
           <Stack.Screen name="index" options={{ headerShown: false }} />
           {/* <Stack.Screen
             name="search/[query]"
