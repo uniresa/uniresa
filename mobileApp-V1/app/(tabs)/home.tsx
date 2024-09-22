@@ -66,20 +66,22 @@ const Home = () => {
     dispatch(fetchAccommodationsStart());
     if (!backendApi) {
       throw new Error("URL missing");
-      return;
     }
     try {
-      const response = await axios.get(backendApi, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
+      // "http://192.168.1.181:8080/api/accommodation/getAllAccommodations"
+      const response = await axios.get(
+        `${backendApi}/api/accommodation/getAllAccommodations`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
       const accommodationsData = response.data;
       if (accommodationsData.status === "success") {
         dispatch(fetchAccommodationsSuccess(accommodationsData.data));
-        console.log(accommodationsData);
       } else {
         // Handle the case where the status is not 'success'
         dispatch(fetchAccommodationsError("Failed to fetch accommodations"));

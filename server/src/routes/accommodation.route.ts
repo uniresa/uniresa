@@ -4,6 +4,7 @@ import {
   getAllAccommodations,
   getSingleAccommodation,
   getSearchedAccommodations,
+  updateDiscountList,
 } from "../controllers/accommodation.controller";
 import verifyUser from "../utils/verifyUser";
 
@@ -16,5 +17,6 @@ accomodationRouter.get(
 );
 accomodationRouter.get("/getAllAccommodations", getAllAccommodations);
 accomodationRouter.post("/getSearchedAccomodations", getSearchedAccommodations);
+accomodationRouter.put("/accommodations/:propertyId/roomTypes/:roomId/discountList", updateDiscountList);
 
 export default accomodationRouter;

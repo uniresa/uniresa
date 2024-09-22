@@ -6,7 +6,13 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Href, router, useLocalSearchParams } from "expo-router";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import GuestPickerModal from "@/components/generalComponents/GuestPickerModal";
-import { Guests, BookingDates } from "@/typesDeclaration/types";
+import {
+  Guests,
+  BookingDates,
+  Query,
+  SearchCriteria,
+  LocationDetails,
+} from "@/typesDeclaration/types";
 import DatePickerModal from "@/components/generalComponents/DatePickerModal";
 import moment from "moment";
 import "moment/locale/fr";
@@ -22,7 +28,17 @@ const accommodationsListing = () => {
   const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   moment.locale("fr");
   const { loading, error } = useSelector(searchResults);
-  const [guestDestination, setGuestDestination] = useState<string>("");
+  const [guestDestination, setGuestDestination] = useState<LocationDetails>({
+    street: "",
+    quartier: "",
+    city: "",
+    district: "",
+    region: "",
+    postalCode: "",
+    country: "",
+    latitude: 0,
+    longitude: 0,
+  });
   const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
   const [showGuestsPicker, setShowGuestsPicker] = useState(false);
@@ -37,12 +53,35 @@ const accommodationsListing = () => {
   // Set the guest destination if received from the destinationPicker screen
   useEffect(() => {
     if (params.selectedDestination) {
-      setGuestDestination(params.selectedDestination as string);
+      const parsedDestination = JSON.parse(
+        params.selectedDestination as string
+      );
+      setGuestDestination(parsedDestination as LocationDetails);
     }
   }, [params.selectedDestination]);
 
   const handleDatePickerConfirm = (newBookingDates: BookingDates) => {
-    setSelectedRange(newBookingDates);
+    // Assuming the dates are in the format "YYYY-MM-DD" or "MM/DD/YYYY"
+    const checkInDate = moment(
+      newBookingDates.checkInDate,
+      ["MM/DD/YYYY", "YYYY-MM-DD"],
+      true
+    );
+    const checkOutDate = moment(
+      newBookingDates.checkOutDate,
+      ["MM/DD/YYYY", "YYYY-MM-DD"],
+      true
+    );
+
+    if (checkInDate.isValid() && checkOutDate.isValid()) {
+      setSelectedRange({
+        checkInDate: checkInDate.format("YYYY-MM-DD"), // Store as ISO-compliant date
+        checkOutDate: checkOutDate.format("YYYY-MM-DD"),
+      });
+    } else {
+      console.error("Invalid date provided:", newBookingDates);
+    }
+
     setShowDatePicker(false);
   };
   const handleGuestPickerConfirm = (newGuests: Guests, newRooms: number) => {
@@ -57,19 +96,21 @@ const accommodationsListing = () => {
       throw new Error("URL missing");
     }
     try {
-      const query = {
+      const query: SearchCriteria = {
         destination: guestDestination,
-        checkInDate: selectedRange.checkInDate,
-        checkOutDate: selectedRange.checkOutDate,
-        capacity: guests.adults + guests.children,
-        rooms: rooms,
+        dates: {
+          checkInDate: selectedRange.checkInDate,
+          checkOutDate: selectedRange.checkOutDate,
+        },
+
+        minGuests: guests.adults + guests.children,
+
+        minRooms: rooms,
       };
       console.log(query);
       const response = await axios.post(
-        backendApi,
-        {
-          body: JSON.stringify(query),
-        },
+        `${backendApi}/api/accommodation/getSearchedAccomodations`,
+        query, // Send the query directly
         {
           headers: {
             Accept: "application/json",
