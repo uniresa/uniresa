@@ -5,7 +5,7 @@ import {
   BookingDetails,
   DiscountDetails,
   PriceDetails,
-  Query,
+  SearchCriteria,
   Review,
   RoomType,
 } from "../typesDeclaration/types";
@@ -497,14 +497,14 @@ export const getSearchedAccommodations = async (
   res: Response
 ) => {
   try {
-    const { destination, checkInDate, checkOutDate, capacity, rooms } =
-      req.body as Query;
+    const { destination, dates, minGuests, minRooms } =
+      req.body as SearchCriteria;
     console.log(req.body);
     // Parse the dates with error handling
     let parsedCheckInDate, parsedCheckOutDate;
     try {
-      parsedCheckInDate = parse(checkInDate, "yyyy-MM-dd", new Date());
-      parsedCheckOutDate = parse(checkOutDate, "yyyy-MM-dd", new Date());
+      parsedCheckInDate = parse(dates.checkInDate, "yyyy-MM-dd", new Date());
+      parsedCheckOutDate = parse(dates.checkOutDate, "yyyy-MM-dd", new Date());
     } catch (error) {
       return res.status(400).json({
         status: "failed",
@@ -517,7 +517,7 @@ export const getSearchedAccommodations = async (
     const accommodationQuery = accommodationRef.where(
       "location.city",
       "==",
-      destination
+      destination.city
     );
 
     const accommodationsSnapshot = await accommodationQuery.get();
@@ -549,7 +549,7 @@ export const getSearchedAccommodations = async (
       // Filter rooms based on the capacity requirement
       matchingRooms = matchingRooms.filter((roomType) => {
         const totalCapacity = roomType.capacity;
-        return totalCapacity >= capacity;
+        return totalCapacity >= minGuests;
       });
 
       // If no rooms match the capacity requirement, continue to the next accommodation
@@ -575,8 +575,8 @@ export const getSearchedAccommodations = async (
       // Check availability by calling the checkPropertyAvailability function
       const isAvailable = await checkPropertyAvailability(
         accommodation.propertyId,
-        new Date(checkInDate),
-        new Date(checkOutDate),
+        new Date(dates.checkInDate),
+        new Date(dates.checkOutDate),
         specificRoomTypeIds
       );
 

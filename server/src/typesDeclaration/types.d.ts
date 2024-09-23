@@ -395,10 +395,13 @@ export interface DiscountDetails {
   updatedAt: Date;
 }
 
-interface Query {
-  destination: string;
-  checkInDate: string;
-  checkOutDate: string;
-  capacity: number;
-  rooms: number;
+interface SearchCriteria {
+  destination: LocationDetails;
+  dates: { checkInDate: string; checkOutDate: string };
+  minGuests: number;
+  minRooms: number;
+  minRating?: number;
+  maxPrice?: number;
+  minStars?: number;
+  amenities?: Amenities;
 }
