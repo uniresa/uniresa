@@ -39,6 +39,7 @@ const accommodationsListing = () => {
     latitude: 0,
     longitude: 0,
   });
+  const [destination, setDestination] = useState<string>();
   const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
   const [rooms, setRooms] = useState(1);
   const [showGuestsPicker, setShowGuestsPicker] = useState(false);
@@ -57,6 +58,7 @@ const accommodationsListing = () => {
         params.selectedDestination as string
       );
       setGuestDestination(parsedDestination as LocationDetails);
+      setDestination(params.destinationPicked as string);
     }
   }, [params.selectedDestination]);
 
@@ -175,7 +177,7 @@ const accommodationsListing = () => {
                   className="w-6 h-8 mr-6"
                 />
                 <Text className="text-neutrals-800 font-semibold text-lg">
-                  {guestDestination ? `${guestDestination}` : "Destination"}
+                  {destination ? `${destination}` : "Destination"}
                 </Text>
               </View>
             </TouchableOpacity>
