@@ -58,7 +58,7 @@ const { fridayFormatted, sundayFormatted } = getUpcomingWeekendDates();
 const Home = () => {
   const backendApi: string | undefined = process.env.EXPO_PUBLIC_BASE_URL;
   const dispatch = useDispatch();
-  const { accommodations, loading, error } = useSelector(
+  const { accommodationsList, loading, error } = useSelector(
     (state: RootState) => state.accommodationsList
   );
   const { user } = useSelector((state: RootState) => state.userProfile);
