@@ -5,6 +5,7 @@ import authReducer from "./slices/authSlice";
 import accommodationsReducer from "./slices/accommodationSlice";
 import UserSearchHistoryReducer from "./slices/userSearchHistorySlice";
 import searchResultsReducer from "./slices/searchResultSlice";
+import searchCriteriaReducer from "./slices/searchCriteriaSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     accommodationsList: accommodationsReducer,
     userSearchHistory: UserSearchHistoryReducer,
     searchResults: searchResultsReducer,
+    searchCriteria: searchCriteriaReducer,
   },
 });
 
