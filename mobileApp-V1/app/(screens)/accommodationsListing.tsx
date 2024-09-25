@@ -72,10 +72,11 @@ const accommodationsListing = () => {
       setGuestDestination(parsedDestination as LocationDetails);
 
       if (params.destinationPicked) {
-        console.log(params.destinationPicked);
         setLocalDestination(params.destinationPicked as string);
-        dispatch(setSearchCriteria({ destination: localDestination }));
-        dispatch(updateDestination(localDestination));
+        dispatch(
+          setSearchCriteria({ destination: params.destinationPicked as string })
+        );
+        dispatch(updateDestination(params.destinationPicked as string));
       }
     }
   }, [params.selectedDestination]);
@@ -153,7 +154,6 @@ const accommodationsListing = () => {
         );
         return;
       }
-      console.log(results.length);
       dispatch(fetchSearchResultsSuccess(results));
       router.push("/searchResults" as Href<"/searchResults">);
     } catch (error) {

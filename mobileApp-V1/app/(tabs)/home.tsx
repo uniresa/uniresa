@@ -62,42 +62,42 @@ const Home = () => {
     (state: RootState) => state.accommodationsList
   );
   const { user } = useSelector((state: RootState) => state.userProfile);
-  const listOfAccommodations = async () => {
-    dispatch(fetchAccommodationsStart());
-    if (!backendApi) {
-      throw new Error("URL missing");
-    }
-    try {
-      // "http://192.168.1.181:8080/api/accommodation/getAllAccommodations"
-      const response = await axios.get(
-        `${backendApi}/api/accommodation/getAllAccommodations`,
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      const accommodationsData = response.data;
-      if (accommodationsData.status === "success") {
-        dispatch(fetchAccommodationsSuccess(accommodationsData.data));
-      } else {
-        // Handle the case where the status is not 'success'
-        dispatch(fetchAccommodationsError("Failed to fetch accommodations"));
-        console.error(
-          "Failed to fetch accommodations:",
-          accommodationsData.message
-        );
-      }
-    } catch (error: any) {
-      dispatch(fetchAccommodationsError(error.message));
-      console.log("Error fetching accommodations:", error.message);
-    }
-  };
-  useEffect(() => {
-    listOfAccommodations();
-  }, []);
+  // const listOfAccommodations = async () => {
+  //   dispatch(fetchAccommodationsStart());
+  //   if (!backendApi) {
+  //     throw new Error("URL missing");
+  //   }
+  //   try {
+  //     // "http://192.168.1.181:8080/api/accommodation/getAllAccommodations"
+  //     const response = await axios.get(
+  //       `${backendApi}/api/accommodation/getAllAccommodations`,
+  //       {
+  //         headers: {
+  //           Accept: "application/json",
+  //           "Content-Type": "application/json",
+  //         },
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     const accommodationsData = response.data;
+  //     if (accommodationsData.status === "success") {
+  //       dispatch(fetchAccommodationsSuccess(accommodationsData.data));
+  //     } else {
+  //       // Handle the case where the status is not 'success'
+  //       dispatch(fetchAccommodationsError("Failed to fetch accommodations"));
+  //       console.error(
+  //         "Failed to fetch accommodations:",
+  //         accommodationsData.message
+  //       );
+  //     }
+  //   } catch (error: any) {
+  //     dispatch(fetchAccommodationsError(error.message));
+  //     console.log("Error fetching accommodations:", error.message);
+  //   }
+  // };
+  // useEffect(() => {
+  //   listOfAccommodations();
+  // }, []);
   return (
     <SafeAreaView>
       <ParallaxScrollView

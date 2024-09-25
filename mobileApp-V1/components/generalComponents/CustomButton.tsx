@@ -39,7 +39,8 @@ const CustomButton = ({
   textVariant = "default",
   IconLeft,
   IconRight,
-  className,
+  classNameLocal,
+  classNameTitle,
   ...props
 }: ButtonProps) => {
   return (
@@ -48,12 +49,14 @@ const CustomButton = ({
       activeOpacity={0.7}
       className={`w-full rounded-3xl min-h-[52px] p-3 flex flex-row justify-center shadow-md shadow-neutral-400/70 ${getBgVariantStyle(
         bgVariant
-      )} ${className}`}
+      )} ${classNameLocal}`}
       {...props}
     >
       {IconLeft && <IconLeft />}
       <Text
-        className={`font-rbold text-base ${getTextVariantStyle(textVariant)}`}
+        className={`font-rbold text-base ${getTextVariantStyle(
+          textVariant
+        )} ${classNameTitle}`}
       >
         {title}
       </Text>

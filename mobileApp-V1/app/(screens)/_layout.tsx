@@ -17,6 +17,12 @@ const screensLayout = () => {
             headerShown: false,
           }}
         />
+        {/* <Stack.Screen
+          name="accommodationOverviewPage"
+          options={{
+            headerShown: false,
+          }}
+        /> */}
       </Stack>
 
       {/* <Loader isLoading={loading} /> */}

@@ -2,6 +2,7 @@ import { View, Text, Image, TouchableOpacity, Pressable } from "react-native";
 import React, { PropsWithChildren } from "react";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
+import { Href, router } from "expo-router";
 
 interface PropertyCardProps {
   property: AccommodationProperty;
@@ -78,7 +79,19 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
   };
 
   return (
-    <Pressable className="flex flex-col mx-2 p-4 items-start border  border-neutrals-20 gap-2 rounded-lg">
+    <Pressable
+      className="flex flex-col mx-2 p-4 items-start border  border-neutrals-20 gap-2 rounded-lg"
+      key={property.propertyId}
+      onPress={() =>
+        router.push({
+          pathname: "/(search)[propertyId]",
+          params: {
+            propertyId: property.propertyId,
+            propertyName: property.propertyName,
+          }, // Pass propertyName here
+        })
+      }
+    >
       <Image
         source={{ uri: property.images[0] }}
         style={{ width: 290, height: 150, borderRadius: 12 }}

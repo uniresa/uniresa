@@ -11,6 +11,7 @@ const searchLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen name="[propertyId]" options={{ headerShown: false }} />
       </Stack>
 
       {/* <Loader isLoading={loading} /> */}
