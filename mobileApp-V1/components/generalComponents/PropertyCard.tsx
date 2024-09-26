@@ -84,11 +84,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
       key={property.propertyId}
       onPress={() =>
         router.push({
-          pathname: "/(search)[propertyId]",
+          pathname: "/(search)/[propertyId]",
           params: {
             propertyId: property.propertyId,
-            propertyName: property.propertyName,
-          }, // Pass propertyName here
+            property: JSON.stringify(property),
+          },
         })
       }
     >
