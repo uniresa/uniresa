@@ -28,6 +28,7 @@ const setDefaultAccommodationValues = (
     propertyId: GenerateCustomID(10), // Generate a unique ID based on timestamp
     propertyName: accommodation.propertyName || "Default Property Name",
     propertyType: accommodation.propertyType || "Hotel",
+    tagMessage: accommodation.tagMessage || "Discover an amazing hotel",
     description: accommodation.description || "No description provided.",
     location: accommodation.location || {
       street: "",
@@ -41,19 +42,39 @@ const setDefaultAccommodationValues = (
       longitude: 0,
     },
     images: accommodation.images || [],
-    amenities: accommodation.amenities || {
-      freeWiFi: false,
-      parking: false,
-      swimmingPool: false,
-      airConditioning: false,
-      kitchen: false,
-      privateBathroom: false,
-      balcony: false,
-      petFriendly: false,
-      breakfastIncluded: false,
-      gym: false,
-      laundryService: false,
-    },
+    amenities: accommodation.amenities || [
+      {
+        amenityName: "freeWiFi",
+        amenityDescription: "4G connection",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "parking",
+        amenityDescription: "200m du logement",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "gym",
+        amenityDescription: "equipé d'un' materiel sportif de haut gamme",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "swimmingPool",
+        amenityDescription:
+          "bassin pour enfant et 1 basin de 1.5m de profondeur",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "airConditioning",
+        amenityDescription: "disponible dans les chambres et au salon",
+        isAvailable: true,
+        isPopular: true,
+      },
+    ],
     policies: accommodation.policies || {
       isSmokingAllowed: false,
       isPetsAllowed: false,
