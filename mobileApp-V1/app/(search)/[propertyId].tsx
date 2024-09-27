@@ -7,6 +7,7 @@ import CustomButton from "@/components/generalComponents/CustomButton";
 import renderStars from "@/utils/renderStars";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 import { Dimensions } from "react-native";
+import { getAmenityIcon } from "@/utils/amenityIcon";
 
 const { width } = Dimensions.get("window");
 const accommodationOverviewPage = () => {
@@ -30,6 +31,7 @@ const accommodationOverviewPage = () => {
         description: "",
         numberOfStars: 0,
         images: [],
+        amenities: [],
       };
     }
   } catch (error) {
@@ -39,9 +41,17 @@ const accommodationOverviewPage = () => {
       description: "",
       numberOfStars: 0,
       images: [],
+      amenities: [],
     }; // Default value
   }
-  const { propertyName, description, numberOfStars, images } = parsedProperty;
+  const {
+    propertyName,
+    description,
+    numberOfStars,
+    images,
+    amenities,
+    tagMessage,
+  } = parsedProperty;
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const scrollX = useRef(new Animated.Value(0)).current; // For horizontal scrolling
@@ -111,14 +121,20 @@ const accommodationOverviewPage = () => {
         scrollEventThrottle={16}
       >
         <View className="mt-4 px-2">
-          <Text className="font-lbold text-3xl text-neutrals-900">
+          <Text className="font-bold text-3xl text-neutrals-900">
             {propertyName}
           </Text>
           <View className="flex flex-row items-center gap-1 mt-1">
             {renderStars(numberOfStars, 24)}
           </View>
+          <Text
+            className="text-neutrals-800 my-4 font-semibold text-xl text-justify"
+            numberOfLines={4}
+          >
+            {tagMessage}
+          </Text>
           {/* FlatList to render images */}
-          <View className="flex flex-row w-full justify-between gap-1 mt-2">
+          <View className="flex flex-row w-full justify-between mt-2">
             <FlatList
               data={images}
               keyExtractor={(item, index) => index.toString()}
@@ -131,7 +147,7 @@ const accommodationOverviewPage = () => {
                 <TouchableOpacity onPress={() => {}}>
                   <ImageBackground
                     source={{ uri: item, cache: "force-cache" }}
-                    className="h-[300px] w-full mx-2"
+                    className="h-[300px] w-full mx-1"
                     style={{ width: width }}
                     resizeMode="cover"
                   />
@@ -159,15 +175,84 @@ const accommodationOverviewPage = () => {
               />
             ))}
           </View>
-          <Text className="font-lbold text-xl text-neutrals-900"></Text>
-          <Text style={{ marginVertical: 300 }}>Scrollable content here</Text>
-          <View className="mt-4 mx-4">
-            <Text className="text-neutrals-900 font-lbold text-3xl mb-4 flex-wrap">
-              Description
+          <View className="mt-6">
+            <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
+              Equipements populaires
+            </Text>
+            <View className="flex flex-row flex-wrap justify-between mx-1">
+              {amenities
+                .filter((amenity) => amenity.isAvailable && amenity.isPopular)
+                .map((amenity, index) => {
+                  const icon = getAmenityIcon(amenity.amenityName);
+                  return (
+                    <View
+                      key={index}
+                      className="w-[48%] mb-4 flex flex-row items-center"
+                    >
+                      {icon && (
+                        <Image
+                          source={icon}
+                          className="w-6 h-6 mr-1"
+                          resizeMode="contain"
+                        />
+                      )}
+                      <Text className="text-neutrals-800 text-xl">
+                        {amenity.amenityName}
+                      </Text>
+                    </View>
+                  );
+                })}
+            </View>
+          </View>
+          <View className="mt-6">
+            <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
+              Decovrez la zone
+            </Text>
+            <View>{/* Add the map component here */}</View>
+          </View>
+          <View className="mt-6">
+            <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
+              Description de l'hebergement
             </Text>
             <View>
               <Text
-                className="text-neutrals-800 font-semibold text-xl text-justify"
+                className="text-neutrals-800  text-xl text-justify"
+                numberOfLines={isExpanded ? undefined : 4}
+              >
+                {description}
+              </Text>
+              <TouchableOpacity onPress={toggleExpanded}>
+                <Text className="text-warning-600 text-xl my-4">
+                  {isExpanded ? "Voir moins" : "Voir la description complete"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View className="mt-6">
+            <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
+              Conditions
+            </Text>
+            <View>
+              <Text
+                className="text-neutrals-800  text-xl text-justify"
+                numberOfLines={isExpanded ? undefined : 4}
+              >
+                {description}
+              </Text>
+              <TouchableOpacity onPress={toggleExpanded}>
+                <Text className="text-warning-600 text-xl my-4">
+                  {isExpanded ? "Voir moins" : "Voir la description complete"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View className="mt-6">
+            <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
+              Informations importantes
+            </Text>
+            <View>
+              <Text
+                className="text-neutrals-800  text-xl text-justify"
                 numberOfLines={isExpanded ? undefined : 4}
               >
                 {description}
