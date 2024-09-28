@@ -54,7 +54,7 @@ export default function RootLayout() {
           <Stack.Screen name="(conditions)" options={{ headerShown: false }} />
           <Stack.Screen name="(screens)" options={{ headerShown: false }} />
           <Stack.Screen name="(search)" options={{ headerShown: false }} />
-          
+          <Stack.Screen name="(modals)" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
           {/* <Stack.Screen
             name="search/[query]"
