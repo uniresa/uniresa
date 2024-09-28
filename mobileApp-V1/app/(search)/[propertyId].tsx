@@ -1,4 +1,11 @@
-import { View, Text, Image, Animated, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Animated,
+  ImageBackground,
+  Modal,
+} from "react-native";
 import React, { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -12,9 +19,13 @@ import { getAmenityIcon } from "@/utils/amenityIcon";
 const { width } = Dimensions.get("window");
 const accommodationOverviewPage = () => {
   const params = useLocalSearchParams();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => {
     setIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+  };
+  const toggleModal = () => {
+    setModalIsOpen(!modalIsOpen);
   };
   let parsedProperty;
   try {
@@ -182,8 +193,9 @@ const accommodationOverviewPage = () => {
             <View className="flex flex-row flex-wrap justify-between mx-1">
               {amenities
                 .filter((amenity) => amenity.isAvailable && amenity.isPopular)
+                .slice(0, 6)
                 .map((amenity, index) => {
-                  const icon = getAmenityIcon(amenity.amenityName);
+                  const icon = getAmenityIcon(amenity.amenityId);
                   return (
                     <View
                       key={index}
@@ -203,6 +215,11 @@ const accommodationOverviewPage = () => {
                   );
                 })}
             </View>
+            <TouchableOpacity onPress={toggleModal}>
+              <Text className="text-primary text-xl my-4">
+                Afficher tous services et équipements
+              </Text>
+            </TouchableOpacity>
           </View>
           <View className="mt-6">
             <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
@@ -266,6 +283,45 @@ const accommodationOverviewPage = () => {
           </View>
         </View>
       </Animated.ScrollView>
+      {/* Full-screen Modal for All Amenities */}
+      <Modal
+        visible={modalIsOpen}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={toggleModal}
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          <TouchableOpacity onPress={toggleModal} className="p-4">
+            <Text className="text-primary text-3xl">X</Text>
+          </TouchableOpacity>
+          <View className="p-4">
+            <Text className="text-neutrals-900 font-bold text-2xl mb-4">
+              Tous les équipements
+            </Text>
+            <FlatList
+              data={amenities.filter((amenity) => amenity.isAvailable)}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => {
+                const icon = getAmenityIcon(item.amenityId);
+                return (
+                  <View className="flex flex-row items-center mb-4">
+                    {icon && (
+                      <Image
+                        source={icon}
+                        className="w-6 h-6 mr-2"
+                        resizeMode="contain"
+                      />
+                    )}
+                    <Text className="text-neutrals-800 text-xl">
+                      {item.amenityName}
+                    </Text>
+                  </View>
+                );
+              }}
+            />
+          </View>
+        </SafeAreaView>
+      </Modal>
       {/* Fixed Footer */}
       <View className="mx-4 my-4">
         <CustomButton

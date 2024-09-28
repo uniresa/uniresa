@@ -378,6 +378,7 @@ export interface Amenities {
 }
 export interface Amenity {
   amenityName: string;
+  amenityId: string;
   amenityDescription: string;
   isAvailable: boolean;
   isPopular: boolean;
