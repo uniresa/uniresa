@@ -64,7 +64,8 @@ export interface ButtonProps extends TouchableOpacityProps {
   textVariant?: "primary" | "default" | "secondary" | "danger" | "success";
   IconLeft?: React.ComponentType<any>;
   IconRight?: React.ComponentType<any>;
-  className?: string;
+  classNameLocal?: string;
+  classNameTitle?: string;
 }
 export interface Profile {
   // id: string;
@@ -303,10 +304,11 @@ export interface AccommodationProperty {
     | "Guesthouse"
     | "Hostel"
     | "Resort";
+  tagMessage: string;
   description: string;
   location: LocationDetails;
   images: string[];
-  amenities: Amenities;
+  amenities: Amenity[];
   policies: Policies; // Policies related to the property
   checkInDetails: CheckInDetails;
   priceDetails: PriceDetails;
@@ -363,16 +365,23 @@ export interface LocationDetails {
 export interface Amenities {
   freeWiFi: boolean;
   parking: boolean;
-  swimmingPool?: boolean;
+  swimmingPool: boolean;
   airConditioning: boolean;
-  kitchen?: boolean;
-  privateBathroom?: boolean;
-  balcony?: boolean;
-  petFriendly?: boolean;
-  breakfastIncluded?: boolean;
-  gym?: boolean;
-  laundryService?: boolean;
-  [key: string]: boolean | undefined; // Allows for additional amenities
+  kitchen: boolean;
+  privateBathroom: boolean;
+  balcony: boolean;
+  petFriendly: boolean;
+  breakfastIncluded: boolean;
+  gym: boolean;
+  laundryService: boolean;
+  [key: string]: boolean; // Allows for additional amenities
+}
+export interface Amenity {
+  amenityName: string;
+  amenityId: string;
+  amenityDescription: string;
+  isAvailable: boolean;
+  isPopular: boolean;
 }
 
 export interface Policies {

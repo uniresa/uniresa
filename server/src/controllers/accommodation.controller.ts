@@ -5,7 +5,7 @@ import {
   BookingDetails,
   DiscountDetails,
   PriceDetails,
-  Query,
+  SearchCriteria,
   Review,
   RoomType,
 } from "../typesDeclaration/types";
@@ -28,6 +28,7 @@ const setDefaultAccommodationValues = (
     propertyId: GenerateCustomID(10), // Generate a unique ID based on timestamp
     propertyName: accommodation.propertyName || "Default Property Name",
     propertyType: accommodation.propertyType || "Hotel",
+    tagMessage: accommodation.tagMessage || "Discover an amazing hotel",
     description: accommodation.description || "No description provided.",
     location: accommodation.location || {
       street: "",
@@ -41,19 +42,110 @@ const setDefaultAccommodationValues = (
       longitude: 0,
     },
     images: accommodation.images || [],
-    amenities: accommodation.amenities || {
-      freeWiFi: false,
-      parking: false,
-      swimmingPool: false,
-      airConditioning: false,
-      kitchen: false,
-      privateBathroom: false,
-      balcony: false,
-      petFriendly: false,
-      breakfastIncluded: false,
-      gym: false,
-      laundryService: false,
-    },
+    amenities: accommodation.amenities || [
+      {
+        amenityName: "Wi-Fi gratuit",
+        amenityId: "100000",
+        amenityDescription: "4G connection",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Parking disponible",
+        amenityId: "100001",
+        amenityDescription: "200m du logement",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Climatisation",
+        amenityId: "100004",
+        amenityDescription: "disponible dans les chambres et au salon",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Piscine",
+        amenityId: "100003",
+        amenityDescription:
+          "bassin pour enfant et 1 basin de 1.5m de profondeur",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Petit-déjeuner disponible",
+        amenityId: "100011",
+        amenityDescription: "petit dejeuner complet pour seulement 5000 Fcfa",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Reception",
+        amenityId: "100007",
+        amenityDescription: "Reception ouverte 24h/24",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Salle de sport",
+        amenityId: "100002",
+        amenityDescription: "equipé d'un' materiel sportif de haut gamme",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Bar",
+        amenityId: "100005",
+        amenityDescription: "Bar ouvert de 7h à 00h00",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Service d'étage",
+        amenityId: "100006",
+        amenityDescription:
+          "livraison de tout necessaire sur appel de la reception",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Blanchisserie",
+        amenityId: "100008",
+        amenityDescription: "Nettoyage et repassage de tout type de vetements",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Restaurant",
+        amenityId: "100009",
+        amenityDescription:
+          "Une multitudes de plats africains servis par nos chefs",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Animaux de compagnie acceptés",
+        amenityId: "100010",
+        amenityDescription:
+          "chiens de petite taille uniquement le reste sur demande",
+        isAvailable: true,
+        isPopular: true,
+      },
+      {
+        amenityName: "Spa",
+        amenityId: "100012",
+        amenityDescription: "petit dejeuner complet pour seulement 5000 Fcfa",
+        isAvailable: true,
+        isPopular: false,
+      },
+      {
+        amenityName: "Ventilateur",
+        amenityId: "100013",
+        amenityDescription: "disponible dans les chambres et au salon",
+        isAvailable: true,
+        isPopular: true,
+      },
+    ],
     policies: accommodation.policies || {
       isSmokingAllowed: false,
       isPetsAllowed: false,
@@ -497,14 +589,14 @@ export const getSearchedAccommodations = async (
   res: Response
 ) => {
   try {
-    const { destination, checkInDate, checkOutDate, capacity, rooms } =
-      req.body as Query;
+    const { destination, dates, minGuests, minRooms } =
+      req.body as SearchCriteria;
     console.log(req.body);
     // Parse the dates with error handling
     let parsedCheckInDate, parsedCheckOutDate;
     try {
-      parsedCheckInDate = parse(checkInDate, "yyyy-MM-dd", new Date());
-      parsedCheckOutDate = parse(checkOutDate, "yyyy-MM-dd", new Date());
+      parsedCheckInDate = parse(dates.checkInDate, "yyyy-MM-dd", new Date());
+      parsedCheckOutDate = parse(dates.checkOutDate, "yyyy-MM-dd", new Date());
     } catch (error) {
       return res.status(400).json({
         status: "failed",
@@ -517,7 +609,7 @@ export const getSearchedAccommodations = async (
     const accommodationQuery = accommodationRef.where(
       "location.city",
       "==",
-      destination
+      destination.city
     );
 
     const accommodationsSnapshot = await accommodationQuery.get();
@@ -549,7 +641,7 @@ export const getSearchedAccommodations = async (
       // Filter rooms based on the capacity requirement
       matchingRooms = matchingRooms.filter((roomType) => {
         const totalCapacity = roomType.capacity;
-        return totalCapacity >= capacity;
+        return totalCapacity >= minGuests;
       });
 
       // If no rooms match the capacity requirement, continue to the next accommodation
@@ -575,8 +667,8 @@ export const getSearchedAccommodations = async (
       // Check availability by calling the checkPropertyAvailability function
       const isAvailable = await checkPropertyAvailability(
         accommodation.propertyId,
-        new Date(checkInDate),
-        new Date(checkOutDate),
+        new Date(dates.checkInDate),
+        new Date(dates.checkOutDate),
         specificRoomTypeIds
       );
 

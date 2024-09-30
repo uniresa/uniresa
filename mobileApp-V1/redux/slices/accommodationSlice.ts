@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 
 const initialState = {
-  accommodations: [] as AccommodationProperty[],
+  accommodationsList: [] as AccommodationProperty[],
   loading: false,
   error: null,
 };
@@ -18,7 +18,7 @@ const accommodationsSlice = createSlice({
     fetchAccommodationsSuccess: (state, action) => {
       state.loading = false;
       state.error = null;
-      state.accommodations = action.payload;
+      state.accommodationsList = action.payload;
     },
     fetchAccommodationsError: (state, action) => {
       state.loading = false;
@@ -34,6 +34,6 @@ export const {
 } = accommodationsSlice.actions;
 
 export const accommodationsList = (state: typeof initialState) =>
-  state.accommodations;
+  state.accommodationsList;
 
 export default accommodationsSlice.reducer;

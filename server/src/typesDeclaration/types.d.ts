@@ -228,13 +228,15 @@ export interface AccommodationProperty {
     | "Guesthouse"
     | "Hostel"
     | "Resort";
+  tagMessage: string;
   description: string;
   location: LocationDetails;
   images: string[];
-  amenities: Amenities;
+  amenities: Amenity[];
   policies: Policies; // Policies related to the property
   checkInDetails: CheckInDetails;
   priceDetails: PriceDetails;
+
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
@@ -253,6 +255,13 @@ export interface AccommodationProperty {
   propertyBookings?: BookingDetails[];
   createdAt: Date;
   updatedAt: Date;
+}
+export interface Amenity {
+  amenityName: string;
+  amenityId: string;
+  amenityDescription: string;
+  isAvailable: boolean;
+  isPopular: boolean;
 }
 
 export interface LocationDetails {
@@ -380,6 +389,16 @@ export interface KeyCollection {
   code?: string;
   keyHolderName?: string;
   details?: string;
+}
+interface SearchCriteria {
+  destination: LocationDetails;
+  dates: { checkInDate: string; checkOutDate: string };
+  minGuests: number;
+  minRooms: number;
+  minRating?: number;
+  maxPrice?: number;
+  minStars?: number;
+  amenities?: Amenities;
 }
 export interface DiscountDetails {
   discountId: string;
