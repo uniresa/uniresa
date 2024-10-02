@@ -9,7 +9,6 @@ import GuestPickerModal from "@/components/generalComponents/GuestPickerModal";
 import {
   Guests,
   BookingDates,
-  Query,
   SearchCriteria,
   LocationDetails,
 } from "@/typesDeclaration/types";
@@ -22,12 +21,22 @@ import {
   fetchSearchResultsSuccess,
   searchResults,
 } from "@/redux/slices/searchResultSlice";
+import {
+  setSearchCriteria,
+  updateDestination,
+  updateDates,
+  updateGuests,
+  updateRooms,
+  selectSearchCriteria,
+} from "@/redux/slices/searchCriteriaSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const accommodationsListing = () => {
   const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   moment.locale("fr");
-  const { loading, error } = useSelector(searchResults);
+  const { loading, error, accommodations } = useSelector(searchResults);
+  const searchCriteria = useSelector(selectSearchCriteria);
+  const { destination, dates, guests, rooms } = searchCriteria;
   const [guestDestination, setGuestDestination] = useState<LocationDetails>({
     street: "",
     quartier: "",
@@ -39,8 +48,12 @@ const accommodationsListing = () => {
     latitude: 0,
     longitude: 0,
   });
-  const [guests, setGuests] = useState<Guests>({ adults: 2, children: 0 });
-  const [rooms, setRooms] = useState(1);
+  const [localDestination, setLocalDestination] = useState<string>();
+  const [localGuests, setLocalGuests] = useState<Guests>({
+    adults: 2,
+    children: 0,
+  });
+  const [localRooms, setLocalRooms] = useState(1);
   const [showGuestsPicker, setShowGuestsPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedRange, setSelectedRange] = useState<BookingDates>({
@@ -57,11 +70,18 @@ const accommodationsListing = () => {
         params.selectedDestination as string
       );
       setGuestDestination(parsedDestination as LocationDetails);
+
+      if (params.destinationPicked) {
+        setLocalDestination(params.destinationPicked as string);
+        dispatch(
+          setSearchCriteria({ destination: params.destinationPicked as string })
+        );
+        dispatch(updateDestination(params.destinationPicked as string));
+      }
     }
   }, [params.selectedDestination]);
 
   const handleDatePickerConfirm = (newBookingDates: BookingDates) => {
-    // Assuming the dates are in the format "YYYY-MM-DD" or "MM/DD/YYYY"
     const checkInDate = moment(
       newBookingDates.checkInDate,
       ["MM/DD/YYYY", "YYYY-MM-DD"],
@@ -78,6 +98,12 @@ const accommodationsListing = () => {
         checkInDate: checkInDate.format("YYYY-MM-DD"), // Store as ISO-compliant date
         checkOutDate: checkOutDate.format("YYYY-MM-DD"),
       });
+      dispatch(
+        updateDates({
+          checkInDate: checkInDate.format("YYYY-MM-DD"), // Store as ISO-compliant date
+          checkOutDate: checkOutDate.format("YYYY-MM-DD"),
+        })
+      );
     } else {
       console.error("Invalid date provided:", newBookingDates);
     }
@@ -85,8 +111,10 @@ const accommodationsListing = () => {
     setShowDatePicker(false);
   };
   const handleGuestPickerConfirm = (newGuests: Guests, newRooms: number) => {
-    setGuests(newGuests);
-    setRooms(newRooms);
+    setLocalGuests(newGuests);
+    setLocalRooms(newRooms);
+    dispatch(updateGuests(localGuests));
+    dispatch(updateRooms(localRooms));
     setShowGuestsPicker(false);
   };
 
@@ -99,18 +127,17 @@ const accommodationsListing = () => {
       const query: SearchCriteria = {
         destination: guestDestination,
         dates: {
-          checkInDate: selectedRange.checkInDate,
-          checkOutDate: selectedRange.checkOutDate,
+          checkInDate: dates.checkInDate,
+          checkOutDate: dates.checkOutDate,
         },
 
         minGuests: guests.adults + guests.children,
 
         minRooms: rooms,
       };
-      console.log(query);
       const response = await axios.post(
         `${backendApi}/api/accommodation/getSearchedAccomodations`,
-        query, // Send the query directly
+        query,
         {
           headers: {
             Accept: "application/json",
@@ -119,8 +146,8 @@ const accommodationsListing = () => {
           withCredentials: true,
         }
       );
-      console.log(response);
-      const results = await response.data;
+
+      const results = await response.data.data;
       if (!results || results.length === 0) {
         throw new Error(
           "Aucun résultat trouvé pour ces critères de recherche."
@@ -175,7 +202,7 @@ const accommodationsListing = () => {
                   className="w-6 h-8 mr-6"
                 />
                 <Text className="text-neutrals-800 font-semibold text-lg">
-                  {guestDestination ? `${guestDestination}` : "Destination"}
+                  {localDestination ? `${localDestination}` : "Destination"}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -207,17 +234,19 @@ const accommodationsListing = () => {
                 />
                 <Text className="text-neutrals-800 font-semibold text-lg">
                   <Text>
-                    {guests.adults > 1
-                      ? `${guests.adults} Adultes, `
-                      : `${guests.adults} Adulte, `}
+                    {localGuests.adults > 1
+                      ? `${localGuests.adults} Adultes, `
+                      : `${localGuests.adults} Adulte, `}
                   </Text>
                   <Text>
-                    {guests.children > 1
-                      ? `${guests.children} Enfants, `
-                      : `${guests.children} Enfant, `}
+                    {localGuests.children > 1
+                      ? `${localGuests.children} Enfants, `
+                      : `${localGuests.children} Enfant, `}
                   </Text>
                   <Text>
-                    {rooms > 1 ? `${rooms} chambres` : `${rooms} chambre`}
+                    {localRooms > 1
+                      ? `${localRooms} chambres`
+                      : `${localRooms} chambre`}
                   </Text>
                 </Text>
               </View>
@@ -233,7 +262,7 @@ const accommodationsListing = () => {
           {/* Date Picker Modal (Calendar for selecting date range) */}
           <DatePickerModal
             isVisible={showDatePicker}
-            bookingDates={selectedRange}
+            bookingDates={dates}
             onClose={() => setShowDatePicker(false)}
             onConfirm={handleDatePickerConfirm}
           />

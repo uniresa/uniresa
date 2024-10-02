@@ -29,7 +29,13 @@ const destinationPicker = () => {
         fetchDetails={true}
         debounce={200}
         onPress={(data, details = null) => {
-          if (details && details.address_components && details.geometry) {
+          if (
+            data &&
+            data.description &&
+            details &&
+            details.address_components &&
+            details.geometry
+          ) {
             // Extract the address and coordinates from Google Autocomplete
             const address = details.address_components;
             const getComponent = (types: PlaceType[]) =>
@@ -60,6 +66,7 @@ const destinationPicker = () => {
               pathname: "/accommodationsListing",
               params: {
                 selectedDestination: JSON.stringify(selectedDestination),
+                destinationPicked: data.description,
               }, // Serialize the selectedDestination object into a JSON string
             });
           }
