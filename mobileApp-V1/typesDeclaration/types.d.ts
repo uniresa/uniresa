@@ -353,8 +353,8 @@ export interface LocationDetails {
   region?: string;
   postalCode?: string;
   country: string;
-  latitude?: number; // Geographical latitude
-  longitude?: number; // Geographical longitude
+  latitude: number; // Geographical latitude
+  longitude: number; // Geographical longitude
 }
 
 // export interface ImageDetails {
