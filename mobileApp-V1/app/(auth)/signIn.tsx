@@ -92,7 +92,7 @@ const SignIn = () => {
             <CustomButton
               title={loading ? "En cours..." : "Se connecter"}
               handlePress={onSignInPress}
-              className="mt-6"
+              classNameLocal="mt-6"
             />
             <View className="flex flex-row justify-center items-center my-6 gap-x-3">
               <View className="flex-1 h-[1px] bg-neutrals-100" />
@@ -122,7 +122,7 @@ const SignIn = () => {
             </View>
             <CustomButton
               title="Continuer sans se connecter"
-              className="bg-neutrals-20 py-3 mt-8 w-full"
+              classNameLocal="bg-neutrals-20 py-3 mt-8 w-full"
               textVariant="primary"
               handlePress={() => router.push("/home")}
             />

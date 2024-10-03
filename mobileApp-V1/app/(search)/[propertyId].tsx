@@ -5,27 +5,34 @@ import {
   Animated,
   ImageBackground,
   Modal,
+  TouchableOpacity,
+  Linking,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import React, { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
-import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import renderStars from "@/utils/renderStars";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 import { Dimensions } from "react-native";
 import { getAmenityIcon } from "@/utils/amenityIcon";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 const accommodationOverviewPage = () => {
   const params = useLocalSearchParams();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [mapModalVisible, setMapModalVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => {
     setIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
   };
   const toggleModal = () => {
     setModalIsOpen(!modalIsOpen);
+  };
+  const toggleMapModal = () => {
+    setMapModalVisible(!mapModalVisible);
   };
   let parsedProperty;
   try {
@@ -43,6 +50,17 @@ const accommodationOverviewPage = () => {
         numberOfStars: 0,
         images: [],
         amenities: [],
+        location: {
+          street: "",
+          quartier: "", // Specific area within a city
+          city: "",
+          district: "",
+          region: "",
+          postalCode: "",
+          country: "",
+          latitude: 3.865, // Geographical latitude
+          longitude: 11.5161, // Geographical longitude
+        },
       };
     }
   } catch (error) {
@@ -53,6 +71,17 @@ const accommodationOverviewPage = () => {
       numberOfStars: 0,
       images: [],
       amenities: [],
+      location: {
+        street: "",
+        quartier: "", // Specific area within a city
+        city: "",
+        district: "",
+        region: "",
+        postalCode: "",
+        country: "",
+        latitude: 3.865, // Geographical latitude
+        longitude: 11.5161, // Geographical longitude
+      },
     }; // Default value
   }
   const {
@@ -62,7 +91,13 @@ const accommodationOverviewPage = () => {
     images,
     amenities,
     tagMessage,
+    location,
+    policies,
+    checkInDetails,
+    priceDetails,
+    finalCleaning,
   } = parsedProperty;
+
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const scrollX = useRef(new Animated.Value(0)).current; // For horizontal scrolling
@@ -225,9 +260,59 @@ const accommodationOverviewPage = () => {
             <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
               Decovrez la zone
             </Text>
-            <View>{/* Add the map component here */}</View>
+            <View>
+              {/* Display the map */}
+              <MapView
+                style={{ height: 300, width: "100%" }}
+                initialRegion={{
+                  latitude: location.latitude || 3.865,
+                  longitude: location.longitude || 11.5161,
+                  latitudeDelta: 0.05,
+                  longitudeDelta: 0.02,
+                }}
+                zoomEnabled={true}
+                scrollEnabled={true}
+                showsUserLocation={true}
+                showsMyLocationButton={true}
+              >
+                {location.latitude && location.longitude && (
+                  <Marker
+                    coordinate={{
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                    }}
+                    title={propertyName}
+                    description={tagMessage}
+                  />
+                )}
+              </MapView>
+              <View className="flex mt-4">
+                <Text className="text-neutrals-800 text-base font-semibold">
+                  {location.street}, {location.quartier}, {location.district},{" "}
+                  {location.region}, {location.country}
+                </Text>
+                <TouchableOpacity
+                  onPress={toggleMapModal}
+                  // onPress={() => {
+                  //   Linking.openURL(
+                  //     `geo:${location.latitude},${location.longitude}?q=${location.latitude},${location.longitude}`
+                  //   );
+                  // }}
+                  className="flex flex-row items-center gap-2 text-primary mt-4"
+                >
+                  <Text className="text-lg text-primary">
+                    Afficher la carte
+                  </Text>
+                  <Image
+                    source={require("@/assets/icons/arrowNoQActive.png")}
+                    className="w-4 h-4"
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-          <View className="mt-6">
+          <View className="mt-8">
             <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
               Description de l'hebergement
             </Text>
@@ -291,35 +376,92 @@ const accommodationOverviewPage = () => {
         onRequestClose={toggleModal}
       >
         <SafeAreaView className="flex-1 bg-white">
-          <TouchableOpacity onPress={toggleModal} className="p-4">
-            <Text className="text-primary text-3xl">X</Text>
-          </TouchableOpacity>
-          <View className="p-4">
-            <Text className="text-neutrals-900 font-bold text-2xl mb-4">
-              Tous les équipements
-            </Text>
-            <FlatList
-              data={amenities.filter((amenity) => amenity.isAvailable)}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => {
-                const icon = getAmenityIcon(item.amenityId);
-                return (
-                  <View className="flex flex-row items-center mb-4">
-                    {icon && (
-                      <Image
-                        source={icon}
-                        className="w-6 h-6 mr-2"
-                        resizeMode="contain"
-                      />
-                    )}
-                    <Text className="text-neutrals-800 text-xl">
-                      {item.amenityName}
-                    </Text>
-                  </View>
-                );
+          <ScrollView className="mt-4">
+            <TouchableOpacity onPress={toggleModal} className="p-4 ">
+              <Text className="text-primary text-3xl">X</Text>
+            </TouchableOpacity>
+            <View className="p-4">
+              <Text className="text-neutrals-900 font-bold text-2xl mb-4">
+                Tous les équipements
+              </Text>
+              <FlatList
+                scrollEnabled={false}
+                data={amenities.filter((amenity) => amenity.isAvailable)}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => {
+                  const icon = getAmenityIcon(item.amenityId);
+                  return (
+                    <View className="flex flex-row items-center mb-4">
+                      {icon && (
+                        <Image
+                          source={icon}
+                          className="w-6 h-6 mr-2"
+                          resizeMode="contain"
+                        />
+                      )}
+                      <Text className="text-neutrals-800 text-xl">
+                        {item.amenityName}
+                      </Text>
+                    </View>
+                  );
+                }}
+              />
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+      {/* Full-screen Modal for Map */}
+      <Modal
+        visible={mapModalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={toggleMapModal}
+      >
+        <SafeAreaView className="flex-1 bg-white">
+          <View className="flex w-full justify-between">
+            <View className="flex flex-row w-full justify-between p-4">
+              <TouchableOpacity onPress={toggleMapModal}>
+                <Image
+                  source={require("@/assets/icons/backArrowActive.png")}
+                  className=" w-8 h-8"
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <View className="flex flex-row justify-start gap-2 mr-2">
+                <Text className="font-bold text-xl text-neutrals-900">
+                  {propertyName}
+                </Text>
+                <View className="flex flex-row items-center gap-1 mt-1">
+                  {renderStars(numberOfStars, 16)}
+                </View>
+              </View>
+            </View>
+            <MapView
+              style={{ height: height * 0.95, width: "100%" }}
+              initialRegion={{
+                latitude: location.latitude || 3.865,
+                longitude: location.longitude || 11.5161,
+                latitudeDelta: 0.025,
+                longitudeDelta: 0.01,
               }}
-            />
+              zoomEnabled={true}
+              scrollEnabled={true}
+              showsUserLocation={true}
+              showsMyLocationButton={true}
+            >
+              {location.latitude && location.longitude && (
+                <Marker
+                  coordinate={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                  }}
+                  title={propertyName}
+                  description={tagMessage}
+                />
+              )}
+            </MapView>
           </View>
+          <View className="p-4"></View>
         </SafeAreaView>
       </Modal>
       {/* Fixed Footer */}
