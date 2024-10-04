@@ -153,15 +153,19 @@ const setDefaultAccommodationValues = (
       additionalPolicies: "",
     },
     checkInDetails: accommodation.checkInDetails || {
-      checkInFrom: "14:00",
-      checkInTo: "20:00",
-      checkOutFrom: "07:00",
-      checkOutTo: "12:00",
+      checkIn: "",
+      checkOut: "",
+      checkInInfo: "",
+      propertyAccesDetails: "",
+      paymentMethods: "",
+      pets: "",
     },
     priceDetails: accommodation.priceDetails || {
       pricePerNight: 0,
       currency: "Fcfa",
     },
+    additionalCost: accommodation.additionalCost || "",
+    additionalServices: accommodation.additionalServices || "",
     finalCleaning: accommodation.finalCleaning || {
       finalCleaningincluded: true,
       cleaningFee: 0,

@@ -312,7 +312,8 @@ export interface AccommodationProperty {
   policies: Policies; // Policies related to the property
   checkInDetails: CheckInDetails;
   priceDetails: PriceDetails;
-
+  additionalCost: string;
+  additionalServices: string;
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
@@ -326,7 +327,7 @@ export interface AccommodationProperty {
   hostDetails?: HostDetails;
   nearbyAttractions?: NearbyAttraction[];
   healthAndSafetyMeasures?: HealthAndSafetyMeasures;
-  cancellationPolicy?: string;
+  cancellationPolicy: string;
   keyCollection?: KeyCollection;
   propertyBookings?: BookingDetails[];
   createdAt: Date;
@@ -392,10 +393,12 @@ export interface Policies {
 }
 
 export interface CheckInDetails {
-  checkInFrom: string; // Example: "14:00"
-  checkInTo: string; // Example: "22:00"
-  checkOutFrom: string; // Example: "07:00"
-  checkOutTo: string; // Example: "12:00"
+  checkIn: string;
+  checkOut: string;
+  checkInInfo: string;
+  propertyAccesDetails: string;
+  paymentMethods: string;
+  pets: string;
 }
 
 export interface PriceDetails {

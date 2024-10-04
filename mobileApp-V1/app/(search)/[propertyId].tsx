@@ -5,18 +5,18 @@ import {
   Animated,
   ImageBackground,
   Modal,
+  Dimensions,
   TouchableOpacity,
-  Linking,
+  FlatList,
+  ScrollView,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import React, { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
 import CustomButton from "@/components/generalComponents/CustomButton";
 import renderStars from "@/utils/renderStars";
 import { AccommodationProperty } from "@/typesDeclaration/types";
-import { Dimensions } from "react-native";
 import { getAmenityIcon } from "@/utils/amenityIcon";
 
 const { width, height } = Dimensions.get("window");
@@ -25,8 +25,16 @@ const accommodationOverviewPage = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [mapModalVisible, setMapModalVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [infoIsExpanded, setInfoIsExpanded] = useState(false);
+  const [conditionIsExpanded, setConditionIsExpanded] = useState(false);
   const toggleExpanded = () => {
     setIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+  };
+  const toggleExpandedInfo = () => {
+    setInfoIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+  };
+  const toggleExpandedConditions = () => {
+    setConditionIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
   };
   const toggleModal = () => {
     setModalIsOpen(!modalIsOpen);
@@ -50,6 +58,17 @@ const accommodationOverviewPage = () => {
         numberOfStars: 0,
         images: [],
         amenities: [],
+        additionalCost: "",
+        additionalServices: "",
+        // policies: [],
+        checkInDetails: {
+          checkIn: "",
+          checkOut: "",
+          checkInInfo: "",
+          propertyAccesDetails: "",
+          paymentMethods: "",
+          pets: "",
+        },
         location: {
           street: "",
           quartier: "", // Specific area within a city
@@ -69,8 +88,18 @@ const accommodationOverviewPage = () => {
       propertyName: "",
       description: "",
       numberOfStars: 0,
+      additionalCost: "",
+      additionalServices: "",
       images: [],
       amenities: [],
+      checkInDetails: {
+        checkIn: "",
+        checkOut: "",
+        checkInInfo: "",
+        propertyAccesDetails: "",
+        paymentMethods: "",
+        pets: "",
+      },
       location: {
         street: "",
         quartier: "", // Specific area within a city
@@ -94,6 +123,8 @@ const accommodationOverviewPage = () => {
     location,
     policies,
     checkInDetails,
+    additionalCost,
+    additionalServices,
     priceDetails,
     finalCleaning,
   } = parsedProperty;
@@ -162,7 +193,7 @@ const accommodationOverviewPage = () => {
       <Animated.ScrollView
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false } // `false` to avoid layout conflicts with animations
+          { useNativeDriver: true } // `false` to avoid layout conflicts with animations
         )}
         scrollEventThrottle={16}
       >
@@ -181,25 +212,27 @@ const accommodationOverviewPage = () => {
           </Text>
           {/* FlatList to render images */}
           <View className="flex flex-row w-full justify-between mt-2">
-            <FlatList
-              data={images}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={handleScroll}
-              pagingEnabled={true}
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              // contentContainerStyle={{ paddingHorizontal: 10 }}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => {}}>
-                  <ImageBackground
-                    source={{ uri: item, cache: "force-cache" }}
-                    className="h-[300px] w-full mx-1"
-                    style={{ width: width }}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-              )}
-            />
+            {images.length > 0 ? (
+              <FlatList
+                data={images}
+                keyExtractor={(item, index) => index.toString()}
+                onScroll={handleScroll}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => {}}>
+                    <ImageBackground
+                      source={{ uri: item, cache: "force-cache" }}
+                      style={{ height: 300, width: width }}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+              <Text>No images available</Text>
+            )}
             <View className="absolute right-0 bottom-0 bg-neutrals-800 p-2">
               <Text className="text-base text-neutrals">
                 {images.length} photos
@@ -250,7 +283,11 @@ const accommodationOverviewPage = () => {
                   );
                 })}
             </View>
-            <TouchableOpacity onPress={toggleModal}>
+            <TouchableOpacity
+              onPress={toggleModal}
+              accessibilityLabel="Afficher tous services et équipements"
+              accessible={true}
+            >
               <Text className="text-primary text-xl my-4">
                 Afficher tous services et équipements
               </Text>
@@ -293,11 +330,6 @@ const accommodationOverviewPage = () => {
                 </Text>
                 <TouchableOpacity
                   onPress={toggleMapModal}
-                  // onPress={() => {
-                  //   Linking.openURL(
-                  //     `geo:${location.latitude},${location.longitude}?q=${location.latitude},${location.longitude}`
-                  //   );
-                  // }}
                   className="flex flex-row items-center gap-2 text-primary mt-4"
                 >
                   <Text className="text-lg text-primary">
@@ -330,20 +362,100 @@ const accommodationOverviewPage = () => {
               </TouchableOpacity>
             </View>
           </View>
+
           <View className="mt-6">
             <Text className="text-neutrals-900 font-bold text-2xl mb-4 flex-wrap">
               Conditions
             </Text>
             <View>
-              <Text
-                className="text-neutrals-800  text-xl text-justify"
-                numberOfLines={isExpanded ? undefined : 4}
-              >
-                {description}
-              </Text>
-              <TouchableOpacity onPress={toggleExpanded}>
-                <Text className="text-warning-600 text-xl my-4">
-                  {isExpanded ? "Voir moins" : "Voir la description complete"}
+              {infoIsExpanded ? (
+                <View>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Arrivée
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {checkInDetails.checkIn
+                      .split(".")
+                      .map((sentence, index) => (
+                        <Text key={index}>
+                          {sentence.trim()} {/* Ensure no extra spaces */}
+                          {"\n"} {/* Line break */}
+                        </Text>
+                      ))}
+                  </Text>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Départ
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {checkInDetails.checkOut
+                      .split(".")
+                      .map((sentence, index) => (
+                        <Text key={index}>
+                          {sentence.trim()} {/* Ensure no extra spaces */}
+                          {"\n"} {/* Line break */}
+                        </Text>
+                      ))}
+                  </Text>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Informations concernant l'arrivée
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {checkInDetails.propertyAccesDetails
+                      .split(".")
+                      .map((sentence, index) => (
+                        <Text key={index}>
+                          {sentence.trim()} {/* Ensure no extra spaces */}
+                          {"\n"} {/* Line break */}
+                        </Text>
+                      ))}
+                  </Text>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Animaux domestiques
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {checkInDetails.pets.split(".").map((sentence, index) => (
+                      <Text key={index}>
+                        {sentence.trim()} {/* Ensure no extra spaces */}
+                        {"\n"} {/* Line break */}
+                      </Text>
+                    ))}
+                  </Text>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Moyens de paiement
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {checkInDetails.paymentMethods
+                      .split(".")
+                      .map((sentence, index) => (
+                        <Text key={index}>
+                          {sentence.trim()} {/* Ensure no extra spaces */}
+                          {"\n"} {/* Line break */}
+                        </Text>
+                      ))}
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Arrivée
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {checkInDetails.checkIn
+                      .split(".")
+                      .map((sentence, index) => (
+                        <Text key={index}>
+                          {sentence.trim()} {/* Ensure no extra spaces */}
+                          {"\n"} {/* Line break */}
+                        </Text>
+                      ))}
+                  </Text>
+                </View>
+              )}
+              <TouchableOpacity onPress={toggleExpandedInfo}>
+                <Text className="text-warning-600 text-xl my-2">
+                  {infoIsExpanded
+                    ? "Voir moins"
+                    : "Voir la description complete"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -353,18 +465,54 @@ const accommodationOverviewPage = () => {
               Informations importantes
             </Text>
             <View>
-              <Text
-                className="text-neutrals-800  text-xl text-justify"
-                numberOfLines={isExpanded ? undefined : 4}
-              >
-                {description}
-              </Text>
-              <TouchableOpacity onPress={toggleExpanded}>
-                <Text className="text-warning-600 text-xl my-4">
-                  {isExpanded ? "Voir moins" : "Voir la description complete"}
-                </Text>
-              </TouchableOpacity>
+              {conditionIsExpanded ? (
+                <View>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Frais Supplementaires a regler surplace
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {additionalCost.split(".").map((sentence, index) => (
+                      <Text key={index}>
+                        {sentence.trim()} {/* Ensure no extra spaces */}
+                        {"\n"} {/* Line break */}
+                      </Text>
+                    ))}
+                  </Text>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Options en supplément
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {additionalServices.split(".").map((sentence, index) => (
+                      <Text key={index}>
+                        {sentence.trim()} {/* Ensure no extra spaces */}
+                        {"\n"} {/* Line break */}
+                      </Text>
+                    ))}
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  <Text className="font-bold text-neutrals-800 text-xl text-justify">
+                    Frais Supplementaires a regler surplace
+                  </Text>
+                  <Text className="text-neutrals-800 text-xl text-justify">
+                    {additionalCost.split(".").map((sentence, index) => (
+                      <Text key={index}>
+                        {sentence.trim()} {/* Ensure no extra spaces */}
+                        {"\n"} {/* Line break */}
+                      </Text>
+                    ))}
+                  </Text>
+                </View>
+              )}
             </View>
+            <TouchableOpacity onPress={toggleExpandedConditions}>
+              <Text className="text-warning-600 text-xl my-4">
+                {conditionIsExpanded
+                  ? "Voir moins"
+                  : "Voir la description complete"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Animated.ScrollView>
@@ -384,28 +532,33 @@ const accommodationOverviewPage = () => {
               <Text className="text-neutrals-900 font-bold text-2xl mb-4">
                 Tous les équipements
               </Text>
-              <FlatList
-                scrollEnabled={false}
-                data={amenities.filter((amenity) => amenity.isAvailable)}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => {
-                  const icon = getAmenityIcon(item.amenityId);
-                  return (
-                    <View className="flex flex-row items-center mb-4">
-                      {icon && (
-                        <Image
-                          source={icon}
-                          className="w-6 h-6 mr-2"
-                          resizeMode="contain"
-                        />
-                      )}
-                      <Text className="text-neutrals-800 text-xl">
-                        {item.amenityName}
-                      </Text>
-                    </View>
-                  );
-                }}
-              />
+              <View>
+                <Text className="text-neutrals-900 font-bold text-xl mb-4 flex-wrap">
+                  Equipements populaires
+                </Text>
+                <FlatList
+                  scrollEnabled={false}
+                  data={amenities.filter((amenity) => amenity.isAvailable)}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => {
+                    const icon = getAmenityIcon(item.amenityId);
+                    return (
+                      <View className="flex flex-row items-center mb-4">
+                        {icon && (
+                          <Image
+                            source={icon}
+                            className="w-6 h-6 mr-2"
+                            resizeMode="contain"
+                          />
+                        )}
+                        <Text className="text-neutrals-800 text-xl">
+                          {item.amenityName}
+                        </Text>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
             </View>
           </ScrollView>
         </SafeAreaView>
