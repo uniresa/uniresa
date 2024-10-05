@@ -336,7 +336,8 @@ export interface AccommodationProperty {
 
 export interface DiscountDetails {
   discountId: string;
-  discountPercentage: number;
+  discountPercentage?: number;
+  discountAmount?: number;
   startDate: Date;
   endDate: Date;
   discountType: "percentage" | "fixed"; // Type of discount ("percentage" or "fixed")
@@ -434,13 +435,18 @@ export interface AvailabilityDetails {
 export interface RoomType {
   roomId: string;
   type: string; // Example: "Double Room", "Suite", etc.
-  size: number; // surface
+  surface: number; // surface
   capacity: number; // Number of people the room can accommodate
-  amenities?: Amenities;
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
   discountList: DiscountDetails[];
   ongoingDiscountPercentages: number[];
+  isRefundable: boolean;
+  amenities: Amenity[];
+  roomImages: string[];
+  roomBookings?: BookingDetails[];
+  roomDescription: string;
+  bedType: string;
 }
 
 export interface HostDetails {
