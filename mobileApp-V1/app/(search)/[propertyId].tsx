@@ -18,17 +18,24 @@ import CustomButton from "@/components/generalComponents/CustomButton";
 import renderStars from "@/utils/renderStars";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 import { getAmenityIcon } from "@/utils/amenityIcon";
+import FullScreenModal from "@/components/generalComponents/FullScreenModal";
 
 const { width, height } = Dimensions.get("window");
+
 const accommodationOverviewPage = () => {
   const params = useLocalSearchParams();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [mapModalVisible, setMapModalVisible] = useState(false);
+  const [roomsModalVisible, setRoomsModalVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [infoIsExpanded, setInfoIsExpanded] = useState(false);
   const [conditionIsExpanded, setConditionIsExpanded] = useState(false);
+
   const toggleExpanded = () => {
     setIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+  };
+  const toggleRoomModal = () => {
+    setRoomsModalVisible((prevState) => !prevState); // Toggle between expanded and collapsed
   };
   const toggleExpandedInfo = () => {
     setInfoIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
@@ -60,6 +67,24 @@ const accommodationOverviewPage = () => {
         amenities: [],
         additionalCost: "",
         additionalServices: "",
+        roomTypes: [
+          {
+            roomId: "",
+            type: "", // Example: "Double Room", "Suite", etc.
+            surface: 0, // surface
+            capacity: 1, // Number of people the room can accommodate
+            priceDetails: [],
+            roomAvailabilities: [], // Availability details by date range
+            discountList: [],
+            ongoingDiscountPercentages: [],
+            isRefundable: true,
+            amenities: [],
+            roomImages: [],
+            roomBookings: [],
+            roomDescription: "",
+            bedType: "",
+          },
+        ],
         // policies: [],
         checkInDetails: {
           checkIn: "",
@@ -90,6 +115,24 @@ const accommodationOverviewPage = () => {
       numberOfStars: 0,
       additionalCost: "",
       additionalServices: "",
+      roomTypes: [
+        {
+          roomId: "",
+          type: "", // Example: "Double Room", "Suite", etc.
+          surface: 0, // surface
+          capacity: 1, // Number of people the room can accommodate
+          priceDetails: [],
+          roomAvailabilities: [], // Availability details by date range
+          discountList: [],
+          ongoingDiscountPercentages: [],
+          isRefundable: true,
+          amenities: [],
+          roomImages: [],
+          roomBookings: [],
+          roomDescription: "",
+          bedType: "",
+        },
+      ],
       images: [],
       amenities: [],
       checkInDetails: {
@@ -127,6 +170,7 @@ const accommodationOverviewPage = () => {
     additionalServices,
     priceDetails,
     finalCleaning,
+    roomTypes,
   } = parsedProperty;
 
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
@@ -214,22 +258,22 @@ const accommodationOverviewPage = () => {
           <View className="flex flex-row w-full justify-between mt-2">
             {images.length > 0 ? (
               <FlatList
-                data={images}
-                keyExtractor={(item, index) => index.toString()}
-                onScroll={handleScroll}
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => {}}>
-                    <ImageBackground
-                      source={{ uri: item, cache: "force-cache" }}
-                      style={{ height: 300, width: width }}
-                      resizeMode="cover"
-                    />
-                  </TouchableOpacity>
-                )}
-              />
+              data={images}
+              keyExtractor={(item, index) => index.toString()}
+              onScroll={handleScroll}
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => {}}>
+                  <ImageBackground
+                    source={{ uri: item, cache: "force-cache" }}
+                    style={{ height: 300, width: width }}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              )}
+            />
             ) : (
               <Text>No images available</Text>
             )}
@@ -614,14 +658,22 @@ const accommodationOverviewPage = () => {
               )}
             </MapView>
           </View>
-          <View className="p-4"></View>
         </SafeAreaView>
       </Modal>
       {/* Fixed Footer */}
+      <FullScreenModal
+        toggleModal={toggleRoomModal}
+        openModal={roomsModalVisible}
+        title={propertyName}
+        data={roomTypes}
+        // renderContent=
+        // renderFooter=
+      />
       <View className="mx-4 my-4">
         <CustomButton
           title="Sélectionner une chambre"
           classNameTitle="text-2xl font-lbold"
+          handlePress={toggleRoomModal}
         />
       </View>
     </SafeAreaView>
