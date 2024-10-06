@@ -433,6 +433,7 @@ export interface AvailabilityDetails {
 }
 
 export interface RoomType {
+  reduce(arg0: (acc: any, room: any) => any, arg1: number): unknown;
   roomId: string;
   type: string; // Example: "Double Room", "Suite", etc.
   surface: number; // surface

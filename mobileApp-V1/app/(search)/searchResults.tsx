@@ -15,7 +15,6 @@ const searchResultsPage = () => {
   const { loading, error, accommodations } = useSelector(searchResults);
   const searchCriteria = useSelector(selectSearchCriteria);
   const { destination, dates, guests, rooms } = searchCriteria;
-  console.log(destination);
 
   if (loading) {
     return (

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { selectSearchCriteria } from "@/redux/slices/searchCriteriaSlice";
 import moment from "moment";
 import "moment/locale/fr";
+import CustomButton from "./CustomButton";
 
 interface FullScreenModalProps {
   toggleModal: () => void; // Function to toggle the modal visibility
@@ -24,6 +25,10 @@ interface FullScreenModalProps {
   renderContent?: () => ReactNode; // Optional function to render custom content
   renderFooter?: () => ReactNode; // Optional function to render footer (e.g., actions or buttons)
 }
+type SelectedRoom = {
+  roomId: string;
+  roomTotalPrice: number;
+};
 
 // FullScreenModal Component with TypeScript
 const FullScreenModal: React.FC<FullScreenModalProps> = ({
@@ -35,9 +40,36 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
   renderFooter,
 }) => {
   const { dates } = useSelector(selectSearchCriteria);
-  const handleSelectRoom = (roomId: string) => {
-    console.log(`Room ${roomId} selected`);
-    // Handle room selection (e.g., update state or navigate)
+  const [selectedRooms, setSelectedRooms] = useState<SelectedRoom[]>([]);
+
+  const handleSelectRoom = (roomId: string, roomTotalPrice: number) => {
+    console.log(`Room ${roomId} selected with total price: ${roomTotalPrice}`);
+
+    setSelectedRooms((prevSelectedRooms) => {
+      // Check if room is already selected
+      const isRoomSelected = prevSelectedRooms.some(
+        (room) => room.roomId === roomId
+      );
+
+      if (isRoomSelected) {
+        // If room is already selected, remove it
+        return prevSelectedRooms.filter((room) => room.roomId !== roomId);
+      } else {
+        // Add the room with its total price
+        return [...prevSelectedRooms, { roomId, roomTotalPrice }];
+      }
+    });
+  };
+
+  const reservationTotalPrice = selectedRooms.reduce(
+    (acc, room) => acc + room.roomTotalPrice,
+    0
+  );
+  console.log(selectedRooms);
+  console.log(reservationTotalPrice);
+  const handleReserve = () => {
+    // Navigate to the reservation confirmation page or payment screen
+    router.push("/reservationSummary");
   };
 
   return (
@@ -104,6 +136,22 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
             {renderFooter && <View className="mt-4">{renderFooter()}</View>}
           </View>
         </ScrollView>
+        {/* Fixed Footer */}
+        <View className="mx-4 my-4">
+          <View className="my-2">
+            <Text className="text-xl text-neutrals-900 font-bold">
+              XAF {reservationTotalPrice} Pour {""}
+              {selectedRooms.length > 1
+                ? `${selectedRooms.length} hebergements`
+                : `${selectedRooms.length} hebergement`}
+            </Text>
+
+            <Text className="text-lg text-neutrals-800">
+              Taxes et frais compris
+            </Text>
+          </View>
+          <CustomButton title="Reserver" classNameTitle="" classNameLocal="" />
+        </View>
       </SafeAreaView>
     </Modal>
   );

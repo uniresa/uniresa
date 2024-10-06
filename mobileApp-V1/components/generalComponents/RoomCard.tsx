@@ -19,12 +19,13 @@ const { width } = Dimensions.get("window");
 
 interface RoomCardProps {
   room: RoomType;
-  onSelectRoom: (roomId: string) => void;
+  onSelectRoom: (roomId: string, roomTotalPrice: number) => void;
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
   const { dates } = useSelector(selectSearchCriteria);
+
   const handleScroll = (event: {
     nativeEvent: { contentOffset: { x: any } };
   }) => {
@@ -42,7 +43,12 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
   );
   // Calculate total price (with or without discount)
   const discountedPricePerNight = calculateDiscountedPrice(room.priceDetails);
-  const totalPrice = discountedPricePerNight * nights;
+  const totalDiscountedPrice = discountedPricePerNight * nights;
+  const totalStandardPrice = room.priceDetails.pricePerNight * nights;
+
+  const roomTotalPrice = room.priceDetails.discount
+    ? totalDiscountedPrice
+    : totalStandardPrice;
 
   return (
     <View className="rounded-3xl border-2 border-neutrals-300 my-4">
@@ -173,7 +179,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
               {(room.priceDetails.pricePerNight * nights).toFixed(0)}
             </Text>
             <Text className="text-xl text-neutrals-800 font-bold">
-              {room.priceDetails.currency} {totalPrice.toFixed(0)}
+              {room.priceDetails.currency} {totalDiscountedPrice.toFixed(0)}
             </Text>
           </View>
         ) : (
@@ -187,7 +193,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
         <CustomButton
           title="Choisir cette chambre"
           classNameTitle="text-xl font-bold"
-          handlePress={() => onSelectRoom(room.roomId)}
+          handlePress={() => onSelectRoom(room.roomId, roomTotalPrice)}
         />
       </View>
     </View>
