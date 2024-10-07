@@ -10,18 +10,20 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RoomCard from "./RoomCard";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { useSelector } from "react-redux";
 import { selectSearchCriteria } from "@/redux/slices/searchCriteriaSlice";
 import moment from "moment";
 import "moment/locale/fr";
 import CustomButton from "./CustomButton";
+import { AccommodationProperty } from "@/typesDeclaration/types";
 
 interface FullScreenModalProps {
   toggleModal: () => void; // Function to toggle the modal visibility
   openModal: boolean; // Boolean to control modal visibility
   title?: string; // Optional title for the modal, default provided in the component
   data?: Array<any>; // Optional data array for rendering content (e.g., amenities)
+  property: AccommodationProperty;
   renderContent?: () => ReactNode; // Optional function to render custom content
   renderFooter?: () => ReactNode; // Optional function to render footer (e.g., actions or buttons)
 }
@@ -36,6 +38,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
   openModal,
   title = "Belle hotel",
   data = [], // Default empty array for data
+  property,
   renderContent,
   renderFooter,
 }) => {
@@ -69,7 +72,22 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
   console.log(reservationTotalPrice);
   const handleReserve = () => {
     // Navigate to the reservation confirmation page or payment screen
-    router.push("/reservationSummary");
+    if (selectedRooms.length > 0) {
+      router.push({
+        pathname: "/(screens)/bookingPersonForm",
+        // as Href<"/bookingPersonForm">
+        params: {
+          reservationTotalPrice:reservationTotalPrice,
+          checkInDate: dates.checkInDate,
+          checkOutDate: dates.checkOutDate,
+          selectedRooms: JSON.stringify(selectedRooms),
+          property: JSON.stringify(property),
+        },
+      });
+    } else {
+      alert("Veuillez séléctionner au moins un chambre pour réserver");
+      return;
+    }
   };
 
   return (
@@ -150,7 +168,12 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
               Taxes et frais compris
             </Text>
           </View>
-          <CustomButton title="Reserver" classNameTitle="" classNameLocal="" />
+          <CustomButton
+            title="Reserver"
+            classNameTitle=""
+            classNameLocal=""
+            handlePress={handleReserve}
+          />
         </View>
       </SafeAreaView>
     </Modal>

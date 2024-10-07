@@ -14,6 +14,7 @@ import { InputFieldProps } from "@/typesDeclaration/types";
 
 const InputField = ({
   label,
+  isRequired,
   icon,
   hidePassIcon1,
   hidePassIconStyle1,
@@ -39,11 +40,14 @@ const InputField = ({
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className={`my-2 w-full ${className}`}>
-          {label && (
-            <Text className={`text-base font-lregular mb-4 ${labelStyle}`}>
-              {label}
-            </Text>
-          )}
+          <View className="flex flex-row">
+            {label && (
+              <Text className={`text-base font-lregular mb-4 ${labelStyle}`}>
+                {label}
+              </Text>
+            )}
+            {isRequired && <Text className="text-accents text-xl"> *</Text>}
+          </View>
           <View
             className={`flex flex-row w-full justify-start items-center relative bg-neutrals-20 rounded-2xl border-4 border-neutrals-40 focus:border-primary-200  ${containerStyle}`}
           >
