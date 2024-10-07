@@ -49,6 +49,7 @@ export interface InputFieldProps extends TextInputProps {
   hidePassIconStyle1?: string;
   hidePassIcon2?: any;
   hidePassIconStyle2?: string;
+  isRequired?: boolean;
   // secureTextEntry?: boolean;
   labelStyle?: string;
   containerStyle?: string;
@@ -195,7 +196,7 @@ interface BookingPerson {
   surName: string;
   email: string;
   phoneNumber: string;
-  birthDate?: Date;
+  birthDate?: string;
   address: Address;
 }
 //address interface

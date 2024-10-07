@@ -258,22 +258,22 @@ const accommodationOverviewPage = () => {
           <View className="flex flex-row w-full justify-between mt-2">
             {images.length > 0 ? (
               <FlatList
-              data={images}
-              keyExtractor={(item, index) => index.toString()}
-              onScroll={handleScroll}
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              horizontal
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => {}}>
-                  <ImageBackground
-                    source={{ uri: item, cache: "force-cache" }}
-                    style={{ height: 300, width: width }}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-              )}
-            />
+                data={images}
+                keyExtractor={(item, index) => index.toString()}
+                onScroll={handleScroll}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                horizontal
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => {}}>
+                    <ImageBackground
+                      source={{ uri: item, cache: "force-cache" }}
+                      style={{ height: 300, width: width }}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                )}
+              />
             ) : (
               <Text>No images available</Text>
             )}
@@ -666,6 +666,7 @@ const accommodationOverviewPage = () => {
         openModal={roomsModalVisible}
         title={propertyName}
         data={roomTypes}
+        property={parsedProperty as AccommodationProperty}
         // renderContent=
         // renderFooter=
       />
