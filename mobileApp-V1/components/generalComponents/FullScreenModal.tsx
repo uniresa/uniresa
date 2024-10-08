@@ -10,19 +10,19 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RoomCard from "./RoomCard";
-import { Href, router } from "expo-router";
+import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import { selectSearchCriteria } from "@/redux/slices/searchCriteriaSlice";
 import moment from "moment";
 import "moment/locale/fr";
 import CustomButton from "./CustomButton";
-import { AccommodationProperty } from "@/typesDeclaration/types";
+import { AccommodationProperty, RoomType } from "@/typesDeclaration/types";
 
 interface FullScreenModalProps {
   toggleModal: () => void; // Function to toggle the modal visibility
   openModal: boolean; // Boolean to control modal visibility
   title?: string; // Optional title for the modal, default provided in the component
-  data?: Array<any>; // Optional data array for rendering content (e.g., amenities)
+  data: Array<any>;
   property: AccommodationProperty;
   renderContent?: () => ReactNode; // Optional function to render custom content
   renderFooter?: () => ReactNode; // Optional function to render footer (e.g., actions or buttons)
@@ -30,6 +30,7 @@ interface FullScreenModalProps {
 type SelectedRoom = {
   roomId: string;
   roomTotalPrice: number;
+  roomName: string;
 };
 
 // FullScreenModal Component with TypeScript
@@ -37,7 +38,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
   toggleModal,
   openModal,
   title = "Belle hotel",
-  data = [], // Default empty array for data
+  data = [], 
   property,
   renderContent,
   renderFooter,
@@ -45,8 +46,14 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
   const { dates } = useSelector(selectSearchCriteria);
   const [selectedRooms, setSelectedRooms] = useState<SelectedRoom[]>([]);
 
-  const handleSelectRoom = (roomId: string, roomTotalPrice: number) => {
-    console.log(`Room ${roomId} selected with total price: ${roomTotalPrice}`);
+  const handleSelectRoom = (
+    roomId: string,
+    roomTotalPrice: number,
+    roomName: string
+  ) => {
+    console.log(
+      `Room ${roomName} with iD ${roomId} selected with total price: ${roomTotalPrice}`
+    );
 
     setSelectedRooms((prevSelectedRooms) => {
       // Check if room is already selected
@@ -59,7 +66,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
         return prevSelectedRooms.filter((room) => room.roomId !== roomId);
       } else {
         // Add the room with its total price
-        return [...prevSelectedRooms, { roomId, roomTotalPrice }];
+        return [...prevSelectedRooms, { roomId, roomTotalPrice, roomName}];
       }
     });
   };
@@ -68,8 +75,6 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
     (acc, room) => acc + room.roomTotalPrice,
     0
   );
-  console.log(selectedRooms);
-  console.log(reservationTotalPrice);
   const handleReserve = () => {
     // Navigate to the reservation confirmation page or payment screen
     if (selectedRooms.length > 0) {
@@ -77,7 +82,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
         pathname: "/(screens)/bookingPersonForm",
         // as Href<"/bookingPersonForm">
         params: {
-          reservationTotalPrice:reservationTotalPrice,
+          reservationTotalPrice: reservationTotalPrice,
           checkInDate: dates.checkInDate,
           checkOutDate: dates.checkOutDate,
           selectedRooms: JSON.stringify(selectedRooms),

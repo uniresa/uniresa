@@ -516,3 +516,13 @@ interface Query {
   capacity: number;
   rooms: number;
 }
+
+interface CountryPickerWrapperProps {
+  countryCode?: CountryCode;
+  withFlag?: boolean;
+  withFilter?: boolean;
+  withCallingCode?: boolean;
+  withCountryNameButton?: boolean;
+  onSelect: (country: any) => void;
+  containerButtonStyle?: object;
+}

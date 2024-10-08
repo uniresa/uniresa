@@ -19,7 +19,11 @@ const { width } = Dimensions.get("window");
 
 interface RoomCardProps {
   room: RoomType;
-  onSelectRoom: (roomId: string, roomTotalPrice: number) => void;
+  onSelectRoom: (
+    roomId: string,
+    roomTotalPrice: number,
+    roomName: string
+  ) => void;
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
@@ -193,7 +197,9 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
         <CustomButton
           title="Choisir cette chambre"
           classNameTitle="text-xl font-bold"
-          handlePress={() => onSelectRoom(room.roomId, roomTotalPrice)}
+          handlePress={() =>
+            onSelectRoom(room.roomId, roomTotalPrice, room.type)
+          }
         />
       </View>
     </View>
