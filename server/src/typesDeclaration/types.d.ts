@@ -238,6 +238,7 @@ export interface AccommodationProperty {
   priceDetails: PriceDetails;
   additionalCost: string;
   additionalServices: string;
+  additionalInfo: string;
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
