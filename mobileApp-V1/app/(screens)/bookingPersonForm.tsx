@@ -14,6 +14,8 @@ import { AccommodationProperty, BookingPerson } from "@/typesDeclaration/types";
 import InputField from "@/components/generalComponents/InputField";
 import CountryPicker, { CountryCode } from "react-native-country-picker-modal";
 import CountryPickerWrapper from "@/utils/CountryPickerWrapper";
+import { useSelector } from "react-redux";
+import { loggedInUser } from "@/redux/slices/userSlice";
 
 const titleOptions = [
   { label: "Mr", value: "Monsieur" },
@@ -26,6 +28,7 @@ const titleOptions = [
 ];
 
 const bookingPersonForm = () => {
+  const { user } = useSelector(loggedInUser);
   const params = useLocalSearchParams();
   const {
     reservationTotalPrice,
@@ -60,7 +63,28 @@ const bookingPersonForm = () => {
   const [phonePrefix, setPhonePrefix] = useState<string>("+237"); // Store the country phone prefix
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState("");
-  
+
+  useEffect(() => {
+    // Autofill bookingPerson data if user is logged in
+    if (user) {
+      setBookingPerson((prevState) => ({
+        ...prevState,
+        title: user.title || "", // Assuming user object has a title property
+        firstName: user.firstName || "",
+        surName: user.surName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        birthDate: user.birthDate || "",
+        address: {
+          ...prevState.address,
+          quartier: user.address?.quartier || "",
+          city: user.address?.city || "",
+          country: user.address?.country || "Cameroun", // Default country if not provided
+        },
+      }));
+    }
+  }, [user]);
+
   useEffect(() => {
     try {
       if (property) {
@@ -151,10 +175,14 @@ const bookingPersonForm = () => {
             <Text className="font-bold text-xl mb-1">Titre *</Text>
             <TouchableOpacity
               onPress={() => setIsDropdownOpen((prev) => !prev)}
-              className="bg-neutrals-20 border-4 border-neutrals-40 rounded-2xl p-2 w-1/2"
+              className="bg-neutrals-20 border-4 border-neutrals-40 rounded-2xl p-2 w-1/4"
             >
               <Text className="text-lg">
-                {selectedTitle ? selectedTitle : "Sélectionnez un titre"}
+                {selectedTitle ? (
+                  selectedTitle
+                ) : (
+                  <Image source={require("@/assets/icons/arrowDown.png")} />
+                )}
               </Text>
             </TouchableOpacity>
             {isDropdownOpen && (

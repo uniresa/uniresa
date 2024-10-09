@@ -166,6 +166,7 @@ const setDefaultAccommodationValues = (
     },
     additionalCost: accommodation.additionalCost || "",
     additionalServices: accommodation.additionalServices || "",
+    additionalInfo: accommodation.additionalInfo || "",
     finalCleaning: accommodation.finalCleaning || {
       finalCleaningincluded: true,
       cleaningFee: 0,

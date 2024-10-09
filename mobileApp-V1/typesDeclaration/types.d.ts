@@ -104,7 +104,7 @@ export interface UserProfile {
   phoneNumber: string;
   avatarUrl?: string;
   bio?: string;
-  birthDate?: Date;
+  birthDate?: string;
   address?: Address;
   socialLinks?: {
     twitter?: string;
@@ -314,6 +314,7 @@ export interface AccommodationProperty {
   checkInDetails: CheckInDetails;
   priceDetails: PriceDetails;
   additionalCost: string;
+  additionalInfo: string;
   additionalServices: string;
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
