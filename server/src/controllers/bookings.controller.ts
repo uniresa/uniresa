@@ -73,6 +73,7 @@ export const createBooking = async (req: Request, res: Response) => {
         email: bookingPerson.email,
         password: genericPass, // Make sure to handle passwords securely
         phoneNumber: bookingPerson.phoneNumber,
+        accountBalance: bookingPerson.accountBalance,
         notificationPreferences: {
           emailNotifications: true,
           smsNotifications: true,

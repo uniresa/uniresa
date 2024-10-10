@@ -43,7 +43,7 @@ export interface UserProfile {
   preferredCurrency?: string; // Example: "USD", "EUR"
   preferredLanguage?: string; // Example: "en", "fr"
   preferredPaymentMethod?: string; //"Credit Card", "MoMo", "OM"
-  accountBalance?: { amount: number; currency: string };
+  accountBalance: { amount: number; currency: string };
 
   // Booking History
   bookingHistory?: BookingDetails[];
@@ -119,8 +119,9 @@ interface BookingPerson {
   surName: string;
   email: string;
   phoneNumber: string;
-  birthDate?: Date;
+  birthDate?: string;
   address: Address;
+  accountBalance: { amount: number; currency: string };
 }
 //address interface
 interface Address {

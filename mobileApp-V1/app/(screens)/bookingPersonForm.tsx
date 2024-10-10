@@ -48,6 +48,7 @@ const bookingPersonForm = () => {
     email: "",
     phoneNumber: "",
     birthDate: "",
+    accountBalance: { amount: 0, currency: "FCFA" },
     address: {
       street: "",
       quartier: "",

@@ -19,9 +19,15 @@ import "moment/locale/fr";
 
 const { width } = Dimensions.get("window");
 
+type SelectedRoom = {
+  roomId: string;
+  roomTotalPrice: number;
+  roomName: string;
+};
+
 const bookingRecap = () => {
   const params = useLocalSearchParams();
-  const [parsedRooms, setParsedRooms] = useState<any[]>([]);
+  const [parsedRooms, setParsedRooms] = useState<SelectedRoom[]>([]);
   const [parsedBookingPerson, setParsedBookingPerson] =
     useState<BookingPerson | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -204,14 +210,27 @@ const bookingRecap = () => {
       console.error("Error parsing params:", error);
     }
   }, [selectedRooms, bookingPerson]);
-
-  const moveToPayment = () => {};
   const handleScroll = (event: {
     nativeEvent: { contentOffset: { x: any } };
   }) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / width); // Update the current index based on scroll position
     setCurrentIndex(index);
+  };
+
+  const moveToPayment = () => {
+    router.push({
+      pathname: "/bookingPaymentScreen",
+      params: {
+        totalToPay,
+        checkInDate,
+        checkOutDate,
+        selectedRooms,
+        property,
+        bookingPerson,
+        nights,
+      },
+    });
   };
 
   return (
@@ -317,7 +336,10 @@ const bookingRecap = () => {
               : {""}
               {parsedRooms &&
                 parsedRooms.map((room) => (
-                  <Text className="font-semibold text-lg text-neutrals-900">
+                  <Text
+                    key={room.roomId}
+                    className="font-semibold text-lg text-neutrals-900"
+                  >
                     {""}
                     {room.roomName},{" "}
                   </Text>
@@ -333,7 +355,7 @@ const bookingRecap = () => {
                 className="w-6 h-6 mx-2"
                 resizeMode="contain"
               />
-              <Text className="text-secondary text-base font-semibold text-justify flex flex-wrap">
+              <Text className="text-secondary-800 text-base font-semibold text-justify flex flex-wrap">
                 Excellent choix ! Reservez ces hebergements dès maintenant avant
                 qu'ils n'affichent complets
               </Text>
@@ -346,7 +368,7 @@ const bookingRecap = () => {
                 resizeMode="contain"
               />
               <Text className="text-secondary text-base font-semibold text-justify flex flex-wrap">
-                EXcellent choix ! Reservez cet hebergement dès maintenant avant
+                Excellent choix ! Reservez cet hebergement dès maintenant avant
                 qu'il n'affiche complet
               </Text>
             </View>
@@ -437,9 +459,14 @@ const bookingRecap = () => {
           <Text className="text-xl font-bold text-neutrals-900">
             Politique d’annulation
           </Text>
-          <View className="mt-2">
+          <View className="flex flex-row my-1">
+            <Image
+              source={require("@/assets/icons/amenities/yesTick.png")}
+              className="w-6 h-6 mr-2"
+              resizeMode="contain"
+            />
             {cancellationPolicy && (
-              <Text className="text-base  text-neutrals-800 text-justify">
+              <Text className="shrink text-base  text-neutrals-800 text-justify">
                 {cancellationPolicy}
               </Text>
             )}
@@ -450,21 +477,42 @@ const bookingRecap = () => {
             Informations importantes
           </Text>
           <View className="mt-4">
-            {additionalInfo && (
-              <Text className="flex-wrap text-base text-justify text-neutrals-800 overflow-hidden">
-                {additionalInfo}
-              </Text>
-            )}
-            {additionalCost && (
-              <Text className="text-lg text-justify text-neutrals-800 my-1">
-                {additionalCost}
-              </Text>
-            )}
-            {additionalServices && (
-              <Text className="text-lg text-justify text-neutrals-800 my-1">
-                {additionalServices}
-              </Text>
-            )}
+            <View className="flex flex-row my-1">
+              <Image
+                source={require("@/assets/icons/amenities/yesTick.png")}
+                className="w-6 h-6 mr-2"
+                resizeMode="contain"
+              />
+              {additionalInfo && (
+                <Text className="shrink text-base text-justify text-neutrals-800">
+                  {additionalInfo}
+                </Text>
+              )}
+            </View>
+            <View className="flex flex-row my-1">
+              <Image
+                source={require("@/assets/icons/amenities/yesTick.png")}
+                className="w-6 h-6 mr-2"
+                resizeMode="contain"
+              />
+              {additionalCost && (
+                <Text className="shrink text-lg text-justify text-neutrals-800 my-1">
+                  {additionalCost}
+                </Text>
+              )}
+            </View>
+            <View className="flex flex-row my-1">
+              <Image
+                source={require("@/assets/icons/amenities/yesTick.png")}
+                className="w-6 h-6 mr-2"
+                resizeMode="contain"
+              />
+              {additionalServices && (
+                <Text className="shrink text-lg text-justify text-neutrals-800 my-1">
+                  {additionalServices}
+                </Text>
+              )}
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -487,7 +535,7 @@ const bookingRecap = () => {
           </Text>
         </View>
         <CustomButton
-          title="Derniere étape"
+          title="Reserver"
           classNameTitle=""
           classNameLocal=""
           handlePress={moveToPayment}
