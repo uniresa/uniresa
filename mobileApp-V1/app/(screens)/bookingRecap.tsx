@@ -62,7 +62,6 @@ const bookingRecap = () => {
       (actualCheckInDate.getTime() - actualCheckOutDate.getTime()) / oneDay
     )
   );
-  // Parse bookingPerson if received from bookingPersonForm screen
   let parsedProperty;
   try {
     if (params.property) {

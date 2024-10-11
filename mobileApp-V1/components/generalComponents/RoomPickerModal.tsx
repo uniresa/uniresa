@@ -1,13 +1,5 @@
-import { Guests, RoomType } from "@/typesDeclaration/types";
-import React, { useState, useEffect } from "react";
-import {
-  BottomModal,
-  ModalButton,
-  ModalContent,
-  ModalFooter,
-  ModalTitle,
-  SlideAnimation,
-} from "react-native-modals";
+import { RoomType } from "@/typesDeclaration/types";
+import React, { useState } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
 
 interface RoomPickerModalProps {

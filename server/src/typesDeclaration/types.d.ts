@@ -100,12 +100,15 @@ interface BookingDetails {
   checkInDate: string;
   checkOutDate: string;
   totalAmount: number;
+  paidAmount: number;
   travellers?: number;
   currency: string;
   bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
   bookingChannel?: string;
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
+  paymentMethod: string;
+  paymentChannel: string;
   specialRequests?: string[]; // Any specific requests made during booking
   createdAt?: Date;
   updatedAt?: Date;
