@@ -30,6 +30,9 @@ const accommodationOverviewPage = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [infoIsExpanded, setInfoIsExpanded] = useState(false);
   const [conditionIsExpanded, setConditionIsExpanded] = useState(false);
+  const [scrollY, setScrollY] = useState(new Animated.Value(0));
+  const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
+  const scrollX = useRef(new Animated.Value(0)).current; // For horizontal scrolling
 
   const toggleExpanded = () => {
     setIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
@@ -173,9 +176,7 @@ const accommodationOverviewPage = () => {
     roomTypes,
   } = parsedProperty;
 
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
-  const [currentIndex, setCurrentIndex] = useState(0); // Track the current image index
-  const scrollX = useRef(new Animated.Value(0)).current; // For horizontal scrolling
+  
 
   // Interpolation to show/hide property name based on scroll position
   const propertyNameOpacity = scrollY.interpolate({

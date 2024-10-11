@@ -10,24 +10,6 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
-  // let currentPrices = property.roomTypes.map((roomType) => {
-  //   // Calculate the discount amount if there are ongoing discounts
-  //   const discountAmount =
-  //     roomType.ongoingDiscountPercentages.length > 0
-  //       ? roomType.ongoingDiscountPercentages.reduce(
-  //           (acc, discount) =>
-  //             acc + roomType.priceDetails.pricePerNight * (discount / 100),
-  //           0
-  //         )
-  //       : 0;
-
-  //   // Calculate the current price after applying the discount
-  //   const discountedPrice =
-  //     roomType.priceDetails.pricePerNight - discountAmount;
-
-  //   // Return the computed price
-  //   return discountedPrice;
-  // });
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
