@@ -13,6 +13,11 @@ export interface Room {
   payment: string;
   bed: string;
 }
+export interface SelectedRoom {
+  roomId: string;
+  roomTotalPrice: number;
+  roomName: string;
+}
 
 // export interface Property {
 //   id: string;
@@ -182,6 +187,34 @@ interface BookingDetails {
   specialRequests?: string[]; // Any specific requests made during booking
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+interface BookingRequest {
+  bookingPerson: BookingPerson;
+  propertyId: string;
+  propertyName: string;
+  propertyType:
+    | "Hotel"
+    | "Bungalow"
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  specificRoomTypeIds: string[];
+  bookingDates: BookingDates;
+  totalAmount: number;
+  currency: string;
+  paidAmount: number;
+  paymentMethod:string;
+  paymentChannel: string;
+  bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
+  bookingChannel: string;
+  bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
+  paymentStatus: "Paid" | "Pending" | "Failed";
+  specialRequests: string[];
 }
 
 interface BookingDates {

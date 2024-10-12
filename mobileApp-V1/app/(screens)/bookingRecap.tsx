@@ -40,7 +40,6 @@ const bookingRecap = () => {
     property,
     bookingPerson,
   } = params;
-
   //adminFee calculation 1%
   const parsedReservationTotalPrice = Array.isArray(reservationTotalPrice)
     ? parseFloat(reservationTotalPrice[0])

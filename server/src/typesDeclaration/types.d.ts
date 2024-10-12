@@ -97,8 +97,7 @@ interface BookingDetails {
     | "Resort";
   specificRoomTypeIds: string[];
   numberOfRooms: number;
-  checkInDate: string;
-  checkOutDate: string;
+  bookingDates: BookingDates;
   totalAmount: number;
   paidAmount: number;
   travellers?: number;
@@ -114,6 +113,38 @@ interface BookingDetails {
   updatedAt?: Date;
 }
 
+interface BookingRequest {
+  propertyId: string;
+  propertyName: string;
+  propertyType:
+    | "Hotel"
+    | "Bungalow"
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  specificRoomTypeIds: string[];
+  bookingDates: BookingDates;
+  totalAmount: number;
+  currency: string;
+  paidAmount: number;
+  paymentMethod: string;
+  paymentChannel: string;
+  bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
+  bookingChannel: string;
+  bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
+  paymentStatus: "Paid" | "Pending" | "Failed";
+  specialRequests: string[];
+  bookingPerson: BookingPerson;
+}
+
+interface BookingDates {
+  checkInDate: string;
+  checkOutDate: string;
+}
 //interface for the person making the booking request
 
 interface BookingPerson {

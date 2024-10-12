@@ -16,16 +16,52 @@ import { useSelector } from "react-redux";
 import { loggedInUser } from "@/redux/slices/userSlice";
 import moment from "moment";
 import "moment/locale/fr";
-import { AccommodationProperty } from "@/typesDeclaration/types";
+import {
+  AccommodationProperty,
+  BookingPerson,
+  BookingRequest,
+  SelectedRoom,
+} from "@/typesDeclaration/types";
+
+const allowedPropertyTypes = [
+  "Hotel",
+  "Bungalow",
+  "Furnished Apartment",
+  "Furnished House",
+  "Villa",
+  "Cottage",
+  "Guesthouse",
+  "Hostel",
+  "Resort",
+] as const;
 
 const bookingConfirmation = () => {
   const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   const { user } = useSelector(loggedInUser);
   const params = useLocalSearchParams();
-  const [selectedMethod, setSelectedMethod] = useState("portefeuille");
-  const [parsedRooms, setParsedRooms] = useState<string[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<string>("portefeuille");
+  const [parsedRooms, setParsedRooms] = useState<SelectedRoom[]>([]);
   const [parsedNights, setParsedNights] = useState<number>(1);
   const [parsedTotalToPay, setParsedTotalToPay] = useState<number>(0);
+  const [parsedBookingPerson, setParsedBookingPerson] = useState<BookingPerson>(
+    {
+      firstName: "",
+      surName: "",
+      email: "",
+      phoneNumber: "",
+      address: {
+        street: "",
+        quartier: "",
+        city: "",
+        district: "",
+        region: "",
+        postalCode: "",
+        country: "",
+      },
+      birthDate: "",
+      accountBalance: { amount: 0, currency: "" },
+    }
+  );
   const [paidAmount, setPaidAmount] = useState<number>(0);
   const {
     totalToPay,
@@ -40,11 +76,21 @@ const bookingConfirmation = () => {
   const parsedPaymentChannel = Array.isArray(paymentChannel)
     ? paymentChannel[0]
     : paymentChannel;
-  const parsedCheckingDate = new Date(
+  const parsedCheckinDate = new Date(
     Array.isArray(checkInDate) ? checkInDate[0] : checkInDate
   );
-  const freeCancellationExpiryDate = new Date(parsedCheckingDate);
-  freeCancellationExpiryDate.setDate(parsedCheckingDate.getDate() - 2);
+
+  // checkin and checkout as string
+  const parsedCheckInDateString = Array.isArray(checkInDate)
+    ? checkInDate[0]
+    : checkInDate;
+
+  const parsedCheckOutDateString = Array.isArray(checkOutDate)
+    ? checkOutDate[0]
+    : checkOutDate;
+
+  const freeCancellationExpiryDate = new Date(parsedCheckinDate);
+  freeCancellationExpiryDate.setDate(parsedCheckinDate.getDate() - 2);
   const prepayment = (parsedTotalToPay * 5) / 100;
   const downpayment = (parsedTotalToPay * 95) / 100;
   let parsedProperty;
@@ -52,105 +98,26 @@ const bookingConfirmation = () => {
     if (property) {
       const propertyString = Array.isArray(property) ? property[0] : property;
       parsedProperty = JSON.parse(propertyString) as AccommodationProperty;
+      parsedProperty.propertyType;
     } else {
       console.error("params.property is undefined or null");
       parsedProperty = {
+        propertyId: "",
         propertyName: "",
-        description: "",
-        numberOfStars: 0,
-        images: [],
-        amenities: [],
+
         additionalCost: "",
         additionalServices: "",
         additionalInfo: "",
-        roomTypes: [
-          {
-            roomId: "",
-            type: "", // Example: "Double Room", "Suite", etc.
-            surface: 0, // surface
-            capacity: 1, // Number of people the room can accommodate
-            priceDetails: [],
-            roomAvailabilities: [], // Availability details by date range
-            discountList: [],
-            ongoingDiscountPercentages: [],
-            isRefundable: true,
-            amenities: [],
-            roomImages: [],
-            roomBookings: [],
-            roomDescription: "",
-            bedType: "",
-          },
-        ],
-        // policies: [],
-        checkInDetails: {
-          checkIn: "",
-          checkOut: "",
-          checkInInfo: "",
-          propertyAccesDetails: "",
-          paymentMethods: "",
-          pets: "",
-        },
-        location: {
-          street: "",
-          quartier: "", // Specific area within a city
-          city: "",
-          district: "",
-          region: "",
-          postalCode: "",
-          country: "",
-          latitude: 3.865, // Geographical latitude
-          longitude: 11.5161, // Geographical longitude
-        },
       };
     }
   } catch (error) {
     console.error("Failed to parse property:", error);
     parsedProperty = {
+      propertyId: "",
       propertyName: "",
-      description: "",
-      numberOfStars: 0,
       additionalCost: "",
       additionalServices: "",
       additionalInfo: "",
-      roomTypes: [
-        {
-          roomId: "",
-          type: "", // Example: "Double Room", "Suite", etc.
-          surface: 0, // surface
-          capacity: 1, // Number of people the room can accommodate
-          priceDetails: [],
-          roomAvailabilities: [], // Availability details by date range
-          discountList: [],
-          ongoingDiscountPercentages: [],
-          isRefundable: true,
-          amenities: [],
-          roomImages: [],
-          roomBookings: [],
-          roomDescription: "",
-          bedType: "",
-        },
-      ],
-      images: [],
-      amenities: [],
-      checkInDetails: {
-        checkIn: "",
-        checkOut: "",
-        checkInInfo: "",
-        propertyAccesDetails: "",
-        paymentMethods: "",
-        pets: "",
-      },
-      location: {
-        street: "",
-        quartier: "", // Specific area within a city
-        city: "",
-        district: "",
-        region: "",
-        postalCode: "",
-        country: "",
-        latitude: 3.865, // Geographical latitude
-        longitude: 11.5161, // Geographical longitude
-      },
     }; // Default value
   }
   const {
@@ -162,6 +129,10 @@ const bookingConfirmation = () => {
     additionalCost,
     additionalServices,
   } = parsedProperty;
+  const propertyTypeChecked =
+    propertyType && allowedPropertyTypes.includes(propertyType)
+      ? propertyType
+      : "Hotel";
 
   useEffect(() => {
     try {
@@ -170,7 +141,7 @@ const bookingConfirmation = () => {
           ? selectedRooms[0]
           : selectedRooms;
         const parsedSelectedRooms = JSON.parse(selectedRoomsString);
-        setParsedRooms(parsedSelectedRooms.roomId);
+        setParsedRooms(parsedSelectedRooms);
       }
       if (nights) {
         let nightsString = Array.isArray(nights) ? nights[0] : nights;
@@ -184,31 +155,48 @@ const bookingConfirmation = () => {
         const newTotalToPay = JSON.parse(totalToPayString);
         setParsedTotalToPay(newTotalToPay);
       }
+      if (bookingPerson) {
+        let totalToPayString = Array.isArray(bookingPerson)
+          ? bookingPerson[0]
+          : bookingPerson;
+        const newBookingPerson = JSON.parse(totalToPayString) as BookingPerson;
+        setParsedBookingPerson(newBookingPerson);
+      }
     } catch (error) {
       console.error("Error parsing params:", error);
     }
   }, [selectedRooms, nights, totalToPay]);
   const userBalance = user ? user.accountBalance.amount : 0;
   const pricePerNight = parsedTotalToPay / parsedNights;
-  const bookingPayload = {
+  const specificRoomTypeIds: string[] = parsedRooms.map((room) => room.roomId);
+  const formattedCheckInDate = moment(parsedCheckInDateString).format(
+    "MM/DD/YYYY"
+  );
+  const formattedCheckOutDate = moment(parsedCheckOutDateString).format(
+    "MM/DD/YYYY"
+  );
+  const bookingPayload: BookingRequest = {
     propertyId,
     propertyName,
-    propertyType,
-    specificRoomTypeIds: parsedRooms,
-    checkInDate: checkInDate,
-    checkOutDate: checkOutDate,
-    totalAmount: totalToPay,
+    specificRoomTypeIds,
+    propertyType: propertyTypeChecked,
+    bookingDates: {
+      checkInDate: formattedCheckInDate,
+      checkOutDate: formattedCheckOutDate,
+    },
+    totalAmount: parsedTotalToPay,
     currency: "FCFA",
-    paymentStatus: "pending",
+    paymentStatus: "Pending",
     bookingType: "customer",
     bookingChannel: "mobileApp",
-    bookingStatus: "pending",
-    bookingPerson: bookingPerson,
+    bookingStatus: "Pending",
+    bookingPerson: parsedBookingPerson,
     paymentMethod: selectedMethod,
     paymentChannel: parsedPaymentChannel,
     paidAmount: paidAmount,
-    specialRequests: "No special requests",
+    specialRequests: ["No special requests"],
   };
+
   const handleBookingSubmit = async () => {
     try {
       const res = await axios.post(

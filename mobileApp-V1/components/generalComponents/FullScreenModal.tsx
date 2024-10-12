@@ -16,7 +16,11 @@ import { selectSearchCriteria } from "@/redux/slices/searchCriteriaSlice";
 import moment from "moment";
 import "moment/locale/fr";
 import CustomButton from "./CustomButton";
-import { AccommodationProperty, RoomType } from "@/typesDeclaration/types";
+import {
+  AccommodationProperty,
+  RoomType,
+  SelectedRoom,
+} from "@/typesDeclaration/types";
 
 interface FullScreenModalProps {
   toggleModal: () => void; // Function to toggle the modal visibility
@@ -27,18 +31,18 @@ interface FullScreenModalProps {
   renderContent?: () => ReactNode; // Optional function to render custom content
   renderFooter?: () => ReactNode; // Optional function to render footer (e.g., actions or buttons)
 }
-type SelectedRoom = {
-  roomId: string;
-  roomTotalPrice: number;
-  roomName: string;
-};
+// type SelectedRoom = {
+//   roomId: string;
+//   roomTotalPrice: number;
+//   roomName: string;
+// };
 
 // FullScreenModal Component with TypeScript
 const FullScreenModal: React.FC<FullScreenModalProps> = ({
   toggleModal,
   openModal,
   title = "Belle hotel",
-  data = [], 
+  data = [],
   property,
   renderContent,
   renderFooter,
@@ -66,7 +70,7 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
         return prevSelectedRooms.filter((room) => room.roomId !== roomId);
       } else {
         // Add the room with its total price
-        return [...prevSelectedRooms, { roomId, roomTotalPrice, roomName}];
+        return [...prevSelectedRooms, { roomId, roomTotalPrice, roomName }];
       }
     });
   };
