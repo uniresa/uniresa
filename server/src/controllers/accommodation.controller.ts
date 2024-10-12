@@ -596,7 +596,7 @@ export const getSearchedAccommodations = async (
   try {
     const { destination, dates, minGuests, minRooms } =
       req.body as SearchCriteria;
-    console.log(req.body);
+
     // Parse the dates with error handling
     let parsedCheckInDate, parsedCheckOutDate;
     try {
@@ -629,7 +629,7 @@ export const getSearchedAccommodations = async (
     const accommodations = accommodationsSnapshot.docs.map(
       (doc) => doc.data() as AccommodationProperty
     );
-    console.log(accommodations);
+
     // Filter accommodations by capacity
     const filteredAccommodations: AccommodationProperty[] = [];
 
@@ -654,46 +654,43 @@ export const getSearchedAccommodations = async (
         continue;
       }
 
-      // // Filter accommodations by the number of rooms
-      // matchingRooms = matchingRooms.filter((roomType) => {
-      //   return roomType.numberOfBedrooms >= rooms; // Match rooms based on number of bedrooms
-      // });
-
-      // // If no rooms match the number of rooms requirement, continue to the next accommodation
-      // if (matchingRooms.length === 0) {
-      //   continue;
-      // }
-
       // Collect specific room type IDs for availability check
       const specificRoomTypeIds = matchingRooms.map(
         (roomType) => roomType.roomId
       );
 
-      // Check availability by calling the checkPropertyAvailability function
-      const isAvailable = await checkPropertyAvailability(
-        accommodation.propertyId,
-        new Date(dates.checkInDate),
-        new Date(dates.checkOutDate),
-        specificRoomTypeIds
-      );
+      // Track available rooms for the accommodation
+      const availableRooms: RoomType[] = [];
 
-      // If the property is not available, skip this accommodation
-      if (!isAvailable) {
-        continue;
+      // Check each room's availability
+      for (const roomTypeId of specificRoomTypeIds) {
+        const isAvailable = await checkPropertyAvailability(
+          accommodation.propertyId,
+          new Date(dates.checkInDate),
+          new Date(dates.checkOutDate),
+          [roomTypeId]
+        );
+        if (isAvailable) {
+          // If the room is available, add it to the list of available rooms
+          const room = matchingRooms.find((room) => room.roomId === roomTypeId);
+          if (room) {
+            availableRooms.push(room);
+          }
+        }
       }
-
-      // If available, add accommodation to filtered list
-      accommodation.roomTypes = matchingRooms;
-      filteredAccommodations.push(accommodation);
-    }
-    // Return the filtered accommodations or an error if no matches were found
+      // Add the accommodation to the filtered list only if there are available rooms
+      if (availableRooms.length > 0) {
+        accommodation.roomTypes = availableRooms; // Attach only the available rooms
+        filteredAccommodations.push(accommodation);
+      }
+    } // Return the filtered accommodations or an error if no matches were found
     if (filteredAccommodations.length === 0) {
       return res.status(404).json({
         status: "failed",
-        message: "Aucun logement disponible pour ces critères de recherche.",
+        message: "No accommodations available for the search criteria.",
       });
     }
-    console.log(filteredAccommodations, filteredAccommodations.length);
+
     return res.status(200).json({
       status: "success",
       message: "Logements trouvés avec succès.",

@@ -95,22 +95,22 @@ interface BookingDetails {
     | "Guesthouse"
     | "Hostel"
     | "Resort";
-  specificRoomTypeIds: string[];
-  numberOfRooms: number;
+  roomTypeId: string;
+  // numberOfRooms: number;
   bookingDates: BookingDates;
   totalAmount: number;
   paidAmount: number;
   travellers?: number;
   currency: string;
   bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
-  bookingChannel?: string;
+  bookingChannel: string;
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
   paymentMethod: string;
   paymentChannel: string;
   specialRequests?: string[]; // Any specific requests made during booking
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface BookingRequest {
@@ -382,7 +382,7 @@ export interface AvailabilityDetails {
 
 export interface RoomType {
   roomId: string;
-  type: string; // Example: "Double Room", "Suite", etc.
+  type: string; // name of the room Example: "Double Room", "Suite", etc.
   surface: number; // surface
   capacity: number; // Number of people the room can accommodate
   priceDetails: PriceDetails;

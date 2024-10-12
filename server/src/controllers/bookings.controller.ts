@@ -26,7 +26,6 @@ export const createBooking = async (req: Request, res: Response) => {
     specialRequests,
     bookingPerson,
   } = req.body as BookingRequest;
-  console.log(bookingDates);
 
   if (!specificRoomTypeIds || specificRoomTypeIds.length === 0) {
     return res.status(400).json({
@@ -76,13 +75,42 @@ export const createBooking = async (req: Request, res: Response) => {
     if (!existingEmail.empty) {
       // User already exists; use the user ID
       userRef = existingEmail.docs[0].id;
+
+      // Get the current address from the existing user
+      const existingUserData = existingEmail.docs[0].data() as UserProfile;
+      const existingAddress = existingUserData.address;
+
+      if (existingAddress) {
+        const newAddress = bookingPerson.address;
+        if (
+          existingAddress.street !== newAddress.street ||
+          existingAddress.quartier !== newAddress.quartier ||
+          existingAddress.city !== newAddress.city ||
+          existingAddress.district !== newAddress.district ||
+          existingAddress.region !== newAddress.region ||
+          existingAddress.postalCode !== newAddress.postalCode ||
+          existingAddress.country !== newAddress.country
+        ) {
+          // If any of the fields are different, update the user's address
+          await db.collection("users").doc(userRef).update({
+            address: newAddress,
+          });
+          console.log("User address updated.");
+        }
+      } else {
+        // If the existing address is undefined, update the user's address
+        await db.collection("users").doc(userRef).update({
+          address: bookingPerson.address,
+        });
+        console.log("User address was undefined, now set to new address.");
+      }
     } else {
       // Create a new user from booking details
       const newUserProfile: UserProfile = {
         firstName: bookingPerson.firstName,
         surName: bookingPerson.surName,
         email: bookingPerson.email,
-        password: genericPass, // Make sure to handle passwords securely
+        password: genericPass,
         phoneNumber: bookingPerson.phoneNumber,
         accountBalance: bookingPerson.accountBalance,
         notificationPreferences: {
@@ -90,6 +118,7 @@ export const createBooking = async (req: Request, res: Response) => {
           smsNotifications: true,
           pushNotifications: false,
         },
+        address: bookingPerson.address,
       };
 
       // Create a new user profile
@@ -120,28 +149,35 @@ export const createBooking = async (req: Request, res: Response) => {
       bookingIds.push(bookingId);
 
       // Create a booking for the specific room type
+
       await db
         .collection("accommodations")
         .doc(propertyId)
-        .collection("propertyBookings")
+        .collection("roomTypes")
+        .doc(roomTypeId)
+        .collection("roomBookings")
         .doc(bookingId)
         .set({
           bookingId,
           userId: userRef,
+          bookingPerson,
+          propertyId,
+          propertyName,
+          propertyType,
           roomTypeId,
-          // numberOfRooms,
           bookingDates,
           totalAmount,
           paidAmount,
           currency,
-          paymentStatus,
-          paymentMethod,
-          paymentChannel,
           bookingType,
           bookingChannel,
           bookingStatus,
+          paymentStatus,
+          paymentMethod,
+          paymentChannel,
           specialRequests,
           createdAt: new Date(),
+          updatedAt: new Date(),
         });
 
       // Update availability by adding the booked date range for the specific room type
@@ -156,6 +192,35 @@ export const createBooking = async (req: Request, res: Response) => {
           startDate: bookingDates.checkInDate,
           endDate: bookingDates.checkOutDate,
         });
+        
+      // Add booking to propertyBookings
+      await db
+        .collection("accommodations")
+        .doc(propertyId)
+        .collection("propertyBookings")
+        .doc(bookingId)
+        .set({
+          bookingId,
+          userId: userRef,
+          bookingPerson,
+          propertyId,
+          propertyName,
+          propertyType,
+          roomTypeId,
+          bookingDates,
+          totalAmount,
+          paidAmount,
+          currency,
+          bookingType,
+          bookingChannel,
+          bookingStatus,
+          paymentStatus,
+          paymentMethod,
+          paymentChannel,
+          specialRequests,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
 
       // Add booking to the user's booking history
       await db
@@ -165,6 +230,8 @@ export const createBooking = async (req: Request, res: Response) => {
         .doc(bookingId)
         .set({
           bookingId,
+          userId: userRef,
+          bookingPerson,
           propertyId,
           propertyName,
           propertyType,
@@ -173,11 +240,11 @@ export const createBooking = async (req: Request, res: Response) => {
           totalAmount,
           paidAmount,
           currency,
-          paymentStatus,
           bookingType,
-          paymentMethod,
           bookingChannel,
           bookingStatus,
+          paymentStatus,
+          paymentMethod,
           paymentChannel,
           specialRequests,
           createdAt: new Date(),
