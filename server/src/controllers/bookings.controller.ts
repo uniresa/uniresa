@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BookingDetails, UserProfile } from "../typesDeclaration/types";
+import { BookingRequest, UserProfile } from "../typesDeclaration/types";
 import { db } from "../../firebaseConfig";
 import { checkPropertyAvailability } from "./propertiesAvailabilities.controller";
 import { GenerateCustomID, genericPassword } from "../utils/customIdGenerator";
@@ -13,8 +13,7 @@ export const createBooking = async (req: Request, res: Response) => {
     // numberOfRooms,
     propertyType,
     specificRoomTypeIds,
-    checkInDate,
-    checkOutDate,
+    bookingDates,
     totalAmount,
     paidAmount,
     currency,
@@ -26,7 +25,8 @@ export const createBooking = async (req: Request, res: Response) => {
     bookingStatus,
     specialRequests,
     bookingPerson,
-  } = req.body as BookingDetails;
+  } = req.body as BookingRequest;
+  console.log(bookingDates);
 
   if (!specificRoomTypeIds || specificRoomTypeIds.length === 0) {
     return res.status(400).json({
@@ -43,8 +43,16 @@ export const createBooking = async (req: Request, res: Response) => {
   }
 
   // Parse dates using date-fns
-  const parsedCheckInDate = parse(checkInDate, "MM/dd/yyyy", new Date());
-  const parsedCheckOutDate = parse(checkOutDate, "MM/dd/yyyy", new Date());
+  const parsedCheckInDate = parse(
+    bookingDates.checkInDate,
+    "MM/dd/yyyy",
+    new Date()
+  );
+  const parsedCheckOutDate = parse(
+    bookingDates.checkOutDate,
+    "MM/dd/yyyy",
+    new Date()
+  );
   // Check if checkInDate and checkOutDate are valid
   if (!isValid(parsedCheckInDate) || !isValid(parsedCheckOutDate)) {
     return res.status(400).json({
@@ -91,8 +99,8 @@ export const createBooking = async (req: Request, res: Response) => {
     // Check availability for each specific room type
     const isAvailable = await checkPropertyAvailability(
       propertyId,
-      new Date(checkInDate),
-      new Date(checkOutDate),
+      new Date(bookingDates.checkInDate),
+      new Date(bookingDates.checkOutDate),
       specificRoomTypeIds
     );
 
@@ -122,8 +130,7 @@ export const createBooking = async (req: Request, res: Response) => {
           userId: userRef,
           roomTypeId,
           // numberOfRooms,
-          checkInDate,
-          checkOutDate,
+          bookingDates,
           totalAmount,
           paidAmount,
           currency,
@@ -146,8 +153,8 @@ export const createBooking = async (req: Request, res: Response) => {
         .collection("roomAvailabilities")
         .doc(bookingId) // Use booking ID to create a corresponding availability document
         .set({
-          startDate: checkInDate,
-          endDate: checkOutDate,
+          startDate: bookingDates.checkInDate,
+          endDate: bookingDates.checkOutDate,
         });
 
       // Add booking to the user's booking history
@@ -162,8 +169,7 @@ export const createBooking = async (req: Request, res: Response) => {
           propertyName,
           propertyType,
           roomTypeId,
-          checkInDate,
-          checkOutDate,
+          bookingDates,
           totalAmount,
           paidAmount,
           currency,
