@@ -10,7 +10,6 @@ export const createBooking = async (req: Request, res: Response) => {
   const {
     propertyId,
     propertyName,
-    // numberOfRooms,
     propertyType,
     specificRoomTypeIds,
     bookingDates,
@@ -84,7 +83,6 @@ export const createBooking = async (req: Request, res: Response) => {
         const newAddress = bookingPerson.address;
         if (
           existingAddress.street !== newAddress.street ||
-          existingAddress.quartier !== newAddress.quartier ||
           existingAddress.city !== newAddress.city ||
           existingAddress.district !== newAddress.district ||
           existingAddress.region !== newAddress.region ||
@@ -192,7 +190,7 @@ export const createBooking = async (req: Request, res: Response) => {
           startDate: bookingDates.checkInDate,
           endDate: bookingDates.checkOutDate,
         });
-        
+
       // Add booking to propertyBookings
       await db
         .collection("accommodations")

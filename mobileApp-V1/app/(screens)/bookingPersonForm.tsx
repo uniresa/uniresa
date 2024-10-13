@@ -47,11 +47,9 @@ const bookingPersonForm = () => {
     surName: "",
     email: "",
     phoneNumber: "",
-    birthDate: "",
     accountBalance: { amount: 0, currency: "FCFA" },
     address: {
       street: "",
-      quartier: "",
       city: "",
       district: "",
       region: "",
@@ -78,7 +76,7 @@ const bookingPersonForm = () => {
         birthDate: user.birthDate || "",
         address: {
           ...prevState.address,
-          quartier: user.address?.quartier || "",
+          street: user.address?.street || "",
           city: user.address?.city || "",
           country: user.address?.country || "Cameroun", // Default country if not provided
         },
@@ -129,7 +127,7 @@ const bookingPersonForm = () => {
       bookingPerson.surName === "" ||
       bookingPerson.email === "" ||
       bookingPerson.phoneNumber === "" ||
-      bookingPerson.address.quartier === "" ||
+      bookingPerson.address.street === "" ||
       bookingPerson.address.city === "" ||
       bookingPerson.address.country === ""
     ) {
@@ -266,16 +264,16 @@ const bookingPersonForm = () => {
 
           <InputField
             isRequired={true}
-            label="Quartier de résidence"
+            label="Rue ou Quartier"
             labelStyle="mb-1 font-bold text-xl"
             textContentType="addressCity"
-            value={bookingPerson.address.quartier}
+            value={bookingPerson.address.street}
             onChangeText={(value) =>
               setBookingPerson((prevState) => ({
                 ...prevState,
                 address: {
                   ...prevState.address,
-                  quartier: value,
+                  street: value,
                 },
               }))
             }
@@ -313,15 +311,7 @@ const bookingPersonForm = () => {
               }}
             />
           </View>
-          <InputField
-            label="Date de naissance"
-            labelStyle="mb-1 font-bold text-xl"
-            textContentType="birthdate"
-            value={bookingPerson.birthDate}
-            onChangeText={(value) =>
-              setBookingPerson({ ...bookingPerson, birthDate: value })
-            }
-          />
+
         </View>
       </ScrollView>
       {/* Fixed Footer */}

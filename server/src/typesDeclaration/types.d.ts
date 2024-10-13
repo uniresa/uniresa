@@ -148,19 +148,17 @@ interface BookingDates {
 //interface for the person making the booking request
 
 interface BookingPerson {
-  title?: string;
+  title: string;
   firstName: string;
   surName: string;
   email: string;
   phoneNumber: string;
-  birthDate?: string;
   address: Address;
   accountBalance: { amount: number; currency: string };
 }
 //address interface
 interface Address {
   street?: string;
-  quartier?: string;
   city: string;
   district?: string;
   region?: string;

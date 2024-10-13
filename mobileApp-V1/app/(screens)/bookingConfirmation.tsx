@@ -45,20 +45,19 @@ const bookingConfirmation = () => {
   const [parsedTotalToPay, setParsedTotalToPay] = useState<number>(0);
   const [parsedBookingPerson, setParsedBookingPerson] = useState<BookingPerson>(
     {
+      title: "",
       firstName: "",
       surName: "",
       email: "",
       phoneNumber: "",
       address: {
         street: "",
-        quartier: "",
         city: "",
         district: "",
         region: "",
         postalCode: "",
         country: "",
       },
-      birthDate: "",
       accountBalance: { amount: 0, currency: "" },
     }
   );

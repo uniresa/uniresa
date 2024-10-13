@@ -3,13 +3,28 @@ import React, { PropsWithChildren } from "react";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { Href, router } from "expo-router";
+import { getRenderedPrice } from "@/utils/discountedPriceCalculation";
 
 interface PropertyCardProps {
   property: AccommodationProperty;
   textColor?: string;
+  containerStyle?: string;
+  imageStyle?: string;
+  presentationStyle?: string;
+  imageContainerStyle?: string;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({
+  property,
+  textColor,
+  containerStyle,
+  imageStyle,
+  presentationStyle,
+  imageContainerStyle,
+}) => {
+  const { propertyRenderedPrice, propertyDiscountedPrice, roomId } =
+    getRenderedPrice(property.roomTypes);
+
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -61,8 +76,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
   };
 
   return (
-    <Pressable
-      className="flex flex-col mx-2 p-4 items-start border  border-neutrals-20 gap-2 rounded-lg"
+    <TouchableOpacity
+      className={`flex flex-col m-2 border  border-neutrals-60 rounded-xl ${containerStyle}`}
       key={property.propertyId}
       onPress={() =>
         router.push({
@@ -74,13 +89,15 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
         })
       }
     >
-      <Image
-        source={{ uri: property.images[0] }}
-        style={{ width: 290, height: 150, borderRadius: 12 }}
-        resizeMode="cover"
-      />
-      <View className="mt-4 w-full">
-        <View className="flex flex-row items-center justify-between">
+      <View className={`rounded-xl overflow-hidden ${imageContainerStyle}`}>
+        <Image
+          source={{ uri: property.images[0] }}
+          className={`w-72 rounded-xl ${imageStyle}`}
+          resizeMode="cover"
+        />
+      </View>
+      <View className={` w-full ${presentationStyle}`}>
+        <View className="flex mb-1 items-start justify-between gap-1">
           <Text className={`text-lg font-semibold ${textColor}`}>
             {property.propertyName}
           </Text>
@@ -89,32 +106,55 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, textColor }) => {
         <View className="flex flex-row items-center mt-2">
           <Image
             source={require("@/assets/icons/tripAdvisor.png")}
-            style={{ width: 36, height: 20 }}
-            resizeMode="contain"
+            style={{ width: 30, height: 16 }}
+            resizeMode="cover"
           />
           <View className="flex flex-row ml-2">{renderReviewRating()}</View>
           <Text className="ml-2 text-sm text-neutrals-500">
             {property.numberOfReviews} Commentaires
           </Text>
         </View>
-        <Text className="text-sm text-neutrals-500 mt-2">
-          {property.distanceFromCityCenter}
-        </Text>
-        <View className="flex flex-row gap-2 items-center justify-between">
+        {property.distanceFromCityCenter && (
+          <Text className="text-sm text-neutrals-700 mt-2">
+            {`${property.distanceFromCityCenter} km du centre ville`}
+          </Text>
+        )}
+        {property.distanceFromSea != null && property.distanceFromSea != 0 && (
+          <Text className="text-sm text-neutrals-500 mt-2">
+            {`${property.distanceFromSea} km de la mer`}
+          </Text>
+        )}
+        <View className="flex flex-row mt-2 items-center justify-between">
           <View className="flex flex-row items-center gap-2">
             <Text className="font-lbold text-lg text-neutrals-900">Price:</Text>
-            <Text className="line-through text-lg text-accents">
-              {property.priceDetails.pricePerNight}
-            </Text>
-            <Text className="font-lbold text-lg text-secondary-600">
-              0 Fcfa
-              {/* {currentPrices}  */}
-            </Text>
+            {propertyRenderedPrice &&
+            propertyRenderedPrice > propertyDiscountedPrice ? (
+              <Text>
+                <Text className="line-through text-lg text-accents">
+                  {propertyRenderedPrice.toLocaleString("fr-FR", {
+                    style: "currency",
+                    currency: "XAF",
+                  })}
+                </Text>
+                <Text className="font-lbold text-lg text-secondary-600">
+                  {propertyDiscountedPrice.toLocaleString("fr-FR", {
+                    style: "currency",
+                    currency: "XAF",
+                  })}
+                </Text>
+              </Text>
+            ) : (
+              <Text className="font-lbold text-lg text-secondary-600">
+                {propertyRenderedPrice.toLocaleString("fr-FR", {
+                  style: "currency",
+                  currency: "XAF",
+                })}
+              </Text>
+            )}
           </View>
         </View>
       </View>
-    </Pressable>
-    // </View>
+    </TouchableOpacity>
   );
 };
 
