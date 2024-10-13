@@ -176,8 +176,6 @@ const accommodationOverviewPage = () => {
     roomTypes,
   } = parsedProperty;
 
-  
-
   // Interpolation to show/hide property name based on scroll position
   const propertyNameOpacity = scrollY.interpolate({
     inputRange: [0, 70], // adjust the second value to control when the property name fades
@@ -243,7 +241,7 @@ const accommodationOverviewPage = () => {
         scrollEventThrottle={16}
       >
         <View className="mt-4 px-2">
-          <Text className="font-bold text-3xl text-neutrals-900">
+          <Text className="font-bold text-2xl text-neutrals-900">
             {propertyName}
           </Text>
           <View className="flex flex-row items-center gap-1 mt-1">

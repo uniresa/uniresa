@@ -37,7 +37,7 @@ const searchResultsPage = () => {
         {/* Header with destination and dates */}
         <View className=" bg-primary p-4">
           <View className="flex flex-row justify-between items-center mb-4">
-            <TouchableOpacity onPress={() => router.push("/home")}>
+            <TouchableOpacity onPress={() => router.push("/(tabs)/home")}>
               <Image
                 source={require("@/assets/icons/arrowWhite.png")}
                 className=" w-8 h-8"
@@ -77,7 +77,7 @@ const searchResultsPage = () => {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => router.push("/accommodationsListing")}
+                onPress={() => router.push("/(screens)/accommodationsListing")}
               >
                 <Image
                   source={require("@/assets/icons/modifPencil.png")}
@@ -125,7 +125,14 @@ const searchResultsPage = () => {
 
         {Array.isArray(accommodations) && accommodations.length > 0 ? (
           accommodations.map((property) => (
-            <PropertyCard key={property.propertyId} property={property} />
+            <PropertyCard
+              key={property.propertyId}
+              property={property}
+              containerStyle="flex flex-row "
+              imageStyle="w-full h-full"
+              presentationStyle="w-2/3 p-2 ml-2"
+              imageContainerStyle="w-1/3 h-52"
+            />
           ))
         ) : (
           <Text className="text-gray-500 text-center">

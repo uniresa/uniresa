@@ -208,7 +208,7 @@ interface BookingRequest {
   totalAmount: number;
   currency: string;
   paidAmount: number;
-  paymentMethod:string;
+  paymentMethod: string;
   paymentChannel: string;
   bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
   bookingChannel: string;
@@ -224,19 +224,17 @@ interface BookingDates {
 //interface for the person making the booking request
 
 interface BookingPerson {
-  title?: string;
+  title: string;
   firstName: string;
   surName: string;
   email: string;
   phoneNumber: string;
-  birthDate?: string;
   address: Address;
   accountBalance: { amount: number; currency: string };
 }
 //address interface
 interface Address {
   street?: string;
-  quartier?: string;
   city: string;
   district?: string;
   region?: string;
@@ -469,13 +467,12 @@ export interface AvailabilityDetails {
 }
 
 export interface RoomType {
-  reduce(arg0: (acc: any, room: any) => any, arg1: number): unknown;
   roomId: string;
-  type: string; 
-  surface: number; 
-  capacity: number; 
+  type: string;
+  surface: number;
+  capacity: number;
   priceDetails: PriceDetails;
-  roomAvailabilities: AvailabilityDetails[]; 
+  roomAvailabilities: AvailabilityDetails[];
   discountList: DiscountDetails[];
   ongoingDiscountPercentages: number[];
   isRefundable: boolean;
