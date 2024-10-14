@@ -148,6 +148,11 @@ interface BookingRequest {
   specialRequests: string[];
   bookingPerson: BookingPerson;
 }
+export interface SelectedRoom {
+  roomId: string;
+  roomTotalPrice: number;
+  roomName: string;
+}
 
 interface BookingDates {
   checkInDate: string;
@@ -299,6 +304,7 @@ export interface AccommodationProperty {
   createdAt: Date;
   updatedAt: Date;
 }
+
 export interface Amenity {
   amenityName: string;
   amenityId: string;

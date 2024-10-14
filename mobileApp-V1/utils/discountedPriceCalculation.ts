@@ -11,7 +11,7 @@ export const calculateDiscountedPrice = (
   });
 
   if (activeDiscounts.length === 0) {
-    return pricePerNight; 
+    return 0;
   }
 
   // Apply the best discount (highest value)

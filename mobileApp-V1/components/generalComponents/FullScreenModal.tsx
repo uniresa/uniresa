@@ -31,11 +31,6 @@ interface FullScreenModalProps {
   renderContent?: () => ReactNode; // Optional function to render custom content
   renderFooter?: () => ReactNode; // Optional function to render footer (e.g., actions or buttons)
 }
-// type SelectedRoom = {
-//   roomId: string;
-//   roomTotalPrice: number;
-//   roomName: string;
-// };
 
 // FullScreenModal Component with TypeScript
 const FullScreenModal: React.FC<FullScreenModalProps> = ({
@@ -167,7 +162,11 @@ const FullScreenModal: React.FC<FullScreenModalProps> = ({
         <View className="mx-4 my-4">
           <View className="my-2">
             <Text className="text-xl text-neutrals-900 font-bold">
-              XAF {reservationTotalPrice} Pour {""}
+              {reservationTotalPrice.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "XAF",
+              })}{" "}
+              Pour {""}
               {selectedRooms.length > 1
                 ? `${selectedRooms.length} hebergements`
                 : `${selectedRooms.length} hebergement`}

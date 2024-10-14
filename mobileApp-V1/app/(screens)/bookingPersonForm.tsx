@@ -68,7 +68,7 @@ const bookingPersonForm = () => {
     if (user) {
       setBookingPerson((prevState) => ({
         ...prevState,
-        title: user.title || "", // Assuming user object has a title property
+        title: user.title || "",
         firstName: user.firstName || "",
         surName: user.surName || "",
         email: user.email || "",
@@ -78,7 +78,7 @@ const bookingPersonForm = () => {
           ...prevState.address,
           street: user.address?.street || "",
           city: user.address?.city || "",
-          country: user.address?.country || "Cameroun", // Default country if not provided
+          country: user.address?.country || "Cameroun",
         },
       }));
     }
@@ -207,7 +207,7 @@ const bookingPersonForm = () => {
             labelStyle="mb-1 font-bold text-xl"
             textContentType="name"
             value={bookingPerson.firstName}
-            onChangeText={(value) =>
+            onChangeText={(value: string) =>
               setBookingPerson({ ...bookingPerson, firstName: value })
             }
           />
@@ -217,7 +217,7 @@ const bookingPersonForm = () => {
             labelStyle="mb-1 font-bold text-xl"
             textContentType="familyName"
             value={bookingPerson.surName}
-            onChangeText={(value) =>
+            onChangeText={(value: string) =>
               setBookingPerson({ ...bookingPerson, surName: value })
             }
           />
@@ -227,7 +227,7 @@ const bookingPersonForm = () => {
             labelStyle="mb-1 font-bold text-xl"
             textContentType="emailAddress"
             value={bookingPerson.email}
-            onChangeText={(value) =>
+            onChangeText={(value: string) =>
               setBookingPerson({ ...bookingPerson, email: value })
             }
           />
@@ -252,7 +252,7 @@ const bookingPersonForm = () => {
                 className="w-4/5"
                 textContentType="telephoneNumber"
                 value={bookingPerson.phoneNumber.replace(phonePrefix, "")}
-                onChangeText={(value) =>
+                onChangeText={(value: string) =>
                   setBookingPerson({
                     ...bookingPerson,
                     phoneNumber: `${phonePrefix}${value}`,
@@ -266,9 +266,9 @@ const bookingPersonForm = () => {
             isRequired={true}
             label="Rue ou Quartier"
             labelStyle="mb-1 font-bold text-xl"
-            textContentType="addressCity"
+            textContentType="text"
             value={bookingPerson.address.street}
-            onChangeText={(value) =>
+            onChangeText={(value: string) =>
               setBookingPerson((prevState) => ({
                 ...prevState,
                 address: {
@@ -284,7 +284,7 @@ const bookingPersonForm = () => {
             labelStyle="mb-1 font-bold text-xl"
             textContentType="addressCity"
             value={bookingPerson.address.city}
-            onChangeText={(value) =>
+            onChangeText={(value: string) =>
               setBookingPerson((prevState) => ({
                 ...prevState,
                 address: {
@@ -311,7 +311,6 @@ const bookingPersonForm = () => {
               }}
             />
           </View>
-
         </View>
       </ScrollView>
       {/* Fixed Footer */}

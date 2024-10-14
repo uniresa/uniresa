@@ -1,6 +1,6 @@
 import { RoomType } from "@/typesDeclaration/types";
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal } from "react-native";
+import { View, Text, Modal, TouchableOpacity } from "react-native";
 
 interface RoomPickerModalProps {
   isVisible: boolean;
@@ -43,23 +43,23 @@ const RoomPickerModal: React.FC<RoomPickerModalProps> = ({
           <View className="flex flex-row justify-between my-4 text-center">
             <Text className="text-lg font-lbold">nombre d'hebergements</Text>
             <View className="flex flex-row items-center gap-3">
-              <Pressable
+              <TouchableOpacity
                 onPress={() => setLocalRooms(Math.max(1, localRooms - 1))}
                 className="w-7 h-7 rounded-full bg-neutrals-60 justify-center items-center"
               >
                 <Text className="text-xl font-bold">-</Text>
-              </Pressable>
+              </TouchableOpacity>
               <Text>{localRooms}</Text>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => setLocalRooms((localRooms) => localRooms + 1)}
                 className="w-7 h-7 rounded-full bg-neutrals-60 justify-center items-center"
               >
                 <Text className="text-xl font-bold">+</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
 
-          <Pressable
+          <TouchableOpacity
             onPress={() => onConfirm(localRooms)}
             style={{
               backgroundColor: "#069494",
@@ -71,10 +71,10 @@ const RoomPickerModal: React.FC<RoomPickerModalProps> = ({
             <Text style={{ color: "#fff", textAlign: "center" }}>
               Confirmer
             </Text>
-          </Pressable>
-          <Pressable onPress={onClose}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onClose}>
             <Text style={{ textAlign: "center", marginTop: 10 }}>Fermer</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
