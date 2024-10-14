@@ -166,7 +166,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
                       resizeMode="contain"
                     />
                   )}
-                  <Text className="text-neutrals-800 text-xl">
+                  <Text className="text-neutrals-800 text-lg">
                     {amenity.amenityName}
                   </Text>
                 </View>
@@ -177,23 +177,32 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
       <View className="border-t-2 border-neutrals-60"></View>
       {/* Price Section */}
       <View className="m-4 ">
-        <Text className="text-xl text-neutrals-800 font-lregular">
+        <Text className="text-lg text-neutrals-800 font-lregular">
           Tarif pour {nights} nuits
         </Text>
         {totalDiscountedPrice && totalDiscountedPrice != 0 ? (
-          <View className="flex flex-row gap-3">
-            <Text className="text-lg text-accents-400 font-lregular line-through">
-              {room.priceDetails.currency}{" "}
-              {(room.priceDetails.pricePerNight * nights).toFixed(0)}
+          <View className="flex flex-row gap-3 items-center">
+            <Text className="text-base text-accents-400 font-lregular line-through">
+              {(room.priceDetails.pricePerNight * nights).toLocaleString(
+                "fr-FR"
+              )}
             </Text>
-            <Text className="text-xl text-neutrals-800 font-bold">
-              {room.priceDetails.currency} {totalDiscountedPrice.toFixed(0)}
+            <Text className="text-lg text-neutrals-800 font-bold">
+              {totalDiscountedPrice.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "XAF",
+              })}
             </Text>
           </View>
         ) : (
-          <Text className="text-xl text-neutrals-800 font-bold">
-            {room.priceDetails.currency}
-            {(room.priceDetails.pricePerNight * nights).toFixed(0)}
+          <Text className="text-lg text-neutrals-800 font-bold">
+            {(room.priceDetails.pricePerNight * nights).toLocaleString(
+              "fr-FR",
+              {
+                style: "currency",
+                currency: "XAF",
+              }
+            )}
           </Text>
         )}
       </View>

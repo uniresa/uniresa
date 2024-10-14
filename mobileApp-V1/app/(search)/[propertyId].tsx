@@ -35,16 +35,16 @@ const accommodationOverviewPage = () => {
   const scrollX = useRef(new Animated.Value(0)).current; // For horizontal scrolling
 
   const toggleExpanded = () => {
-    setIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+    setIsExpanded((prevState) => !prevState);
   };
   const toggleRoomModal = () => {
-    setRoomsModalVisible((prevState) => !prevState); // Toggle between expanded and collapsed
+    setRoomsModalVisible((prevState) => !prevState);
   };
   const toggleExpandedInfo = () => {
-    setInfoIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+    setInfoIsExpanded((prevState) => !prevState);
   };
   const toggleExpandedConditions = () => {
-    setConditionIsExpanded((prevState) => !prevState); // Toggle between expanded and collapsed
+    setConditionIsExpanded((prevState) => !prevState);
   };
   const toggleModal = () => {
     setModalIsOpen(!modalIsOpen);
