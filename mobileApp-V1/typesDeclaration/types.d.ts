@@ -1,5 +1,3 @@
-import { TextInputProps } from "react-native";
-
 export interface Photo {
   id: string;
   image: string;
@@ -13,31 +11,6 @@ export interface Room {
   payment: string;
   bed: string;
 }
-export interface SelectedRoom {
-  roomId: string;
-  roomTotalPrice: number;
-  roomName: string;
-}
-
-// export interface Property {
-//   id: string;
-//   name: string;
-//   propertyImage: string;
-//   rating: number;
-//   address: string;
-//   oldPrice: number;
-//   newPrice: number;
-//   latitude: string;
-//   longitude: string;
-//   photos: Photo[];
-//   rooms: Room[];
-//   registrationDate: string;
-//   distanceToPoint: string;
-//   propertyType: string;
-//   reviews: number;
-//   reviewsRating: number;
-//   description?: string;
-// }
 
 export interface Place {
   id: string;
@@ -47,56 +20,11 @@ export interface Place {
   properties: Property[];
 }
 
-export interface InputFieldProps extends TextInputProps {
-  label?: string;
-  icon?: any;
-  hidePassIcon1?: any;
-  hidePassIconStyle1?: string;
-  hidePassIcon2?: any;
-  hidePassIconStyle2?: string;
-  isRequired?: boolean;
-  // secureTextEntry?: boolean;
-  labelStyle?: string;
-  containerStyle?: string;
-  inputStyle?: string;
-  iconStyle?: string;
-  className?: string;
-}
-
-export interface ButtonProps extends TouchableOpacityProps {
-  title: string;
-  handlePress?: ((event: GestureResponderEvent) => void) | undefined;
-  bgVariant?: "primary" | "secondary" | "warning" | "outline" | "success";
-  textVariant?: "primary" | "default" | "secondary" | "danger" | "success";
-  IconLeft?: React.ComponentType<any>;
-  IconRight?: React.ComponentType<any>;
-  classNameLocal?: string;
-  classNameTitle?: string;
-}
-export interface Profile {
-  // id: string;
-  firstName: string;
-  surName: string;
-  email: string;
-  phoneNumber: string;
-  avatarUrl?: string;
-  bio?: string;
-  birthDate?: Date;
-  address?: {
-    street: string;
-    quartier: string;
-    city: string;
-    subRegion: string;
-    region: string;
-    country: string;
-  };
-  socialLinks?: {
-    twitter?: string;
-    facebook?: string;
-    linkedin?: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
+export interface Guests {
+  adults: number;
+  children: number;
+  infants?: number; // Optional field for infant capacity
+  pets?: boolean; // Optional field for pet-friendly rooms
 }
 
 export interface UserProfile {
@@ -109,7 +37,7 @@ export interface UserProfile {
   phoneNumber: string;
   avatarUrl?: string;
   bio?: string;
-  birthDate?: string;
+  birthDate?: Date;
   address?: Address;
   socialLinks?: {
     twitter?: string;
@@ -174,23 +102,26 @@ interface BookingDetails {
     | "Guesthouse"
     | "Hostel"
     | "Resort";
-  specificRoomTypeIds: string[];
-  numberOfRooms: number;
+  roomTypeId: string;
+  // numberOfRooms: number;
   bookingDates: BookingDates;
   totalAmount: number;
+  paidAmount: number;
   travellers?: number;
   currency: string;
   bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
-  bookingChannel?: string;
+  bookingChannel: string;
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
+  paymentMethod: string;
+  paymentChannel: string;
+  discountId?: string;
   specialRequests?: string[]; // Any specific requests made during booking
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface BookingRequest {
-  bookingPerson: BookingPerson;
   propertyId: string;
   propertyName: string;
   propertyType:
@@ -215,6 +146,7 @@ interface BookingRequest {
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
   specialRequests: string[];
+  bookingPerson: BookingPerson;
 }
 
 interface BookingDates {
@@ -346,8 +278,8 @@ export interface AccommodationProperty {
   checkInDetails: CheckInDetails;
   priceDetails: PriceDetails;
   additionalCost: string;
-  additionalInfo: string;
   additionalServices: string;
+  additionalInfo: string;
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
@@ -367,57 +299,44 @@ export interface AccommodationProperty {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface DiscountDetails {
-  discountId: string;
-  discountPercentage?: number;
-  discountAmount?: number;
-  startDate: Date;
-  endDate: Date;
-  discountType: "percentage" | "fixed"; // Type of discount ("percentage" or "fixed")
-  isActive: boolean; // Is the discount active or not
-  createdAt: Date;
-  updatedAt: Date;
-  bookings?: BookingDetails[];
-}
-
-export interface LocationDetails {
-  street?: string;
-  quartier?: string; // Specific area within a city
-  city: string;
-  district?: string;
-  region?: string;
-  postalCode?: string;
-  country: string;
-  latitude: number; // Geographical latitude
-  longitude: number; // Geographical longitude
-}
-
-// export interface ImageDetails {
-//   url: string; // Image URL
-//   description?: string; // Optional description of the image
-// }
-
-export interface Amenities {
-  freeWiFi: boolean;
-  parking: boolean;
-  swimmingPool: boolean;
-  airConditioning: boolean;
-  kitchen: boolean;
-  privateBathroom: boolean;
-  balcony: boolean;
-  petFriendly: boolean;
-  breakfastIncluded: boolean;
-  gym: boolean;
-  laundryService: boolean;
-  [key: string]: boolean; // Allows for additional amenities
-}
 export interface Amenity {
   amenityName: string;
   amenityId: string;
   amenityDescription: string;
   isAvailable: boolean;
   isPopular: boolean;
+}
+
+export interface LocationDetails {
+  street: string;
+  quartier?: string; // Specific area within a city
+  city: string;
+  district?: string;
+  region: string;
+  postalCode?: string;
+  country: string;
+  latitude: number; // Geographical latitude
+  longitude: number; // Geographical longitude
+}
+
+export interface ImageDetails {
+  url: string; // Image URL
+  description?: string; // Optional description of the image
+}
+
+export interface Amenities {
+  freeWiFi: boolean;
+  parking: boolean;
+  swimmingPool?: boolean;
+  airConditioning: boolean;
+  kitchen?: boolean;
+  privateBathroom?: boolean;
+  balcony?: boolean;
+  petFriendly?: boolean;
+  breakfastIncluded?: boolean;
+  gym?: boolean;
+  laundryService?: boolean;
+  [key: string]: boolean | undefined; // Allows for additional amenities
 }
 
 export interface Policies {
@@ -434,14 +353,6 @@ export interface CheckInDetails {
   propertyAccesDetails: string;
   paymentMethods: string;
   pets: string;
-}
-
-export interface PriceDetails {
-  currency: string;
-  pricePerNight: number;
-  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
-  taxesAndFees?: number;
-  discount?: DiscountDetails;
 }
 
 export interface Review {
@@ -468,19 +379,38 @@ export interface AvailabilityDetails {
 
 export interface RoomType {
   roomId: string;
-  type: string;
+  type: string; // name of the room Example: "Double Room", "Suite", etc.
   surface: number;
   capacity: number;
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[];
   discountList: DiscountDetails[];
-  ongoingDiscountPercentages: number[];
   isRefundable: boolean;
   amenities: Amenity[];
   roomImages: string[];
   roomBookings?: BookingDetails[];
   roomDescription: string;
   bedType: string;
+}
+
+export interface PriceDetails {
+  currency: string;
+  pricePerNight: number;
+  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
+  taxesAndFees?: number;
+}
+export interface DiscountDetails {
+  discountId: string;
+  discountType: "Percentage" | "Flat Fee";
+  discountValue: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  roomTypeId?: string;
+  propertyId?: string;
+  bookingIds?: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface HostDetails {
@@ -519,7 +449,6 @@ export interface KeyCollection {
   keyHolderName?: string;
   details?: string;
 }
-
 interface SearchCriteria {
   destination: LocationDetails;
   dates: { checkInDate: string; checkOutDate: string };
@@ -531,30 +460,10 @@ interface SearchCriteria {
   amenities?: Amenities;
 }
 
-interface UserSearchHistory {
-  recentSearch: SearchCriteria | null; // Store the most recent search for the user
-  history: SearchCriteria[]; // Store all past searches for the user
-}
-
-interface Guests {
-  adults: number;
-  children: number;
-}
-
 interface Query {
   destination: string;
   checkInDate: string;
   checkOutDate: string;
   capacity: number;
   rooms: number;
-}
-
-interface CountryPickerWrapperProps {
-  countryCode?: CountryCode;
-  withFlag?: boolean;
-  withFilter?: boolean;
-  withCallingCode?: boolean;
-  withCountryNameButton?: boolean;
-  onSelect: (country: any) => void;
-  containerButtonStyle?: object;
 }

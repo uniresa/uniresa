@@ -1,62 +1,75 @@
-import {
-  AccommodationProperty,
-  PriceDetails,
-  RoomType,
-} from "@/typesDeclaration/types";
+import { DiscountDetails, RoomType } from "@/typesDeclaration/types";
+import moment from "moment";
+import "moment/locale/fr";
 
 export const calculateDiscountedPrice = (
-  priceDetails: PriceDetails
+  pricePerNight: number,
+  discountList: DiscountDetails[]
 ): number => {
-  const { pricePerNight, discount } = priceDetails;
+  const activeDiscounts = discountList.filter((discount) => {
+    return discount.isActive;
+  });
 
-  // If there is no discount, return the original price
-  if (!discount || !discount.isActive) {
-    return pricePerNight;
+  if (activeDiscounts.length === 0) {
+    return pricePerNight; 
   }
 
-  const { discountType, discountAmount, discountPercentage } = discount;
+  // Apply the best discount (highest value)
+  const bestDiscount = activeDiscounts.reduce((prev, curr) => {
+    const prevDiscountValue =
+      prev.discountType === "Percentage"
+        ? (pricePerNight * prev.discountValue) / 100
+        : prev.discountValue;
+    const currDiscountValue =
+      curr.discountType === "Percentage"
+        ? (pricePerNight * curr.discountValue) / 100
+        : curr.discountValue;
 
-  // Calculate the discounted price based on the discount type
-  if (discountType === "percentage" && discountPercentage) {
-    return pricePerNight - (pricePerNight * discountPercentage) / 100;
-  } else if (discountType === "fixed" && discountAmount) {
-    return pricePerNight - discountAmount;
+    return currDiscountValue > prevDiscountValue ? curr : prev;
+  });
+
+  if (bestDiscount.discountType === "Percentage") {
+    return pricePerNight - (pricePerNight * bestDiscount.discountValue) / 100;
+  } else if (bestDiscount.discountType === "Flat Fee") {
+    return pricePerNight - bestDiscount.discountValue;
   }
 
-  // If none of the conditions match, return the original price
-  return pricePerNight;
+  return pricePerNight; // Return original price if no valid discount is found
 };
 
 export const getRenderedPrice = (
   roomTypes: RoomType[]
 ): {
-  propertyRenderedPrice: number;
+  propertyInitialPrice: number;
   propertyDiscountedPrice: number;
-  roomId: string; // Return the roomId of the room with the lowest price
+  roomId: string;
 } => {
-  let propertyRenderedPrice: number = Infinity;
+  let propertyInitialPrice: number = Infinity;
   let propertyDiscountedPrice: number = Infinity;
   let cheapestRoomId: string = "";
 
   roomTypes.forEach((roomType) => {
-    const { priceDetails, roomId } = roomType;
+    const { priceDetails, roomId, discountList } = roomType;
 
-    // Get the discounted price
+    const roomDiscountedPrice = calculateDiscountedPrice(
+      priceDetails.pricePerNight,
+      discountList
+    );
 
-    // Check if the current room is cheaper than the previously found cheapest room
-    if (priceDetails.pricePerNight < propertyRenderedPrice) {
-      propertyRenderedPrice = priceDetails.pricePerNight;
-      propertyDiscountedPrice = calculateDiscountedPrice(priceDetails);
+    if (roomDiscountedPrice < propertyDiscountedPrice) {
+      propertyDiscountedPrice = roomDiscountedPrice;
       cheapestRoomId = roomId;
-      console.log(
-        `property: ${propertyRenderedPrice}, discount: ${propertyDiscountedPrice}, roomID:${roomId}`
-      );
+      propertyInitialPrice = priceDetails.pricePerNight;
     }
+
+    console.log(
+      `property: ${propertyInitialPrice}, discount: ${propertyDiscountedPrice}, roomID:${roomId}`
+    );
   });
 
   return {
-    propertyRenderedPrice:
-      propertyRenderedPrice === Infinity ? 0 : propertyRenderedPrice,
+    propertyInitialPrice:
+      propertyInitialPrice === Infinity ? 0 : propertyInitialPrice,
     propertyDiscountedPrice:
       propertyDiscountedPrice === Infinity ? 0 : propertyDiscountedPrice,
     roomId: cheapestRoomId,

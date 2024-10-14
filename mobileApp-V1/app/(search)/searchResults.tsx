@@ -117,21 +117,21 @@ const searchResultsPage = () => {
         </View>
         {/* Accommodation Results */}
         <View className="p-4">
-          <Text className="text-neutrals-900 text-2xl font-bold mb-4">
+          <Text className="text-neutrals-900 text-2xl font-bold mb-4 h-">
             {`${accommodations?.length || 0} logements trouvés`}
           </Text>
         </View>
-        {/* Property Cards */}
+        {/* Property Cards  */}
 
         {Array.isArray(accommodations) && accommodations.length > 0 ? (
           accommodations.map((property) => (
             <PropertyCard
               key={property.propertyId}
               property={property}
-              containerStyle="flex flex-row "
+              containerStyle="flex flex-row h-80"
               imageStyle="w-full h-full"
-              presentationStyle="w-2/3 p-2 ml-2"
-              imageContainerStyle="w-1/3 h-52"
+              presentationStyle="w-3/4 p-2 ml-2"
+              imageContainerStyle="w-1/4 h-full"
             />
           ))
         ) : (
