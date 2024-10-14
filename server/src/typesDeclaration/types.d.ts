@@ -108,6 +108,7 @@ interface BookingDetails {
   paymentStatus: "Paid" | "Pending" | "Failed";
   paymentMethod: string;
   paymentChannel: string;
+  discountId?: string;
   specialRequests?: string[]; // Any specific requests made during booking
   createdAt: Date;
   updatedAt: Date;
@@ -347,15 +348,6 @@ export interface CheckInDetails {
   pets: string;
 }
 
-export interface PriceDetails {
-  currency: string;
-  pricePerNight: number;
-  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
-  taxesAndFees?: number;
-  discount?: number;
-  finalPrice?: number;
-}
-
 export interface Review {
   reviewId: string;
   bookingId: string;
@@ -381,18 +373,37 @@ export interface AvailabilityDetails {
 export interface RoomType {
   roomId: string;
   type: string; // name of the room Example: "Double Room", "Suite", etc.
-  surface: number; // surface
-  capacity: number; // Number of people the room can accommodate
+  surface: number;
+  capacity: number;
   priceDetails: PriceDetails;
-  roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
+  roomAvailabilities: AvailabilityDetails[];
   discountList: DiscountDetails[];
-  ongoingDiscountPercentages: number[];
   isRefundable: boolean;
   amenities: Amenity[];
   roomImages: string[];
   roomBookings?: BookingDetails[];
   roomDescription: string;
   bedType: string;
+}
+
+export interface PriceDetails {
+  currency: string;
+  pricePerNight: number;
+  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
+  taxesAndFees?: number;
+}
+export interface DiscountDetails {
+  discountId: string;
+  discountType: "Percentage" | "Flat Fee";
+  discountValue: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  roomTypeId?: string;
+  propertyId?: string;
+  bookingIds?: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface HostDetails {
@@ -440,19 +451,6 @@ interface SearchCriteria {
   maxPrice?: number;
   minStars?: number;
   amenities?: Amenities;
-}
-export interface DiscountDetails {
-  discountId: string;
-  discountType: "Percentage" | "Flat Fee";
-  discountValue: number;
-  startDate: Date;
-  endDate: Date;
-  isActive: boolean;
-  roomTypeId: string;
-  propertyId: string;
-  bookingIds?: string[];
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 interface Query {

@@ -46,13 +46,17 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
     Math.abs((checkOutDate.getTime() - checkInDate.getTime()) / oneDay)
   );
   // Calculate total price (with or without discount)
-  const discountedPricePerNight = calculateDiscountedPrice(room.priceDetails);
+  const discountedPricePerNight = calculateDiscountedPrice(
+    room.priceDetails.pricePerNight,
+    room.discountList
+  );
   const totalDiscountedPrice = discountedPricePerNight * nights;
   const totalStandardPrice = room.priceDetails.pricePerNight * nights;
 
-  const roomTotalPrice = room.priceDetails.discount
-    ? totalDiscountedPrice
-    : totalStandardPrice;
+  const roomTotalPrice =
+    totalDiscountedPrice && totalDiscountedPrice != 0
+      ? totalDiscountedPrice
+      : totalStandardPrice;
 
   return (
     <View className="rounded-3xl border-2 border-neutrals-300 my-4">
@@ -176,7 +180,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, onSelectRoom }) => {
         <Text className="text-xl text-neutrals-800 font-lregular">
           Tarif pour {nights} nuits
         </Text>
-        {room.priceDetails.discount ? (
+        {totalDiscountedPrice && totalDiscountedPrice != 0 ? (
           <View className="flex flex-row gap-3">
             <Text className="text-lg text-accents-400 font-lregular line-through">
               {room.priceDetails.currency}{" "}

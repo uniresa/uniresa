@@ -519,9 +519,9 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
               discount.roomTypeId.includes(roomType.roomId))
         );
 
-        roomType.ongoingDiscountPercentages = applicableDiscounts
-          .filter((discount) => discount.discountType === "Percentage")
-          .map((discount) => discount.discountValue);
+        // roomType.ongoingDiscountPercentages = applicableDiscounts
+        //   .filter((discount) => discount.discountType === "Percentage")
+        //   .map((discount) => discount.discountValue);
 
         // Add flat fee discounts if needed
         const flatFeeDiscounts = applicableDiscounts.filter(
@@ -585,7 +585,7 @@ const calculatePriceWithDiscounts = (
 
   return {
     ...priceDetails,
-    finalPrice: Math.max(0, finalPrice), // Ensure the price doesn't go below 0
+    // finalPrice: Math.max(0, finalPrice), // Ensure the price doesn't go below 0
   };
 };
 
@@ -672,8 +672,20 @@ export const getSearchedAccommodations = async (
         );
         if (isAvailable) {
           // If the room is available, add it to the list of available rooms
-          const room = matchingRooms.find((room) => room.roomId === roomTypeId);
+          let room = matchingRooms.find((room) => room.roomId === roomTypeId);
           if (room) {
+            const discountListSnapshot = await accommodationRef
+              .doc(accommodation.propertyId)
+              .collection("roomTypes")
+              .doc(roomTypeId)
+              .collection("discountList")
+              .get();
+
+            // Attach the discountList to the room
+            const discountList = discountListSnapshot.docs.map(
+              (doc) => doc.data() as DiscountDetails
+            );
+            room.discountList = discountList;
             availableRooms.push(room);
           }
         }

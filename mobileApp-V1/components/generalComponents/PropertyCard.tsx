@@ -4,6 +4,9 @@ import { AccommodationProperty } from "@/typesDeclaration/types";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import { Href, router } from "expo-router";
 import { getRenderedPrice } from "@/utils/discountedPriceCalculation";
+import { useSelector } from "react-redux";
+import { selectSearchCriteria } from "@/redux/slices/searchCriteriaSlice";
+import { getAmenityIcon } from "@/utils/amenityIcon";
 
 interface PropertyCardProps {
   property: AccommodationProperty;
@@ -22,9 +25,25 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   presentationStyle,
   imageContainerStyle,
 }) => {
-  const { propertyRenderedPrice, propertyDiscountedPrice, roomId } =
+  const { dates } = useSelector(selectSearchCriteria);
+  const { propertyInitialPrice, propertyDiscountedPrice, roomId } =
     getRenderedPrice(property.roomTypes);
+  // Convert check-in and check-out strings to Date objects
+  const checkInDate = new Date(dates.checkInDate);
+  const checkOutDate = new Date(dates.checkOutDate);
+  // Calculate the number of nights
+  const oneDay = 24 * 60 * 60 * 1000; // hours * minutes * seconds * milliseconds
+  const nights = Math.round(
+    Math.abs((checkOutDate.getTime() - checkInDate.getTime()) / oneDay)
+  );
+  const totalDiscountedPrice = propertyDiscountedPrice * nights;
+  const totalInitialPrice = propertyInitialPrice * nights;
 
+  const roomTotalPrice =
+    totalDiscountedPrice && totalDiscountedPrice != 0
+      ? totalDiscountedPrice
+      : totalInitialPrice;
+  const totalDiscount = totalInitialPrice - totalDiscountedPrice;
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -39,6 +58,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     }
     return stars;
   };
+  console.log(property.propertyId);
 
   const renderReviewRating = () => {
     const circles = [];
@@ -89,14 +109,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         })
       }
     >
-      <View className={`rounded-xl overflow-hidden ${imageContainerStyle}`}>
+      <View className={`rounded-l-xl ${imageContainerStyle} flex justify-center`}>
         <Image
           source={{ uri: property.images[0] }}
-          className={`w-72 rounded-xl ${imageStyle}`}
+          className={`w-full h-full rounded-l-xl ${imageStyle}`}
           resizeMode="cover"
         />
       </View>
-      <View className={` w-full ${presentationStyle}`}>
+      <View className={` w-full ${presentationStyle} justify-between`}>
         <View className="flex mb-1 items-start justify-between gap-1">
           <Text className={`text-lg font-semibold ${textColor}`}>
             {property.propertyName}
@@ -124,34 +144,91 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             {`${property.distanceFromSea} km de la mer`}
           </Text>
         )}
-        <View className="flex flex-row mt-2 items-center justify-between">
-          <View className="flex flex-row items-center gap-2">
-            <Text className="font-lbold text-lg text-neutrals-900">Price:</Text>
-            {propertyRenderedPrice &&
-            propertyRenderedPrice > propertyDiscountedPrice ? (
-              <Text>
-                <Text className="line-through text-lg text-accents">
-                  {propertyRenderedPrice.toLocaleString("fr-FR", {
-                    style: "currency",
-                    currency: "XAF",
-                  })}
+        <View className="flex flex-row flex-wrap items-center mt-2 pr-2">
+          {Array.isArray(property.amenities) &&
+            property.amenities
+              .filter((amenity) => amenity.isAvailable && amenity.isPopular)
+              .slice(0, 4)
+              .map((amenity, index) => {
+                const icon = getAmenityIcon(amenity.amenityId);
+                return (
+                  <View
+                    key={index}
+                    className="w-[48%] mb-1 flex flex-row items-center"
+                  >
+                    {icon && (
+                      <Image
+                        source={icon}
+                        className="w-4 h-4 mr-1"
+                        resizeMode="contain"
+                      />
+                    )}
+                    <Text className="text-neutrals-800 text-sm">
+                      {amenity.amenityName}
+                    </Text>
+                  </View>
+                );
+              })}
+        </View>
+        <View className="mt-8 p-2">
+          {propertyDiscountedPrice &&
+          propertyDiscountedPrice < propertyInitialPrice ? (
+            <View className="flex items-end">
+              <View className="rounded-md items-center p-1 bg-secondary-600 mb-3">
+                <Text className="text-neutrals text-sm font-semibold">
+                  - {totalDiscount.toLocaleString("fr-FR")}
                 </Text>
-                <Text className="font-lbold text-lg text-secondary-600">
-                  {propertyDiscountedPrice.toLocaleString("fr-FR", {
+              </View>
+              <Text className="font-lbold text-lg text-neutrals-900">
+                <Text className="line-through text-sm text-accents">
+                  {totalInitialPrice.toLocaleString("fr-FR")}
+                </Text>
+                {"  "}
+                <Text className="font-bold text-lg ">
+                  {totalDiscountedPrice.toLocaleString("fr-FR", {
                     style: "currency",
                     currency: "XAF",
                   })}
                 </Text>
               </Text>
-            ) : (
-              <Text className="font-lbold text-lg text-secondary-600">
-                {propertyRenderedPrice.toLocaleString("fr-FR", {
-                  style: "currency",
-                  currency: "XAF",
-                })}
+              <Text className="flex flex-row text-sm text-neutrals-800">
+                {property.propertyType === "Hotel" ? (
+                  <Text>1 chambre,</Text>
+                ) : property.propertyType === "Furnished Apartment" ? (
+                  <Text>1 appartement,</Text>
+                ) : (
+                  <Text>1 maison,</Text>
+                )}
+                {"  "}
+                {nights > 1 ? (
+                  <Text className="text-sm text-neutrals-800">
+                    {nights} nuits
+                  </Text>
+                ) : (
+                  <Text className="text-sm text-neutrals-800">
+                    {nights} nuit
+                  </Text>
+                )}
               </Text>
-            )}
-          </View>
+              {nights > 1 ? (
+                <Text>
+                  <Text className="font-semibold">
+                    {propertyDiscountedPrice.toLocaleString("fr-FR")}{" "}
+                  </Text>
+                  par nuit
+                </Text>
+              ) : (
+                ""
+              )}
+            </View>
+          ) : (
+            <Text className="font-lbold text-lg text-secondary-600">
+              {totalInitialPrice.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "XAF",
+              })}
+            </Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
