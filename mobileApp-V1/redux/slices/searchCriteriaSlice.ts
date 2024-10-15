@@ -1,10 +1,20 @@
+import { LocationDetails } from "@/typesDeclaration/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  destination: "",
+  destination: <LocationDetails>{
+    street: "",
+    city: "",
+    district: "",
+    region: "",
+    postalCode: "",
+    country: "",
+    latitude: 0,
+    longitude: 0,
+  },
   dates: { checkInDate: "", checkOutDate: "" },
-  guests: { adults: 1, children: 0 },
-  rooms: 1,
+  minGuests: 2,
+  minRooms: 1,
 };
 
 const searchCriteriaSlice = createSlice({
@@ -16,18 +26,18 @@ const searchCriteriaSlice = createSlice({
     },
 
     updateDestination: (state, action) => {
-      state.destination = action.payload;
+      state.destination = action.payload.destination;
     },
     updateDates: (state, action) => {
       const { checkInDate, checkOutDate } = action.payload;
       state.dates.checkInDate = checkInDate;
       state.dates.checkOutDate = checkOutDate;
     },
-    updateGuests: (state, action) => {
-      state.guests = action.payload.guests;
+    updateMinGuests: (state, action) => {
+      state.minGuests = action.payload.minGuests;
     },
-    updateRooms: (state, action) => {
-      state.rooms = action.payload.rooms;
+    updateMinRooms: (state, action) => {
+      state.minRooms = action.payload.minRooms;
     },
   },
 });
@@ -35,8 +45,8 @@ export const {
   setSearchCriteria,
   updateDestination,
   updateDates,
-  updateGuests,
-  updateRooms,
+  updateMinGuests,
+  updateMinRooms,
 } = searchCriteriaSlice.actions;
 export const selectSearchCriteria = (state: {
   searchCriteria: typeof initialState;
