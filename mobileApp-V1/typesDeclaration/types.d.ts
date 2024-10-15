@@ -28,7 +28,7 @@ export interface Guests {
 }
 
 export interface UserProfile {
-  userId?: string;
+  userId: string;
   title?: string;
   firstName: string;
   surName: string;
@@ -67,16 +67,8 @@ export interface UserProfile {
   };
   // Favorites
   favoriteProperties?: Property[]; // List of property IDs that the user has marked as favorite
-
-  //Search
-  searchHistory?: SearchHistoryItem[]; // An array of SearchHistoryItem
-
-  // Transaction History
-  transactionHistory?: Transaction[];
-
   // credit cards list
   creditCards?: CreditCard[];
-
   // Account Status
   emailVerified?: boolean;
   isActive?: boolean;
@@ -179,6 +171,20 @@ interface Address {
   country: string;
 }
 
+interface SearchCriteria {
+  destination: LocationDetails;
+  dates: { checkInDate: string; checkOutDate: string };
+  minGuests: number;
+  minRooms: number;
+  minRating?: number;
+  maxPrice?: number;
+  minStars?: number;
+  amenities?: Amenities;
+}
+export interface UserSearchHistory {
+  recentSearch: SearchCriteria | null;
+  history: SearchCriteria[]; // An array of past search criteria
+}
 // Interface for Search History Item
 interface SearchHistoryItem {
   searchId: string;
@@ -315,7 +321,6 @@ export interface Amenity {
 
 export interface LocationDetails {
   street: string;
-  quartier?: string; // Specific area within a city
   city: string;
   district?: string;
   region: string;
@@ -454,16 +459,6 @@ export interface KeyCollection {
   code?: string;
   keyHolderName?: string;
   details?: string;
-}
-interface SearchCriteria {
-  destination: LocationDetails;
-  dates: { checkInDate: string; checkOutDate: string };
-  minGuests: number;
-  minRooms: number;
-  minRating?: number;
-  maxPrice?: number;
-  minStars?: number;
-  amenities?: Amenities;
 }
 
 interface Query {

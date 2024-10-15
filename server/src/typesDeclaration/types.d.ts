@@ -302,7 +302,6 @@ export interface Amenity {
 
 export interface LocationDetails {
   street: string;
-  quartier?: string; // Specific area within a city
   city: string;
   district?: string;
   region: string;

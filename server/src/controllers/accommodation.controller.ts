@@ -32,7 +32,6 @@ const setDefaultAccommodationValues = (
     description: accommodation.description || "No description provided.",
     location: accommodation.location || {
       street: "",
-      quartier: "",
       city: "",
       district: "",
       region: "",
@@ -596,6 +595,35 @@ export const getSearchedAccommodations = async (
   try {
     const { destination, dates, minGuests, minRooms } =
       req.body as SearchCriteria;
+
+    // Validate required fields
+    if (!destination || !destination.city) {
+      return res.status(400).json({
+        status: "failed",
+        message: "La destination est obligatoire.",
+      });
+    } else {
+      console.log(destination);
+    }
+    if (!dates || !dates.checkInDate || !dates.checkOutDate) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Les dates sont obligatoires.",
+      });
+    }
+
+    if (!minGuests) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Le nombre minimum de clients est obligatoire.",
+      });
+    }
+    if (!minRooms) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Le nombre minimum de chambres est obligatoire.",
+      });
+    }
 
     // Parse the dates with error handling
     let parsedCheckInDate, parsedCheckOutDate;

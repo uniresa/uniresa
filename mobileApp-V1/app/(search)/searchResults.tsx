@@ -14,7 +14,7 @@ const searchResultsPage = () => {
   moment.locale("fr");
   const { loading, error, accommodations } = useSelector(searchResults);
   const searchCriteria = useSelector(selectSearchCriteria);
-  const { destination, dates, guests, rooms } = searchCriteria;
+  const { destination, dates, minGuests, minRooms } = searchCriteria;
 
   if (loading) {
     return (
@@ -47,7 +47,7 @@ const searchResultsPage = () => {
             <View className="flex-1 flex-row ml-4 bg-neutrals-40 p-2 rounded-2xl justify-between items-center">
               <View className="flex flex-col ">
                 <Text className="font-lbold text-neutrals-800 text-lg">
-                  {destination}
+                  {destination.city}
                 </Text>
                 <View className="flex flex-row justify-between  ">
                   <Text className="font-lbold text-neutrals-800 text-lg">
@@ -61,7 +61,7 @@ const searchResultsPage = () => {
                       resizeMode="contain"
                     />
                     <Text className="font-lbold text-neutrals-800 text-lg">
-                      {guests.adults}
+                      {minGuests}
                     </Text>
                   </View>
                   <View className="flex flex-row items-center ml-2">
@@ -71,7 +71,7 @@ const searchResultsPage = () => {
                       resizeMode="contain"
                     />
                     <Text className="font-lbold text-neutrals-800 text-lg">
-                      {guests.children}
+                      0
                     </Text>
                   </View>
                 </View>
