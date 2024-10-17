@@ -32,7 +32,6 @@ const setDefaultAccommodationValues = (
     description: accommodation.description || "No description provided.",
     location: accommodation.location || {
       street: "",
-      quartier: "",
       city: "",
       district: "",
       region: "",
@@ -153,15 +152,20 @@ const setDefaultAccommodationValues = (
       additionalPolicies: "",
     },
     checkInDetails: accommodation.checkInDetails || {
-      checkInFrom: "14:00",
-      checkInTo: "20:00",
-      checkOutFrom: "07:00",
-      checkOutTo: "12:00",
+      checkIn: "",
+      checkOut: "",
+      checkInInfo: "",
+      propertyAccesDetails: "",
+      paymentMethods: "",
+      pets: "",
     },
     priceDetails: accommodation.priceDetails || {
       pricePerNight: 0,
       currency: "Fcfa",
     },
+    additionalCost: accommodation.additionalCost || "",
+    additionalServices: accommodation.additionalServices || "",
+    additionalInfo: accommodation.additionalInfo || "",
     finalCleaning: accommodation.finalCleaning || {
       finalCleaningincluded: true,
       cleaningFee: 0,
@@ -514,9 +518,9 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
               discount.roomTypeId.includes(roomType.roomId))
         );
 
-        roomType.ongoingDiscountPercentages = applicableDiscounts
-          .filter((discount) => discount.discountType === "Percentage")
-          .map((discount) => discount.discountValue);
+        // roomType.ongoingDiscountPercentages = applicableDiscounts
+        //   .filter((discount) => discount.discountType === "Percentage")
+        //   .map((discount) => discount.discountValue);
 
         // Add flat fee discounts if needed
         const flatFeeDiscounts = applicableDiscounts.filter(
@@ -580,7 +584,7 @@ const calculatePriceWithDiscounts = (
 
   return {
     ...priceDetails,
-    finalPrice: Math.max(0, finalPrice), // Ensure the price doesn't go below 0
+    // finalPrice: Math.max(0, finalPrice), // Ensure the price doesn't go below 0
   };
 };
 
@@ -591,7 +595,36 @@ export const getSearchedAccommodations = async (
   try {
     const { destination, dates, minGuests, minRooms } =
       req.body as SearchCriteria;
-    console.log(req.body);
+
+    // Validate required fields
+    if (!destination || !destination.city) {
+      return res.status(400).json({
+        status: "failed",
+        message: "La destination est obligatoire.",
+      });
+    } else {
+      console.log(destination);
+    }
+    if (!dates || !dates.checkInDate || !dates.checkOutDate) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Les dates sont obligatoires.",
+      });
+    }
+
+    if (!minGuests) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Le nombre minimum de clients est obligatoire.",
+      });
+    }
+    if (!minRooms) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Le nombre minimum de chambres est obligatoire.",
+      });
+    }
+
     // Parse the dates with error handling
     let parsedCheckInDate, parsedCheckOutDate;
     try {
@@ -624,7 +657,7 @@ export const getSearchedAccommodations = async (
     const accommodations = accommodationsSnapshot.docs.map(
       (doc) => doc.data() as AccommodationProperty
     );
-    console.log(accommodations);
+
     // Filter accommodations by capacity
     const filteredAccommodations: AccommodationProperty[] = [];
 
@@ -649,46 +682,55 @@ export const getSearchedAccommodations = async (
         continue;
       }
 
-      // // Filter accommodations by the number of rooms
-      // matchingRooms = matchingRooms.filter((roomType) => {
-      //   return roomType.numberOfBedrooms >= rooms; // Match rooms based on number of bedrooms
-      // });
-
-      // // If no rooms match the number of rooms requirement, continue to the next accommodation
-      // if (matchingRooms.length === 0) {
-      //   continue;
-      // }
-
       // Collect specific room type IDs for availability check
       const specificRoomTypeIds = matchingRooms.map(
         (roomType) => roomType.roomId
       );
 
-      // Check availability by calling the checkPropertyAvailability function
-      const isAvailable = await checkPropertyAvailability(
-        accommodation.propertyId,
-        new Date(dates.checkInDate),
-        new Date(dates.checkOutDate),
-        specificRoomTypeIds
-      );
+      // Track available rooms for the accommodation
+      const availableRooms: RoomType[] = [];
 
-      // If the property is not available, skip this accommodation
-      if (!isAvailable) {
-        continue;
+      // Check each room's availability
+      for (const roomTypeId of specificRoomTypeIds) {
+        const isAvailable = await checkPropertyAvailability(
+          accommodation.propertyId,
+          new Date(dates.checkInDate),
+          new Date(dates.checkOutDate),
+          [roomTypeId]
+        );
+        if (isAvailable) {
+          // If the room is available, add it to the list of available rooms
+          let room = matchingRooms.find((room) => room.roomId === roomTypeId);
+          if (room) {
+            const discountListSnapshot = await accommodationRef
+              .doc(accommodation.propertyId)
+              .collection("roomTypes")
+              .doc(roomTypeId)
+              .collection("discountList")
+              .get();
+
+            // Attach the discountList to the room
+            const discountList = discountListSnapshot.docs.map(
+              (doc) => doc.data() as DiscountDetails
+            );
+            room.discountList = discountList;
+            availableRooms.push(room);
+          }
+        }
       }
-
-      // If available, add accommodation to filtered list
-      accommodation.roomTypes = matchingRooms;
-      filteredAccommodations.push(accommodation);
-    }
-    // Return the filtered accommodations or an error if no matches were found
+      // Add the accommodation to the filtered list only if there are available rooms
+      if (availableRooms.length > 0) {
+        accommodation.roomTypes = availableRooms; // Attach only the available rooms
+        filteredAccommodations.push(accommodation);
+      }
+    } // Return the filtered accommodations or an error if no matches were found
     if (filteredAccommodations.length === 0) {
       return res.status(404).json({
         status: "failed",
-        message: "Aucun logement disponible pour ces critères de recherche.",
+        message: "No accommodations available for the search criteria.",
       });
     }
-    console.log(filteredAccommodations, filteredAccommodations.length);
+
     return res.status(200).json({
       status: "success",
       message: "Logements trouvés avec succès.",

@@ -14,8 +14,7 @@ const searchResultsPage = () => {
   moment.locale("fr");
   const { loading, error, accommodations } = useSelector(searchResults);
   const searchCriteria = useSelector(selectSearchCriteria);
-  const { destination, dates, guests, rooms } = searchCriteria;
-  console.log(destination);
+  const { destination, dates, minGuests, minRooms } = searchCriteria;
 
   if (loading) {
     return (
@@ -38,7 +37,7 @@ const searchResultsPage = () => {
         {/* Header with destination and dates */}
         <View className=" bg-primary p-4">
           <View className="flex flex-row justify-between items-center mb-4">
-            <TouchableOpacity onPress={() => router.push("/home")}>
+            <TouchableOpacity onPress={() => router.push("/(tabs)/home")}>
               <Image
                 source={require("@/assets/icons/arrowWhite.png")}
                 className=" w-8 h-8"
@@ -48,7 +47,7 @@ const searchResultsPage = () => {
             <View className="flex-1 flex-row ml-4 bg-neutrals-40 p-2 rounded-2xl justify-between items-center">
               <View className="flex flex-col ">
                 <Text className="font-lbold text-neutrals-800 text-lg">
-                  {destination}
+                  {destination.city}
                 </Text>
                 <View className="flex flex-row justify-between  ">
                   <Text className="font-lbold text-neutrals-800 text-lg">
@@ -62,7 +61,7 @@ const searchResultsPage = () => {
                       resizeMode="contain"
                     />
                     <Text className="font-lbold text-neutrals-800 text-lg">
-                      {guests.adults}
+                      {minGuests}
                     </Text>
                   </View>
                   <View className="flex flex-row items-center ml-2">
@@ -72,13 +71,13 @@ const searchResultsPage = () => {
                       resizeMode="contain"
                     />
                     <Text className="font-lbold text-neutrals-800 text-lg">
-                      {guests.children}
+                      0
                     </Text>
                   </View>
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => router.push("/accommodationsListing")}
+                onPress={() => router.push("/(screens)/accommodationsListing")}
               >
                 <Image
                   source={require("@/assets/icons/modifPencil.png")}
@@ -118,15 +117,22 @@ const searchResultsPage = () => {
         </View>
         {/* Accommodation Results */}
         <View className="p-4">
-          <Text className="text-neutrals-900 text-2xl font-bold mb-4">
+          <Text className="text-neutrals-900 text-2xl font-bold mb-4 h-">
             {`${accommodations?.length || 0} logements trouvés`}
           </Text>
         </View>
-        {/* Property Cards */}
+        {/* Property Cards  */}
 
         {Array.isArray(accommodations) && accommodations.length > 0 ? (
           accommodations.map((property) => (
-            <PropertyCard key={property.propertyId} property={property} />
+            <PropertyCard
+              key={property.propertyId}
+              property={property}
+              containerStyle="flex flex-row h-80"
+              imageStyle="w-full h-full"
+              presentationStyle="w-3/4 p-2 ml-2"
+              imageContainerStyle="w-1/4 h-full"
+            />
           ))
         ) : (
           <Text className="text-gray-500 text-center">

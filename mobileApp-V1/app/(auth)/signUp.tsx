@@ -161,7 +161,7 @@ const SignUp = () => {
             <CustomButton
               title={loading ? "creation du client..." : "Enregistrement"}
               handlePress={onSignUpPress}
-              className="mt-4"
+              classNameLocal="mt-4"
             />
             <Text className="text-sm text-justify  text-neutrals-800 mt-4">
               En vous inscrivant, vous adhérez a nos conditions générales

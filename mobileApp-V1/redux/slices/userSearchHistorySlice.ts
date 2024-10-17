@@ -4,9 +4,10 @@ import { SearchCriteria, UserSearchHistory } from "@/typesDeclaration/types";
 interface UserSearchHistoryState {
   [userId: string]: UserSearchHistory;
 }
-const initialState: UserSearchHistoryState = {
 
-};
+const MAX_HISTORY_LENGTH = 5; // Limit history to 5 entries
+
+const initialState: UserSearchHistoryState = {};
 
 const userSearchHistorySlice = createSlice({
   name: "userSearchHistory",
@@ -18,28 +19,28 @@ const userSearchHistorySlice = createSlice({
     ) => {
       const { userId, search } = action.payload;
 
-      // If the user doesn't exist in the state, initialize their history
       if (!state[userId]) {
+
         state[userId] = {
           recentSearch: search,
           history: [search],
         };
       } else {
-        // If the user exists, update their recent search and push to history
+        // Add new search to the history and update the recent search
         state[userId].recentSearch = search;
-        state[userId].history.push(search);
+        state[userId].history.unshift(search); // Add to the beginning of the array
+
+        // Limit history to MAX_HISTORY_LENGTH
+        if (state[userId].history.length > MAX_HISTORY_LENGTH) {
+          state[userId].history.pop();
+        }
       }
     },
-    clearUserSearchHistory: (
-      state,
-      action: PayloadAction<{ userId: string }>
-    ) => {
+    clearUserSearchHistory: (state, action: PayloadAction<{ userId: string }>) => {
       const { userId } = action.payload;
       if (state[userId]) {
-        state[userId] = {
-          recentSearch: null,
-          history: [],
-        };
+        state[userId].recentSearch = null;
+        state[userId].history = [];
       }
     },
     removeRecentSearch: (state, action: PayloadAction<{ userId: string }>) => {
@@ -51,10 +52,17 @@ const userSearchHistorySlice = createSlice({
   },
 });
 
-export const { addSearchHistory, clearUserSearchHistory, removeRecentSearch } =
-  userSearchHistorySlice.actions;
+export const {
+  addSearchHistory,
+  clearUserSearchHistory,
+  removeRecentSearch,
+} = userSearchHistorySlice.actions;
 
-export const getUserSearchHistory = (state: typeof initialState) =>
-  state.userSearchHistory;
+// Selectors
+export const selectUserSearchHistory = (state: UserSearchHistoryState, userId: string) =>
+  state[userId] ? state[userId].history : [];
+
+export const selectRecentSearch = (state: UserSearchHistoryState, userId: string) =>
+  state[userId] ? state[userId].recentSearch : null;
 
 export default userSearchHistorySlice.reducer;

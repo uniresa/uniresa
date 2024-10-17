@@ -1,102 +1,80 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, FlatList, StyleSheet } from "react-native";
-import { data } from "@/data/tempData";
-import { AccommodationProperty, Amenities } from "@/typesDeclaration/types";
+import { View, Text, Image, FlatList, StyleSheet, Alert } from "react-native";
+import {
+  AccommodationProperty,
+  Amenities,
+  SearchCriteria,
+} from "@/typesDeclaration/types";
 import PropertyCard from "./PropertyCard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import axios from "axios";
+import { getUpcomingWeekend } from "@/utils/getUpcomingWeekend";
 
 interface Props {
   userId?: string; // Adding userId to identify recent search for each user
 }
-const defaultSearchCriteria: {
-  place: string;
-  minRating: number;
-  maxPrice: number;
-  minStars: number;
-  minGuests: number;
-  minRooms: number;
-  amenities: Amenities;
-} = {
-  place: "Yaounde",
-  minRating: 2,
-  maxPrice: 10000,
-  minStars: 3,
-  minGuests: 2,
-  minRooms: 2,
-  amenities: {
-    freeWiFi: true,
-    parking: true,
-    swimmingPool: true,
-    airConditioning: true,
-    kitchen: true,
+const { checkInDate, checkOutDate } = getUpcomingWeekend();
+const defaultSearchCriteria: SearchCriteria = {
+  destination: {
+    street: "",
+    city: "douala",
+    district: "",
+    region: "",
+    postalCode: "",
+    country: "Cameroun",
+    latitude: 0,
+    longitude: 0,
   },
+  dates: { checkInDate, checkOutDate },
+  minGuests: 2,
+  minRooms: 1,
 };
 const RecentSearch: React.FC<Props> = ({ userId }) => {
+  const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   const [filteredHotels, setFilteredHotels] = useState<AccommodationProperty[]>(
     []
   );
-  const { accommodations } = useSelector(
-    (state: RootState) => state.accommodationsList
-  );
-  // Use recent search if available, otherwise use default criteria
+
   const recentSearch =
     useSelector((state: RootState) =>
       userId ? state.userSearchHistory[userId]?.recentSearch : null
     ) || defaultSearchCriteria;
 
   useEffect(() => {
-    if (recentSearch) {
-      const results = accommodations
-        .filter((accomodation) =>
-          accomodation.location.city
-            .toLowerCase()
-            .includes(recentSearch.place.toLowerCase())
-        )
-        .flatMap((accommodation) => accommodation)
-        .filter(
-          (property) =>
-            property.numberOfStars >= recentSearch.minRating &&
-            Object.values(property.roomTypes).some(
-              (roomType) =>
-                roomType.priceDetails.pricePerNight <= recentSearch.maxPrice
-            )
-        )
-        .map((property) => ({
-          propertyId: property.propertyId,
-          propertyName: property.propertyName,
-          propertyType: property.propertyType,
-          description: property.description,
-          location: property.location,
-          images: property.images,
-          amenities: property.amenities,
-          policies: property.policies,
-          checkInDetails: property.checkInDetails,
-          priceDetails: property.priceDetails,
-          finalCleaning: property.finalCleaning,
-          numberOfStars: property.numberOfStars,
-          reviews: property.reviews,
-          numberOfReviews: property.numberOfReviews,
-          reviewsRating: property.reviewsRating,
-          propertyAvailabilities: property.propertyAvailabilities,
-          roomTypes: property.roomTypes,
-          distanceFromCityCenter: property.distanceFromCityCenter,
-          distanceFromSea: property.distanceFromSea,
-          popularFacilities: property.popularFacilities,
-          hostDetails: property.hostDetails,
-          nearbyAttractions: property.nearbyAttractions,
-          healthAndSafetyMeasures: property.healthAndSafetyMeasures,
-          cancellationPolicy: property.cancellationPolicy,
-          keyCollection: property.keyCollection,
-          propertyBookings: property.propertyBookings,
-          createdAt: property.createdAt,
-          updatedAt: property.updatedAt,
-        }));
-      setFilteredHotels(results);
-    } else {
-      setFilteredHotels([]); // Reset if no recent search is available
-    }
-  }, [recentSearch, accommodations]);
+    const fetchRecentSearch = async () => {
+      if (!userId) {
+        setFilteredHotels([]);
+        return;
+      }
+      if (!backendApi) {
+        throw new Error("URL missing");
+      }
+      try {
+        //fetch data based on user search history
+        const response = await axios.post(
+          `${backendApi}/api/accommodation/getSearchedAccomodations`,
+          recentSearch,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        const results = await response.data?.data;
+        if (!results || results.length === 0) {
+          console.log("No results based on recent search");
+        }
+        setFilteredHotels(results);
+      } catch (error) {
+        console.error("Error fetching recent search:", error);
+        Alert.alert("Une erreur lors de la recharge des donnees");
+      }
+    };
+    fetchRecentSearch();
+  }, [recentSearch, userId]);
 
   return (
     <View>
