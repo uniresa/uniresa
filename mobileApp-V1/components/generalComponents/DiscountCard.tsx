@@ -1,13 +1,17 @@
 import { View, Text, Image, ImageBackground, Pressable } from "react-native";
 import React from "react";
-import { Property } from "@/typesDeclaration/types";
+import { AccommodationProperty } from "@/typesDeclaration/types";
 import DiscountButton from "./DiscountButton";
 
 interface DiscountCardProps {
   discountedProperty: {
-    place: string;
-    property: Property;
+    city: string;
+    cheapestProperty: AccommodationProperty;
+    cheapestRoomPrice: number;
+    initialRoomPrice: number;
+    discountPercentage: number;
   };
+
   textColor: string;
 }
 
@@ -15,15 +19,11 @@ const DiscountCard: React.FC<DiscountCardProps> = ({
   discountedProperty,
   textColor,
 }) => {
-  const { place, property } = discountedProperty;
-  const discount =
-    ((property.oldPrice - property.newPrice) / property.oldPrice) * 100;
-
   return (
     <View className="mr-4 rounded-xl shadow-md">
       <Pressable className="relative">
         <ImageBackground
-          source={{ uri: property.propertyImage }}
+          source={{ uri: discountedProperty.cheapestProperty.images[0] }}
           className="w-[320px] h-[190px] rounded-xl"
           imageStyle={{ borderRadius: 15 }}
           resizeMode="cover"
@@ -45,25 +45,38 @@ const DiscountCard: React.FC<DiscountCardProps> = ({
         </ImageBackground>
         <View className="p-4">
           <Text className={`text-base ${textColor} font-semibold`}>
-            {place}
+            {discountedProperty.city}
           </Text>
           <Text className={`text-xl ${textColor} font-bold`}>
-            {property.name}
+            {discountedProperty.cheapestProperty.propertyName}
           </Text>
           <View className="mt-2">
             <View className="flex flex-row items-center gap-4">
               <Text className={`font-lbold text-lg ${textColor}`}>
-                {property.newPrice} Fcfa
+                {discountedProperty.cheapestRoomPrice.toLocaleString("fr-FR", {
+                  style: "currency",
+                  currency: "XAF",
+                })}
               </Text>
               <Text
                 className={`line-through font-lregular text-base ${textColor}`}
               >
-                {property.oldPrice}
+                {discountedProperty.initialRoomPrice.toLocaleString("fr-FR", {
+                  style: "currency",
+                  currency: "XAF",
+                })}
               </Text>
             </View>
             <Text className={`text-base ${textColor} mt-1`}>pour 2 nuits</Text>
             <Text className={`text-base ${textColor} mt-1`}>
-              {property.newPrice / 2} Fcfa par nuit
+              {(discountedProperty.cheapestRoomPrice / 2).toLocaleString(
+                "fr-FR",
+                {
+                  style: "currency",
+                  currency: "XAF",
+                }
+              )}{" "}
+              par nuit
             </Text>
             <Text className={`text-sm ${textColor} mt-1`}>
               taxes et frais compris
@@ -71,7 +84,7 @@ const DiscountCard: React.FC<DiscountCardProps> = ({
           </View>
           <View className="mt-4">
             <DiscountButton
-              discount={discount.toFixed(0)}
+              discount={discountedProperty.discountPercentage.toFixed(0)}
               discountButtonBgColor="bg-accents"
               buttonTextColor="text-neutrals"
               discuntIcon={

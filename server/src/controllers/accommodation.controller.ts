@@ -13,14 +13,14 @@ import { db } from "../../firebaseConfig";
 import { GenerateCustomID } from "../utils/customIdGenerator";
 import { checkPropertyAvailability } from "./propertiesAvailabilities.controller";
 import { parse, isValid } from "date-fns";
+import { getUpcomingWeekend } from "../utils/getUpcomingWeekend";
 
-// Implement the createAccommodationProperty function to create a new accommodation property in Firestore Database.
 const removeUndefinedFields = (obj: any) => {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, v]) => v !== undefined)
   );
 };
-// Set default values for optional fields in AccommodationProperty
+// Default values for optional fields in AccommodationProperty
 const setDefaultAccommodationValues = (
   accommodation: Partial<AccommodationProperty>
 ): AccommodationProperty => {
@@ -32,7 +32,6 @@ const setDefaultAccommodationValues = (
     description: accommodation.description || "No description provided.",
     location: accommodation.location || {
       street: "",
-      quartier: "",
       city: "",
       district: "",
       region: "",
@@ -153,19 +152,25 @@ const setDefaultAccommodationValues = (
       additionalPolicies: "",
     },
     checkInDetails: accommodation.checkInDetails || {
-      checkInFrom: "14:00",
-      checkInTo: "20:00",
-      checkOutFrom: "07:00",
-      checkOutTo: "12:00",
+      checkIn: "",
+      checkOut: "",
+      checkInInfo: "",
+      propertyAccesDetails: "",
+      paymentMethods: "",
+      pets: "",
     },
-    priceDetails: accommodation.priceDetails || {
-      pricePerNight: 0,
-      currency: "Fcfa",
-    },
+    // priceDetails: accommodation.priceDetails || {
+    //   pricePerNight: 0,
+    //   currency: "XAF",
+    //   taxesAndFeesIncluded: true,
+    // },
+    additionalCost: accommodation.additionalCost || "",
+    additionalServices: accommodation.additionalServices || "",
+    additionalInfo: accommodation.additionalInfo || "",
     finalCleaning: accommodation.finalCleaning || {
       finalCleaningincluded: true,
       cleaningFee: 0,
-      currency: "Fcfa",
+      currency: "XAF",
     },
     numberOfStars: accommodation.numberOfStars || 0, // Default rating to 0
     reviews: accommodation.reviews || [],
@@ -250,7 +255,7 @@ export const createAccommodation = async (req: Request, res: Response) => {
       // Exclude subcollection data from the main Collection document
       propertyAvailabilities: undefined,
       propertyBookings: undefined,
-      //   roomTypes: undefined,
+      roomTypes: undefined,
       reviews: undefined,
     });
     await accommodationRef.set(filteredAccommodation);
@@ -292,25 +297,6 @@ export const createAccommodation = async (req: Request, res: Response) => {
     if (newAccommodation.roomTypes?.length) {
       for (const roomType of newAccommodation.roomTypes) {
         const specificRoomId = roomTypesRef.doc(GenerateCustomID(20));
-
-        // Calculate ongoing discount percentages for the roomType
-        const today = new Date();
-        const ongoingDiscountPercentages = (roomType.discountList || [])
-          .filter(
-            (discount) =>
-              discount.isActive &&
-              discount.startDate <= today &&
-              discount.endDate >= today
-          )
-          .filter((discount) => discount.discountType === "Percentage")
-          .map((discount) => discount.discountValue);
-
-        // Save the room type with discounts
-        await specificRoomId.set({
-          ...roomType,
-          roomId: specificRoomId.id,
-          ongoingDiscountPercentages,
-        });
 
         // Save room availabilities for the room type
         const roomAvailabilitiesRef =
@@ -433,6 +419,7 @@ export const getSingleAccommodation = async (req: Request, res: Response) => {
   }
 };
 export const getAllAccommodations = async (req: Request, res: Response) => {
+  const { checkInDate, checkOutDate } = getUpcomingWeekend();
   try {
     const accommodationRef = db.collection("accommodations");
     const accommodationsSnapshot = await accommodationRef.get();
@@ -449,20 +436,7 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
     );
 
     // Fetch related data concurrently
-    const [
-      propertyBookingsSnapshots,
-      reviewsSnapshots,
-      roomTypesSnapshots,
-      discountsSnapshots,
-    ] = await Promise.all([
-      Promise.all(
-        accommodations.map((acc) =>
-          accommodationRef
-            .doc(acc.propertyId)
-            .collection("propertyBookings")
-            .get()
-        )
-      ),
+    const [reviewsSnapshots, roomTypesSnapshots] = await Promise.all([
       Promise.all(
         accommodations.map((acc) =>
           accommodationRef.doc(acc.propertyId).collection("reviews").get()
@@ -473,60 +447,22 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
           accommodationRef.doc(acc.propertyId).collection("roomTypes").get()
         )
       ),
-      Promise.all(
-        accommodations.map((acc) =>
-          db
-            .collection("discountList")
-            .where("propertyIds", "array-contains", acc.propertyId)
-            .get()
-        )
-      ),
     ]);
 
     accommodations.forEach((accommodation, index) => {
-      // Set property bookings
-      accommodation.propertyBookings = propertyBookingsSnapshots[
-        index
-      ].docs.map((doc) => doc.data() as BookingDetails);
-
-      // Set reviews
       accommodation.reviews = reviewsSnapshots[index].docs.map(
         (doc) => doc.data() as Review
       );
 
-      // Set room types and apply discounts
       const roomTypes = roomTypesSnapshots[index].docs.map(
         (doc) => doc.data() as RoomType
       );
 
-      // Get the relevant discounts for the accommodation
-      const discounts = discountsSnapshots[index].docs.map(
-        (doc) => doc.data() as DiscountDetails
-      );
-
+      // Apply discounts (if any) and update room prices
       roomTypes.forEach((roomType) => {
-        const applicableDiscounts = discounts.filter(
-          (discount) =>
-            discount.isActive &&
-            discount.startDate <= new Date() &&
-            discount.endDate >= new Date() &&
-            (!discount.roomTypeId ||
-              discount.roomTypeId.includes(roomType.roomId))
-        );
-
-        roomType.ongoingDiscountPercentages = applicableDiscounts
-          .filter((discount) => discount.discountType === "Percentage")
-          .map((discount) => discount.discountValue);
-
-        // Add flat fee discounts if needed
-        const flatFeeDiscounts = applicableDiscounts.filter(
-          (discount) => discount.discountType === "Flat Fee"
-        );
-
-        // Apply the flat fee discount logic if necessary (e.g., adjusting price)
         roomType.priceDetails = calculatePriceWithDiscounts(
           roomType.priceDetails,
-          flatFeeDiscounts
+          roomType.discountList // Room-level discountList
         );
       });
 
@@ -541,7 +477,10 @@ export const getAllAccommodations = async (req: Request, res: Response) => {
           .collection("roomTypes")
           .doc(roomType.roomId)
           .collection("roomAvailabilities")
+          .where("date", ">=", checkInDate)
+          .where("date", "<=", checkOutDate)
           .get();
+
         roomType.roomAvailabilities = roomAvailabilitiesSnapshot.docs
           .map((doc) => doc.data() as AvailabilityDetails)
           .filter((availability) => availability.isAvailable); // Filter for available rooms
@@ -580,7 +519,7 @@ const calculatePriceWithDiscounts = (
 
   return {
     ...priceDetails,
-    finalPrice: Math.max(0, finalPrice), // Ensure the price doesn't go below 0
+    // finalPrice: Math.max(0, finalPrice), // Ensure the price doesn't go below 0
   };
 };
 
@@ -591,7 +530,35 @@ export const getSearchedAccommodations = async (
   try {
     const { destination, dates, minGuests, minRooms } =
       req.body as SearchCriteria;
-    console.log(req.body);
+
+    // Validate required fields
+    if (!destination || !destination.city) {
+      return res.status(400).json({
+        status: "failed",
+        message: "La destination est obligatoire.",
+      });
+    }
+    if (!dates || !dates.checkInDate || !dates.checkOutDate) {
+      console.log("wrong dates");
+      return res.status(400).json({
+        status: "failed",
+        message: "Les dates sont obligatoires.",
+      });
+    }
+
+    if (!minGuests) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Le nombre minimum de clients est obligatoire.",
+      });
+    }
+    if (!minRooms) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Le nombre minimum de chambres est obligatoire.",
+      });
+    }
+
     // Parse the dates with error handling
     let parsedCheckInDate, parsedCheckOutDate;
     try {
@@ -603,14 +570,31 @@ export const getSearchedAccommodations = async (
         message: 'Invalid date format. Please use "YYYY-MM-DD".',
       });
     }
+
     const accommodationRef = db.collection("accommodations");
 
-    // Filter accommodations by destination
-    const accommodationQuery = accommodationRef.where(
-      "location.city",
-      "==",
-      destination.city
-    );
+    // Filter accommodations by destination with broader criteria
+    let accommodationQuery = accommodationRef
+      .where("location.city", "==", destination.city.toLowerCase()) // Normalizing to lowercase
+      .where("location.country", "==", destination.country.toLowerCase()); // Country filtering
+
+    // Optionally, add region filtering if provided
+    if (destination.region) {
+      accommodationQuery = accommodationQuery.where(
+        "location.region",
+        "==",
+        destination.region.toLowerCase()
+      );
+    }
+
+    // Optionally, add district filtering if provided
+    if (destination.district) {
+      accommodationQuery = accommodationQuery.where(
+        "location.district",
+        "==",
+        destination.district.toLowerCase()
+      );
+    }
 
     const accommodationsSnapshot = await accommodationQuery.get();
 
@@ -624,7 +608,7 @@ export const getSearchedAccommodations = async (
     const accommodations = accommodationsSnapshot.docs.map(
       (doc) => doc.data() as AccommodationProperty
     );
-    console.log(accommodations);
+
     // Filter accommodations by capacity
     const filteredAccommodations: AccommodationProperty[] = [];
 
@@ -649,46 +633,55 @@ export const getSearchedAccommodations = async (
         continue;
       }
 
-      // // Filter accommodations by the number of rooms
-      // matchingRooms = matchingRooms.filter((roomType) => {
-      //   return roomType.numberOfBedrooms >= rooms; // Match rooms based on number of bedrooms
-      // });
-
-      // // If no rooms match the number of rooms requirement, continue to the next accommodation
-      // if (matchingRooms.length === 0) {
-      //   continue;
-      // }
-
       // Collect specific room type IDs for availability check
       const specificRoomTypeIds = matchingRooms.map(
         (roomType) => roomType.roomId
       );
 
-      // Check availability by calling the checkPropertyAvailability function
-      const isAvailable = await checkPropertyAvailability(
-        accommodation.propertyId,
-        new Date(dates.checkInDate),
-        new Date(dates.checkOutDate),
-        specificRoomTypeIds
-      );
+      // Track available rooms for the accommodation
+      const availableRooms: RoomType[] = [];
 
-      // If the property is not available, skip this accommodation
-      if (!isAvailable) {
-        continue;
+      // Check each room's availability
+      for (const roomTypeId of specificRoomTypeIds) {
+        const isAvailable = await checkPropertyAvailability(
+          accommodation.propertyId,
+          new Date(dates.checkInDate),
+          new Date(dates.checkOutDate),
+          [roomTypeId]
+        );
+        if (isAvailable) {
+          // If the room is available, add it to the list of available rooms
+          let room = matchingRooms.find((room) => room.roomId === roomTypeId);
+          if (room) {
+            const discountListSnapshot = await accommodationRef
+              .doc(accommodation.propertyId)
+              .collection("roomTypes")
+              .doc(roomTypeId)
+              .collection("discountList")
+              .get();
+
+            // Attach the discountList to the room
+            const discountList = discountListSnapshot.docs.map(
+              (doc) => doc.data() as DiscountDetails
+            );
+            room.discountList = discountList;
+            availableRooms.push(room);
+          }
+        }
       }
-
-      // If available, add accommodation to filtered list
-      accommodation.roomTypes = matchingRooms;
-      filteredAccommodations.push(accommodation);
-    }
-    // Return the filtered accommodations or an error if no matches were found
+      // Add the accommodation to the filtered list only if there are available rooms
+      if (availableRooms.length > 0) {
+        accommodation.roomTypes = availableRooms; // Attach only the available rooms
+        filteredAccommodations.push(accommodation);
+      }
+    } // Return the filtered accommodations or an error if no matches were found
     if (filteredAccommodations.length === 0) {
       return res.status(404).json({
         status: "failed",
-        message: "Aucun logement disponible pour ces critères de recherche.",
+        message: "No accommodations available for the search criteria.",
       });
     }
-    console.log(filteredAccommodations, filteredAccommodations.length);
+    console.log("accommodation list:", filteredAccommodations);
     return res.status(200).json({
       status: "success",
       message: "Logements trouvés avec succès.",

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BookingDetails, UserProfile } from "../typesDeclaration/types";
+import { BookingRequest, UserProfile } from "../typesDeclaration/types";
 import { db } from "../../firebaseConfig";
 import { checkPropertyAvailability } from "./propertiesAvailabilities.controller";
 import { GenerateCustomID, genericPassword } from "../utils/customIdGenerator";
@@ -10,20 +10,21 @@ export const createBooking = async (req: Request, res: Response) => {
   const {
     propertyId,
     propertyName,
-    numberOfRooms,
     propertyType,
     specificRoomTypeIds,
-    checkInDate,
-    checkOutDate,
+    bookingDates,
     totalAmount,
+    paidAmount,
     currency,
     paymentStatus,
+    paymentMethod,
+    paymentChannel,
     bookingType,
     bookingChannel,
     bookingStatus,
     specialRequests,
     bookingPerson,
-  } = req.body as BookingDetails;
+  } = req.body as BookingRequest;
 
   if (!specificRoomTypeIds || specificRoomTypeIds.length === 0) {
     return res.status(400).json({
@@ -40,8 +41,16 @@ export const createBooking = async (req: Request, res: Response) => {
   }
 
   // Parse dates using date-fns
-  const parsedCheckInDate = parse(checkInDate, "MM/dd/yyyy", new Date());
-  const parsedCheckOutDate = parse(checkOutDate, "MM/dd/yyyy", new Date());
+  const parsedCheckInDate = parse(
+    bookingDates.checkInDate,
+    "MM/dd/yyyy",
+    new Date()
+  );
+  const parsedCheckOutDate = parse(
+    bookingDates.checkOutDate,
+    "MM/dd/yyyy",
+    new Date()
+  );
   // Check if checkInDate and checkOutDate are valid
   if (!isValid(parsedCheckInDate) || !isValid(parsedCheckOutDate)) {
     return res.status(400).json({
@@ -65,19 +74,49 @@ export const createBooking = async (req: Request, res: Response) => {
     if (!existingEmail.empty) {
       // User already exists; use the user ID
       userRef = existingEmail.docs[0].id;
+
+      // Get the current address from the existing user
+      const existingUserData = existingEmail.docs[0].data() as UserProfile;
+      const existingAddress = existingUserData.address;
+
+      if (existingAddress) {
+        const newAddress = bookingPerson.address;
+        if (
+          existingAddress.street !== newAddress.street ||
+          existingAddress.city !== newAddress.city ||
+          existingAddress.district !== newAddress.district ||
+          existingAddress.region !== newAddress.region ||
+          existingAddress.postalCode !== newAddress.postalCode ||
+          existingAddress.country !== newAddress.country
+        ) {
+          // If any of the fields are different, update the user's address
+          await db.collection("users").doc(userRef).update({
+            address: newAddress,
+          });
+          console.log("User address updated.");
+        }
+      } else {
+        // If the existing address is undefined, update the user's address
+        await db.collection("users").doc(userRef).update({
+          address: bookingPerson.address,
+        });
+        console.log("User address was undefined, now set to new address.");
+      }
     } else {
       // Create a new user from booking details
       const newUserProfile: UserProfile = {
         firstName: bookingPerson.firstName,
         surName: bookingPerson.surName,
         email: bookingPerson.email,
-        password: genericPass, // Make sure to handle passwords securely
+        password: genericPass,
         phoneNumber: bookingPerson.phoneNumber,
+        accountBalance: bookingPerson.accountBalance,
         notificationPreferences: {
           emailNotifications: true,
           smsNotifications: true,
           pushNotifications: false,
         },
+        address: bookingPerson.address,
       };
 
       // Create a new user profile
@@ -87,8 +126,8 @@ export const createBooking = async (req: Request, res: Response) => {
     // Check availability for each specific room type
     const isAvailable = await checkPropertyAvailability(
       propertyId,
-      new Date(checkInDate),
-      new Date(checkOutDate),
+      new Date(bookingDates.checkInDate),
+      new Date(bookingDates.checkOutDate),
       specificRoomTypeIds
     );
 
@@ -108,26 +147,35 @@ export const createBooking = async (req: Request, res: Response) => {
       bookingIds.push(bookingId);
 
       // Create a booking for the specific room type
+
       await db
         .collection("accommodations")
         .doc(propertyId)
-        .collection("propertyBookings")
+        .collection("roomTypes")
+        .doc(roomTypeId)
+        .collection("roomBookings")
         .doc(bookingId)
         .set({
           bookingId,
           userId: userRef,
+          bookingPerson,
+          propertyId,
+          propertyName,
+          propertyType,
           roomTypeId,
-          numberOfRooms,
-          checkInDate,
-          checkOutDate,
+          bookingDates,
           totalAmount,
+          paidAmount,
           currency,
-          paymentStatus,
           bookingType,
           bookingChannel,
           bookingStatus,
+          paymentStatus,
+          paymentMethod,
+          paymentChannel,
           specialRequests,
           createdAt: new Date(),
+          updatedAt: new Date(),
         });
 
       // Update availability by adding the booked date range for the specific room type
@@ -139,8 +187,37 @@ export const createBooking = async (req: Request, res: Response) => {
         .collection("roomAvailabilities")
         .doc(bookingId) // Use booking ID to create a corresponding availability document
         .set({
-          startDate: checkInDate,
-          endDate: checkOutDate,
+          startDate: bookingDates.checkInDate,
+          endDate: bookingDates.checkOutDate,
+        });
+
+      // Add booking to propertyBookings
+      await db
+        .collection("accommodations")
+        .doc(propertyId)
+        .collection("propertyBookings")
+        .doc(bookingId)
+        .set({
+          bookingId,
+          userId: userRef,
+          bookingPerson,
+          propertyId,
+          propertyName,
+          propertyType,
+          roomTypeId,
+          bookingDates,
+          totalAmount,
+          paidAmount,
+          currency,
+          bookingType,
+          bookingChannel,
+          bookingStatus,
+          paymentStatus,
+          paymentMethod,
+          paymentChannel,
+          specialRequests,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         });
 
       // Add booking to the user's booking history
@@ -151,18 +228,22 @@ export const createBooking = async (req: Request, res: Response) => {
         .doc(bookingId)
         .set({
           bookingId,
+          userId: userRef,
+          bookingPerson,
           propertyId,
           propertyName,
           propertyType,
           roomTypeId,
-          checkInDate,
-          checkOutDate,
+          bookingDates,
           totalAmount,
+          paidAmount,
           currency,
-          paymentStatus,
           bookingType,
           bookingChannel,
           bookingStatus,
+          paymentStatus,
+          paymentMethod,
+          paymentChannel,
           specialRequests,
           createdAt: new Date(),
           updatedAt: new Date(),

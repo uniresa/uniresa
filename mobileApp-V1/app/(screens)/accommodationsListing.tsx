@@ -25,21 +25,23 @@ import {
   setSearchCriteria,
   updateDestination,
   updateDates,
-  updateGuests,
-  updateRooms,
+  updateMinGuests,
+  updateMinRooms,
   selectSearchCriteria,
 } from "@/redux/slices/searchCriteriaSlice";
+import { addSearchHistory } from "@/redux/slices/userSearchHistorySlice";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const accommodationsListing = () => {
   const backendApi = process.env.EXPO_PUBLIC_BASE_URL;
   moment.locale("fr");
+  const { user } = useSelector((state: RootState) => state.userProfile);
   const { loading, error, accommodations } = useSelector(searchResults);
   const searchCriteria = useSelector(selectSearchCriteria);
-  const { destination, dates, guests, rooms } = searchCriteria;
+  const { destination, dates, minGuests, minRooms } = searchCriteria;
   const [guestDestination, setGuestDestination] = useState<LocationDetails>({
     street: "",
-    quartier: "",
     city: "",
     district: "",
     region: "",
@@ -62,6 +64,10 @@ const accommodationsListing = () => {
   });
   const dispatch = useDispatch();
   const params = useLocalSearchParams();
+  let userId: string;
+  if (user) {
+    userId = user.userId;
+  }
 
   // Set the guest destination if received from the destinationPicker screen
   useEffect(() => {
@@ -69,14 +75,15 @@ const accommodationsListing = () => {
       const parsedDestination = JSON.parse(
         params.selectedDestination as string
       );
-      setGuestDestination(parsedDestination as LocationDetails);
+      // setGuestDestination(parsedDestination as LocationDetails);
+      dispatch(
+        updateDestination({ destination: parsedDestination as LocationDetails })
+      );
 
       if (params.destinationPicked) {
         setLocalDestination(params.destinationPicked as string);
-        dispatch(
-          setSearchCriteria({ destination: params.destinationPicked as string })
-        );
-        dispatch(updateDestination(params.destinationPicked as string));
+
+        // dispatch(updateDestination(params.destinationPicked as string));
       }
     }
   }, [params.selectedDestination]);
@@ -113,8 +120,8 @@ const accommodationsListing = () => {
   const handleGuestPickerConfirm = (newGuests: Guests, newRooms: number) => {
     setLocalGuests(newGuests);
     setLocalRooms(newRooms);
-    dispatch(updateGuests(localGuests));
-    dispatch(updateRooms(localRooms));
+    dispatch(updateMinGuests(localGuests.adults + localGuests.children));
+    dispatch(updateMinRooms(localRooms));
     setShowGuestsPicker(false);
   };
 
@@ -125,16 +132,15 @@ const accommodationsListing = () => {
     }
     try {
       const query: SearchCriteria = {
-        destination: guestDestination,
+        destination: destination,
         dates: {
           checkInDate: dates.checkInDate,
           checkOutDate: dates.checkOutDate,
         },
-
-        minGuests: guests.adults + guests.children,
-
-        minRooms: rooms,
+        minGuests: minGuests,
+        minRooms: minRooms,
       };
+      console.log("query is empty or not see", query);
       const response = await axios.post(
         `${backendApi}/api/accommodation/getSearchedAccomodations`,
         query,
@@ -152,12 +158,11 @@ const accommodationsListing = () => {
         throw new Error(
           "Aucun résultat trouvé pour ces critères de recherche."
         );
-        return;
       }
       dispatch(fetchSearchResultsSuccess(results));
+      dispatch(addSearchHistory({ userId, search: query }));
       router.push("/searchResults" as Href<"/searchResults">);
     } catch (error) {
-      // Type-check if error is an AxiosError
       if (error instanceof AxiosError) {
         // Dispatch only the serializable parts of the Axios error (message)
         dispatch(fetchSearchResultsError({ message: error.message }));
@@ -270,8 +275,8 @@ const accommodationsListing = () => {
           {/* Guest Picker Modal */}
           <GuestPickerModal
             isVisible={showGuestsPicker}
-            numberOfRooms={rooms}
-            guests={guests}
+            numberOfRooms={localRooms}
+            guests={localGuests}
             onClose={() => setShowGuestsPicker(false)}
             onConfirm={handleGuestPickerConfirm}
           />

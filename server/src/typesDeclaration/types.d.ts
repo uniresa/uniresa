@@ -43,7 +43,7 @@ export interface UserProfile {
   preferredCurrency?: string; // Example: "USD", "EUR"
   preferredLanguage?: string; // Example: "en", "fr"
   preferredPaymentMethod?: string; //"Credit Card", "MoMo", "OM"
-  accountBalance?: { amount: number; currency: string };
+  accountBalance: { amount: number; currency: string };
 
   // Booking History
   bookingHistory?: BookingDetails[];
@@ -95,37 +95,71 @@ interface BookingDetails {
     | "Guesthouse"
     | "Hostel"
     | "Resort";
-  specificRoomTypeIds: string[];
-  numberOfRooms: number;
-  checkInDate: string;
-  checkOutDate: string;
+  roomTypeId: string;
+  // numberOfRooms: number;
+  bookingDates: BookingDates;
   totalAmount: number;
+  paidAmount: number;
   travellers?: number;
   currency: string;
   bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
-  bookingChannel?: string;
+  bookingChannel: string;
   bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
   paymentStatus: "Paid" | "Pending" | "Failed";
+  paymentMethod: string;
+  paymentChannel: string;
+  discountId?: string;
   specialRequests?: string[]; // Any specific requests made during booking
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+interface BookingRequest {
+  propertyId: string;
+  propertyName: string;
+  propertyType:
+    | "Hotel"
+    | "Bungalow"
+    | "Furnished Apartment"
+    | "Furnished House"
+    | "Villa"
+    | "Cottage"
+    | "Guesthouse"
+    | "Hostel"
+    | "Resort";
+  specificRoomTypeIds: string[];
+  bookingDates: BookingDates;
+  totalAmount: number;
+  currency: string;
+  paidAmount: number;
+  paymentMethod: string;
+  paymentChannel: string;
+  bookingType: "owner" | "uniresaBlock" | "T-Block" | "customer" | "other";
+  bookingChannel: string;
+  bookingStatus: "Confirmed" | "Cancelled" | "Completed" | "Pending";
+  paymentStatus: "Paid" | "Pending" | "Failed";
+  specialRequests: string[];
+  bookingPerson: BookingPerson;
+}
+
+interface BookingDates {
+  checkInDate: string;
+  checkOutDate: string;
+}
 //interface for the person making the booking request
 
 interface BookingPerson {
-  title?: string;
+  title: string;
   firstName: string;
   surName: string;
   email: string;
   phoneNumber: string;
-  birthDate?: Date;
   address: Address;
+  accountBalance: { amount: number; currency: string };
 }
 //address interface
 interface Address {
   street?: string;
-  quartier?: string;
   city: string;
   district?: string;
   region?: string;
@@ -235,8 +269,10 @@ export interface AccommodationProperty {
   amenities: Amenity[];
   policies: Policies; // Policies related to the property
   checkInDetails: CheckInDetails;
-  priceDetails: PriceDetails;
-
+  // priceDetails: PriceDetails;
+  additionalCost: string;
+  additionalServices: string;
+  additionalInfo: string;
   finalCleaning: FinalCleaning;
   numberOfStars: number; // stars (1-5 scale)
   reviews?: Review[];
@@ -250,7 +286,7 @@ export interface AccommodationProperty {
   hostDetails?: HostDetails;
   nearbyAttractions?: NearbyAttraction[];
   healthAndSafetyMeasures?: HealthAndSafetyMeasures;
-  cancellationPolicy?: string;
+  cancellationPolicy: string;
   keyCollection?: KeyCollection;
   propertyBookings?: BookingDetails[];
   createdAt: Date;
@@ -266,34 +302,18 @@ export interface Amenity {
 
 export interface LocationDetails {
   street: string;
-  quartier?: string; // Specific area within a city
   city: string;
   district?: string;
   region: string;
   postalCode?: string;
   country: string;
-  latitude?: number; // Geographical latitude
-  longitude?: number; // Geographical longitude
+  latitude: number; // Geographical latitude
+  longitude: number; // Geographical longitude
 }
 
 export interface ImageDetails {
   url: string; // Image URL
   description?: string; // Optional description of the image
-}
-
-export interface Amenities {
-  freeWiFi: boolean;
-  parking: boolean;
-  swimmingPool?: boolean;
-  airConditioning: boolean;
-  kitchen?: boolean;
-  privateBathroom?: boolean;
-  balcony?: boolean;
-  petFriendly?: boolean;
-  breakfastIncluded?: boolean;
-  gym?: boolean;
-  laundryService?: boolean;
-  [key: string]: boolean | undefined; // Allows for additional amenities
 }
 
 export interface Policies {
@@ -304,19 +324,12 @@ export interface Policies {
 }
 
 export interface CheckInDetails {
-  checkInFrom: string; // Example: "14:00"
-  checkInTo: string; // Example: "22:00"
-  checkOutFrom: string; // Example: "07:00"
-  checkOutTo: string; // Example: "12:00"
-}
-
-export interface PriceDetails {
-  currency: string;
-  pricePerNight: number;
-  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
-  taxesAndFees?: number;
-  discount?: number;
-  finalPrice?: number;
+  checkIn: string;
+  checkOut: string;
+  checkInInfo: string;
+  propertyAccesDetails: string;
+  paymentMethods: string;
+  pets: string;
 }
 
 export interface Review {
@@ -343,15 +356,40 @@ export interface AvailabilityDetails {
 
 export interface RoomType {
   roomId: string;
-  type: string; // Example: "Double Room", "Suite", etc.
-  size: number; // surface
-  capacity: number; // Number of people the room can accommodate
-  amenities?: Amenities;
+  type: string; // name of the room Example: "Double Room", "Suite", etc.
+  surface: number;
+  capacity: number;
+  beds: number;
+  bedsType: string;
   priceDetails: PriceDetails;
-  roomAvailabilities: AvailabilityDetails[]; // Availability details by date range
-  discountList?: DiscountDetails[];
-  ongoingDiscountPercentages?: number[];
-  numberOfBedrooms: number;
+  roomAvailabilities: AvailabilityDetails[];
+  discountList: DiscountDetails[];
+  isRefundable: boolean;
+  amenities: Amenity[];
+  roomImages: string[];
+  roomBookings?: BookingDetails[];
+  roomDescription: string;
+  
+}
+
+export interface PriceDetails {
+  currency: string;
+  pricePerNight: number;
+  taxesAndFeesIncluded?: boolean; // Whether taxes and fees are included in the price
+  taxesAndFees?: number;
+}
+export interface DiscountDetails {
+  discountId: string;
+  discountType: "Percentage" | "Flat Fee";
+  discountValue: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  roomTypeId?: string;
+  propertyId?: string;
+  bookingIds?: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface HostDetails {
@@ -399,19 +437,6 @@ interface SearchCriteria {
   maxPrice?: number;
   minStars?: number;
   amenities?: Amenities;
-}
-export interface DiscountDetails {
-  discountId: string;
-  discountType: "Percentage" | "Flat Fee";
-  discountValue: number;
-  startDate: Date;
-  endDate: Date;
-  isActive: boolean;
-  roomTypeId: string;
-  propertyId: string;
-  bookingIds?: string[];
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 interface Query {

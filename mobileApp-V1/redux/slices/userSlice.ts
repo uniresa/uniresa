@@ -6,7 +6,7 @@ interface UserState {
   loading: boolean;
   error: string | null;
 }
-const initialState = {
+const initialState: UserState = {
   user: null,
   loading: false,
   error: null,
@@ -37,5 +37,6 @@ const userSlice = createSlice({
 export const { loginStart, loginSuccess, loginFailure, logout } =
   userSlice.actions;
 
-export const logedInUser = (state: typeof initialState) => state.user;
+export const loggedInUser = (state: { userProfile: UserState }) =>
+  state.userProfile;
 export default userSlice.reducer;
