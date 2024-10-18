@@ -15,6 +15,10 @@ interface PropertyCardProps {
   imageStyle?: string;
   presentationStyle?: string;
   imageContainerStyle?: string;
+  reviewSize?: number;
+  starSize?: number;
+  amenityIconStyle?: string;
+  tripIconStyle?: string;
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({
@@ -24,6 +28,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   imageStyle,
   presentationStyle,
   imageContainerStyle,
+  reviewSize,
+  starSize,
+  amenityIconStyle,
+  tripIconStyle,
 }) => {
   const { dates } = useSelector(selectSearchCriteria);
   const { propertyInitialPrice, propertyDiscountedPrice, roomId } =
@@ -44,14 +52,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       ? totalDiscountedPrice
       : totalInitialPrice;
   const totalDiscount = totalInitialPrice - totalDiscountedPrice;
-  const renderStars = () => {
+  const renderStars = (starSize = 16) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <FontAwesome
           key={i}
           name={i <= property.numberOfStars ? "star" : "star-o"}
-          size={16}
+          size={starSize}
           color="#E89600"
         />
       );
@@ -60,7 +68,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   };
   console.log(property.propertyId);
 
-  const renderReviewRating = () => {
+  const renderReviewRating = (size = 16) => {
     const circles = [];
     for (let i = 1; i <= 5; i++) {
       if (i <= property.reviewsRating) {
@@ -68,7 +76,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <MaterialCommunityIcons
             key={i}
             name="circle"
-            size={16}
+            size={size}
             color="#07A872"
           />
         );
@@ -77,7 +85,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <MaterialCommunityIcons
             key={i}
             name="circle-half-full"
-            size={16}
+            size={size}
             color="#07A872"
           />
         );
@@ -86,7 +94,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <MaterialCommunityIcons
             key={i}
             name="circle-outline"
-            size={16}
+            size={size}
             color="#07A872"
           />
         );
@@ -109,7 +117,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         })
       }
     >
-      <View className={`rounded-l-xl ${imageContainerStyle} flex justify-center`}>
+      <View
+        className={`rounded-l-xl ${imageContainerStyle} flex justify-center`}
+      >
         <Image
           source={{ uri: property.images[0] }}
           className={`w-full h-full rounded-l-xl ${imageStyle}`}
@@ -121,15 +131,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <Text className={`text-lg font-semibold ${textColor}`}>
             {property.propertyName}
           </Text>
-          <View className="flex flex-row items-center">{renderStars()}</View>
+          <View className="flex flex-row items-center">
+            {renderStars(starSize)}
+          </View>
         </View>
         <View className="flex flex-row items-center mt-2">
           <Image
             source={require("@/assets/icons/tripAdvisor.png")}
-            style={{ width: 30, height: 16 }}
+            className={`w-6 h-6 ${tripIconStyle}`}
+            style={{ width: 24, height: 15 }}
             resizeMode="cover"
           />
-          <View className="flex flex-row ml-2">{renderReviewRating()}</View>
+          <View className="flex flex-row ml-2">
+            {renderReviewRating(reviewSize)}
+          </View>
           <Text className="ml-2 text-sm text-neutrals-500">
             {property.numberOfReviews} Commentaires
           </Text>
@@ -159,7 +174,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                     {icon && (
                       <Image
                         source={icon}
-                        className="w-4 h-4 mr-1"
+                        className={`w-4 h-4 mr-1 ${amenityIconStyle}`}
                         resizeMode="contain"
                       />
                     )}
@@ -170,7 +185,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
                 );
               })}
         </View>
-        <View className="mt-8 p-2">
+        <View className="mt-2 p-2">
           {propertyDiscountedPrice &&
           propertyDiscountedPrice < propertyInitialPrice ? (
             <View className="flex items-end">

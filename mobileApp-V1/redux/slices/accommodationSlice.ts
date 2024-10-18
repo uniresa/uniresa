@@ -1,8 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 
-const initialState = {
-  accommodationsList: [] as AccommodationProperty[],
+interface AccommodationsState {
+  properties: AccommodationProperty[];
+  loading: boolean;
+  error: string | null;
+}
+
+// Initial state
+const initialState: AccommodationsState = {
+  properties: [],
   loading: false,
   error: null,
 };
@@ -15,12 +22,15 @@ const accommodationsSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchAccommodationsSuccess: (state, action) => {
+    fetchAccommodationsSuccess: (
+      state,
+      action: PayloadAction<AccommodationProperty[]>
+    ) => {
       state.loading = false;
       state.error = null;
-      state.accommodationsList = action.payload;
+      state.properties = action.payload;
     },
-    fetchAccommodationsError: (state, action) => {
+    fetchAccommodationsError: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },
@@ -33,7 +43,9 @@ export const {
   fetchAccommodationsError,
 } = accommodationsSlice.actions;
 
-export const accommodationsList = (state: typeof initialState) =>
-  state.accommodationsList;
+// Corrected selector function
+export const selectAccommodationsList = (state: {
+  accommodationsList: AccommodationsState;
+}) => state.accommodationsList;
 
 export default accommodationsSlice.reducer;
