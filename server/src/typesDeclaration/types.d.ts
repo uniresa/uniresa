@@ -269,7 +269,7 @@ export interface AccommodationProperty {
   amenities: Amenity[];
   policies: Policies; // Policies related to the property
   checkInDetails: CheckInDetails;
-  priceDetails: PriceDetails;
+  // priceDetails: PriceDetails;
   additionalCost: string;
   additionalServices: string;
   additionalInfo: string;
@@ -316,21 +316,6 @@ export interface ImageDetails {
   description?: string; // Optional description of the image
 }
 
-export interface Amenities {
-  freeWiFi: boolean;
-  parking: boolean;
-  swimmingPool?: boolean;
-  airConditioning: boolean;
-  kitchen?: boolean;
-  privateBathroom?: boolean;
-  balcony?: boolean;
-  petFriendly?: boolean;
-  breakfastIncluded?: boolean;
-  gym?: boolean;
-  laundryService?: boolean;
-  [key: string]: boolean | undefined; // Allows for additional amenities
-}
-
 export interface Policies {
   isSmokingAllowed: boolean;
   isPetsAllowed: boolean;
@@ -374,6 +359,8 @@ export interface RoomType {
   type: string; // name of the room Example: "Double Room", "Suite", etc.
   surface: number;
   capacity: number;
+  beds: number;
+  bedsType: string;
   priceDetails: PriceDetails;
   roomAvailabilities: AvailabilityDetails[];
   discountList: DiscountDetails[];
@@ -382,7 +369,7 @@ export interface RoomType {
   roomImages: string[];
   roomBookings?: BookingDetails[];
   roomDescription: string;
-  bedType: string;
+  
 }
 
 export interface PriceDetails {

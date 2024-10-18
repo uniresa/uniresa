@@ -18,7 +18,7 @@ const { checkInDate, checkOutDate } = getUpcomingWeekend();
 const defaultSearchCriteria: SearchCriteria = {
   destination: {
     street: "",
-    city: "douala",
+    city: "Douala",
     district: "",
     region: "",
     postalCode: "",
@@ -83,7 +83,17 @@ const RecentSearch: React.FC<Props> = ({ userId }) => {
           data={filteredHotels}
           keyExtractor={(item) => item.propertyId}
           renderItem={({ item }) => (
-            <PropertyCard property={item} textColor="text-" />
+            <PropertyCard
+              property={item}
+              containerStyle="flex flex-row h-72 w-96"
+              imageStyle="w-full h-full"
+              presentationStyle="w-3/4 p-2 ml-2"
+              imageContainerStyle="w-1/4 h-full"
+              reviewSize={12}
+              starSize={12}
+              amenityIconStyle="w-3 h-3 mr-1"
+              tripIconStyle="w-3 h-3"
+            />
           )}
           horizontal
           showsHorizontalScrollIndicator={false}

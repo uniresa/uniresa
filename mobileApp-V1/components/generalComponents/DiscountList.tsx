@@ -1,47 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { View, FlatList } from "react-native";
-import { data } from "@/data/tempData"; // Assuming this is your data source
+import { FlatList, Text } from "react-native";
 import { AccommodationProperty } from "@/typesDeclaration/types";
 import DiscountCard from "./DiscountCard";
+import { getCheapestAccommodationPerCity } from "@/utils/discountedPriceCalculation";
+import { useSelector } from "react-redux";
+import { selectAccommodationsList } from "@/redux/slices/accommodationSlice";
 
-const DiscountedList: React.FC = () => {
-  const [topDiscountedHotels, setTopDiscountedHotels] = useState<
-    { place: string; property: AccommodationProperty }[]
-  >([]);
+const DiscountedList = () => {
+  const { properties, loading, error } = useSelector(selectAccommodationsList);
+  console.log("Properties fetched data:", properties);
+  if (loading) {
+    return <Text>Loading accommodations...</Text>;
+  }
 
-  useEffect(() => {
-    const results = data
-      .map((place) => {
-        const discountedProperties = place.properties.filter(
-          (property) => property.newPrice < property.oldPrice
-        );
+  if (error) {
+    return <Text>Error loading accommodations: {error}</Text>;
+  }
 
-        if (discountedProperties.length > 0) {
-          const biggestDiscountProperty = discountedProperties.reduce(
-            (max, property) => {
-              const discountAmount = property.oldPrice - property.newPrice;
-              const maxDiscountAmount = max.oldPrice - max.newPrice;
-              return discountAmount > maxDiscountAmount ? property : max;
-            }
-          );
-
-          return {
-            place: place.place,
-            property: biggestDiscountProperty,
-          };
-        }
-
-        return null;
-      })
-      .filter((result) => result !== null);
-
-    setTopDiscountedHotels(results as { place: string; property: Property }[]);
-  }, []);
-
+  if (!properties || properties.length === 0) {
+    return <Text>No accommodations available</Text>;
+  }
+  const cheapestPerCity = getCheapestAccommodationPerCity(properties);
+  console.log("cheapestPerCity final data:", cheapestPerCity);
   return (
     <FlatList
-      data={topDiscountedHotels}
-      keyExtractor={(item) => item.place}
+      data={cheapestPerCity}
+      keyExtractor={(item) => item.cheapestProperty.propertyId}
       renderItem={({ item }) => (
         <DiscountCard discountedProperty={item} textColor="text-neutrals" />
       )}
